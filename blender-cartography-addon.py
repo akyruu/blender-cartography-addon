@@ -216,7 +216,8 @@ History:
 	+ add File > Import > Cartography (.csv, .tsv) menu item
 	+ add CSV reader (tabulation separator)
 	+ add .blend template reader
-	
+2020/08/13: v0.0.2
+	+ add creation of points
 '''
 
 import bpy
@@ -235,7 +236,7 @@ from enum import Enum
 bl_info = {
     'name': '[ΩP] Cartography addon',
     'author': 'Akyruu',
-    'version': (0,  0, 1),
+    'version': (0,  0, 2),
     'blender': (2, 83, 0),
     'location': 'File > Import > Cartography (.csv, .tsv)',
     'description': 'Import CSV file with locations from Cartographie',
@@ -406,7 +407,7 @@ class CartographyReader:
             room = CartographyRoom(name)
             self.__rooms[name] = room
         else:
-            self.__logger.trace('Use existing room <' + name + '>')
+            self.__logger.debug('Use existing room <' + name + '>')
         self.__room = room
 
         # Get default point type for current room
@@ -522,9 +523,7 @@ class CartographyTemplate:
 
     def read(self):
         with bpy.data.libraries.load(self.filepath, link=False) as (data_from, data_to):
-            data_to.materials = self.__filterAlreadyExists(data_from.materials, bpy.data.materials)
-            data_to.images = self.__filterAlreadyExists(data_from.images, bpy.data.images)
-            data_to.objects = self.__filterAlreadyExists(data_from.objects, bpy.data.objects)
+            data_to.objects = self.__filterAlreadyExists(data_from.objects, bpy.data.objects) # import materials too
 
         self.objects[CartographyPointType.OUTLINE] = self.__findObjectByName('contour')
         self.objects[CartographyPointType.GATE] = self.__findObjectByName('Gate')
@@ -546,6 +545,65 @@ class CartographyTemplate:
         object = next((object for object in bpy.data.objects if object.name == name), None)
         if object == None:
             self.__logger.warn('Object not found: ' + name)
+        return object
+
+# Service - Drawer ------------------------------------------------------------
+class CartographyDrawer:
+    __logger = Logger('CartographyDrawer')
+    
+    def __init__(self, rooms, template):
+        self.__rooms = rooms
+        self.__template = template
+    
+    # Methods - Draw
+    def draw(self):
+        for room in self.__rooms.values():
+            self.__drawRoom(room)
+    
+    def __drawRoom(self, room: CartographyRoom):
+        collection = self.__createCollection(room.name)
+        
+        for point in room.points:
+            self.__drawPoint(point, collection)
+    
+    def __drawPoint(self, point: CartographyPoint, collection):
+        # Get template and create point
+        template = self.__template.objects.get(point.type, None)
+        if template == None:
+            self.__logger.warn('Template not found for type <' + point.type.name + '>')
+            return
+        object = self.__createObject(point.name, point.x, point.y, 0, template, collection)
+
+        # Get icon template and create image
+        if point.subType != None:
+            template = self.__template.objects.get(point.subType, None)
+            if template == None:
+                self.__logger.warn('Template not found for type <' + point.subType.name + '>')
+                return
+            
+            name = object.name + '_icon'
+            z = object.location.z + object.dimensions.z
+            self.__createObject(name, object.location.x, object.location.y, z, template, collection)
+    
+    # Methods - Tools
+    def __createCollection(self, name: str):
+        collection = bpy.data.collections.get(name)
+        if collection != None:
+            self.__logger.debug('Collection <' + name + '> already exists: complete delete')
+            bpy.data.collections.remove(collection)
+
+        self.__logger.debug('Create a new collection: <' + name + '>')
+        collection = bpy.data.collections.new(name)
+        bpy.context.scene.collection.children.link(collection)
+        return collection
+    
+    def __createObject(self, name: str, x: int, y: int, z: int, template, collection):
+        object = template.copy()
+        object.name = name
+        object.location.x = x
+        object.location.y = y
+        object.location.z = z
+        collection.objects.link(object)
         return object
 
 # FRONTEND ====================================================================
@@ -570,8 +628,11 @@ class CartographyCsvImportAction:
         template.read()
         self.__logger.info('Template .blend <' + blendPath + '> read with success!')
 
-        # Place points
-        # TODO
+        # Draw points
+        self.__logger.info('Draw <' + str(len(rooms)) + '> room(s)')
+        drawer = CartographyDrawer(rooms, template)
+        drawer.draw()
+        self.__logger.info('<' + str(len(rooms)) + '> room(s) drawn with success!')
 
         self.__logger.info('Import finished with success!')
 
