@@ -218,18 +218,23 @@ History:
 	+ add .blend template reader
 2020/08/13: v0.0.2
 	+ add creation of points
+    + add creation of 3D plane (partial)
 '''
 
 import bpy
+import bmesh
 import datetime
+import mathutils
 import re
 import os
 
+from abc import abstractmethod
 from bpy_extras.io_utils import ImportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
+from bmesh.types import BMEdge, BMFace, BMVert
 
-from enum import Enum
+from enum import auto, Enum, Flag
 
 # CONFIG ======================================================================
 # Blender addon informations --------------------------------------------------
@@ -249,7 +254,7 @@ bl_info = {
 # Addon configuration ---------------------------------------------------------
 config = {
     'production': False,
-    'logLevel': 3, # @see LogLevel class
+    'logLevel': 1, # @see LogLevel class
 }
 
 # TOOLS =======================================================================
@@ -290,19 +295,52 @@ class Logger:
                     self.name + ':', # Name
                     message) # Message
 
+# Blender ---------------------------------------------------------------------
+class BlenderUtils:
+    def bmeshFromMesh(mesh):
+        if mesh.is_editmode:
+            bm = bmesh.from_edit_mesh(me)
+        else :
+            bm = bmesh.new()
+            bm.from_mesh(mesh)
+        return bm
+    
+    def bmeshToMesh(bm, mesh):
+        if bm.is_wrapped:
+            bmesh.update_edit_mesh(me, False, False)
+        else:
+            bm.to_mesh(mesh)
+            mesh.update()
+
 # BACKEND =====================================================================
 # Model - Reader --------------------------------------------------------------
-class CartographyPointType(Enum):
-    OUTLINE = 1
-    GATE = 2
-    ESCARPMENT = 3
-    COLUMN = 4
-    CHASM = 5
-    CLIMBING_POINT = 6
-    HARVESTABLE = 7
-    ANTHROPOGENIC_OBJECT = 8
+class CartographyPointCategoryType(Enum):
+    INTEREST = 1
+    STRUCTURAL = 2
 
-class CartographySubType(Enum):
+class CartographyPointCategory(bytes, Enum):
+    def __new__(cls, value, type, outline = False, level = 0, face = False):
+        obj = bytes.__new__(cls, [value])
+        obj._value_ = value
+        obj.type = type
+        obj.outline = outline
+        obj.level = level
+        obj.face = face
+        return obj
+    
+    # Structural
+    OUTLINE = (1, CartographyPointCategoryType.STRUCTURAL, True)
+    GATE = (2, CartographyPointCategoryType.STRUCTURAL, True)
+    ESCARPMENT = (3, CartographyPointCategoryType.STRUCTURAL)
+    COLUMN = (4, CartographyPointCategoryType.STRUCTURAL, False, 5, True)
+    CHASM = (5, CartographyPointCategoryType.STRUCTURAL, False, -5, True)
+
+    # Interest
+    CLIMBING_POINT = (6, CartographyPointCategoryType.INTEREST)
+    HARVESTABLE = (7, CartographyPointCategoryType.INTEREST)
+    ANTHROPOGENIC_OBJECT = (8, CartographyPointCategoryType.INTEREST)
+
+class CartographyItemType(Enum):
     BOX = 1
     LICHEN = 2
     ORE = 3
@@ -310,16 +348,16 @@ class CartographySubType(Enum):
 class CartographyPoint:
     def __init__(self, 
         name: str, 
-        type: CartographyPointType, 
+        category: CartographyPointCategory, 
         x: int, 
         y: int, 
-        subType: CartographySubType = None
+        itemType: CartographyItemType = None
     ):
         self.name = name
-        self.type = type
+        self.category = category
         self.x = x
         self.y = y
-        self.subType = subType
+        self.itemType = itemType
 
 class CartographyRoom:
     points = []
@@ -338,19 +376,19 @@ class CartographyReader:
     # Fields
     __separator = '\t'
     __pointTypeMap = {
-        '(Outline|Contour)': CartographyPointType.OUTLINE,
-        '(Gate|Porte|Entrée) ([0-9]+)': CartographyPointType.GATE,
-        '(Escarpment|Escarpement) ([0-9]+)': CartographyPointType.ESCARPMENT,
-        '(Column|Colonne) ([0-9]+)': CartographyPointType.COLUMN,
-        '(Chasm|Gouffre) ([0-9]+)': CartographyPointType.CHASM,
-        '(Climbing ?Point|Point( d[\'’ ]?)?escalade)': CartographyPointType.CLIMBING_POINT,
-        '(Harvestables?|Consommables?)': CartographyPointType.HARVESTABLE,
-        '((Anthropogenics? )?Objects?|Objets?( Anthropiques?))': CartographyPointType.ANTHROPOGENIC_OBJECT
+        '(Outline|Contour)': CartographyPointCategory.OUTLINE,
+        '(Gate|Porte|Entrée) ([0-9]+)': CartographyPointCategory.GATE,
+        '(Escarpment|Escarpement) ([0-9]+)': CartographyPointCategory.ESCARPMENT,
+        '(Column|Colonne) ([0-9]+)': CartographyPointCategory.COLUMN,
+        '(Chasm|Gouffre) ([0-9]+)': CartographyPointCategory.CHASM,
+        '(Climbing ?Point|Point( d[\'’ ]?)?escalade)': CartographyPointCategory.CLIMBING_POINT,
+        '(Harvestables?|Consommables?)': CartographyPointCategory.HARVESTABLE,
+        '((Anthropogenics? )?Objects?|Objets?( Anthropiques?))': CartographyPointCategory.ANTHROPOGENIC_OBJECT
     }
-    __subTypeMap = {
-        '(Box(es)?|Caisses?)': CartographySubType.BOX,
-        'Lichens?': CartographySubType.LICHEN,
-        '(Ores?|Minerai?)': CartographySubType.ORE
+    __itemTypeMap = {
+        '(Box(es)?|Caisses?)': CartographyItemType.BOX,
+        'Lichens?': CartographyItemType.LICHEN,
+        '(Ores?|Minerai?)': CartographyItemType.ORE
     }
 
     __row = 0
@@ -358,8 +396,9 @@ class CartographyReader:
     __mode = CartographyReaderMode.HEADER
 
     __rooms = {}
+    __pointNames = []
     __room: CartographyRoom = None
-    __pointType: CartographyPointType = None
+    __pointType: CartographyPointCategory = None
     
     __logger = Logger('CartographyReader')
 
@@ -417,12 +456,14 @@ class CartographyReader:
         self.__mode =  CartographyReaderMode.POINT
 
     def __readPoint(self, line: str):
-        matches = self.__checkLine(line, 'point', ['-?[0-9]+', '-?[0-9]+', '([A-Za-z].+)?'], False, 2)
+        patterns = ['-?[0-9]+', '-?[0-9]+', '([A-Za-z].+)?']
+        matches = self.__checkLine(line, 'point', patterns, False, 2)
         if matches == None:
             try:
                 self.__readRoom(line)
             except:
-                self.__raiseError(line, 'point or room', 'TODO merge patterns with "or"') # TODO
+                self.__raiseError(line, 'point or room', '|'.join(self.__pointTypeMap.keys()) \
+                        + ' or ' + '|'.join(patterns))
         elif self.__room is not None: # Always true in prod runtime
             self.__logger.trace('Point line found: #' + str(self.__row))
             
@@ -431,23 +472,34 @@ class CartographyReader:
             y = int(matches[1].group(0))
             
             # Determine name, point type and sub type
-            name = 'TODO' # TODO get name from room concat with #xxx
             pointType = self.__pointType
-            subType = None
+            itemType = None
             if len(matches) > 2:
                 m = matches[2]
                 name = m.group(0)
-                subType = self.__checkSubType(name, subType)
-                if subType == None:
+                itemType = self.__checkSubType(name, itemType)
+                if itemType == None:
                     pointType = self.__checkPointType(name, pointType)
-            if pointType == None: # Always false in prod runtime
+            elif pointType == None: # Always false in prod runtime
                 raise Exception('Point line found but not the point type: #' + str(self.__row))
+            else:
+                name = self.__room.name + '_' + pointType.name
+            
+            # Check name is unique
+            if name in self.__pointNames:
+                uniqueName = name
+                idx = 1
+                while uniqueName in self.__pointNames:
+                    uniqueName = '{}_{:03d}'.format(name, idx)
+                    idx += 1
+                name = uniqueName
+            self.__pointNames.append(name)
 
             # Create and add point to current room
             self.__logger.debug('Create new point <name=' + name + ', type=' + pointType.name \
-                    + subType.name if subType != None else '' \
+                    + itemType.name if itemType != None else '' \
                     + ', x=' + str(x) + ', y=' + str(y) + '> for room <' + self.__room.name + '>')
-            point = CartographyPoint(name, pointType, x, y, subType)
+            point = CartographyPoint(name, pointType, x, y, itemType)
             self.__room.points.append(point)
         else:
             raise Exception('Point line found but no room found')
@@ -492,11 +544,11 @@ class CartographyReader:
         return defaultValue
 
     def __checkSubType(self, value: str, defaultValue = None):
-        for pattern in self.__subTypeMap:
+        for pattern in self.__itemTypeMap:
             if re.match(pattern, value, re.IGNORECASE) != None \
                     or re.match(pattern + '.*', value, re.IGNORECASE) != None \
                     or re.match('.*' + pattern + '.*', value, re.IGNORECASE) != None:
-                return self.__subTypeMap[pattern]
+                return self.__itemTypeMap[pattern]
         return defaultValue
 
     def __formatValue(self, line: str):
@@ -513,6 +565,9 @@ class CartographyReader:
                     + ' (case insensitive)')
 
 # Service - Template ----------------------------------------------------------
+class CartographyObject(Enum):
+    PLANE = 1
+
 class CartographyTemplate:
     objects = {}
     
@@ -525,18 +580,20 @@ class CartographyTemplate:
         with bpy.data.libraries.load(self.filepath, link=False) as (data_from, data_to):
             data_to.objects = self.__filterAlreadyExists(data_from.objects, bpy.data.objects) # import materials too
 
-        self.objects[CartographyPointType.OUTLINE] = self.__findObjectByName('contour')
-        self.objects[CartographyPointType.GATE] = self.__findObjectByName('Gate')
-        self.objects[CartographyPointType.ESCARPMENT] = self.__findObjectByName('elevation')
-        self.objects[CartographyPointType.COLUMN] = self.__findObjectByName('colonne')
-        self.objects[CartographyPointType.CHASM] = self.__findObjectByName('gouffre')
-        self.objects[CartographyPointType.CLIMBING_POINT] = self.__findObjectByName('escalade')
-        self.objects[CartographyPointType.HARVESTABLE] = self.__findObjectByName('ico_feces_Pilier')
-        self.objects[CartographyPointType.ANTHROPOGENIC_OBJECT] = None
+        self.objects[CartographyPointCategory.OUTLINE] = self.__findObjectByName('contour')
+        self.objects[CartographyPointCategory.GATE] = self.__findObjectByName('Gate')
+        self.objects[CartographyPointCategory.ESCARPMENT] = self.__findObjectByName('elevation')
+        self.objects[CartographyPointCategory.COLUMN] = self.__findObjectByName('colonne')
+        self.objects[CartographyPointCategory.CHASM] = self.__findObjectByName('gouffre')
+        self.objects[CartographyPointCategory.CLIMBING_POINT] = self.__findObjectByName('escalade')
+        self.objects[CartographyPointCategory.HARVESTABLE] = self.__findObjectByName('ico_feces_Pilier')
+        self.objects[CartographyPointCategory.ANTHROPOGENIC_OBJECT] = None
 
-        self.objects[CartographySubType.BOX] = self.__findObjectByName('Caisse_1.001')
-        self.objects[CartographySubType.LICHEN] = self.__findObjectByName('ico_lichen_Ico')
-        self.objects[CartographySubType.ORE] = self.__findObjectByName('ico_handMining_Ico')
+        self.objects[CartographyItemType.BOX] = self.__findObjectByName('Caisse_1.001')
+        self.objects[CartographyItemType.LICHEN] = self.__findObjectByName('ico_lichen_Ico')
+        self.objects[CartographyItemType.ORE] = self.__findObjectByName('ico_handMining_Ico')
+
+        self.objects[CartographyObject.PLANE] = self.__findObjectByName('Plane')
 
     def __filterAlreadyExists(self, source, target):
         return [item for item in source if item not in target]
@@ -550,54 +607,50 @@ class CartographyTemplate:
 # Service - Drawer ------------------------------------------------------------
 class CartographyDrawer:
     __logger = Logger('CartographyDrawer')
-    
-    def __init__(self, rooms, template):
-        self.__rooms = rooms
+
+    def __init__(self, template, *roomDrawers):
         self.__template = template
+        self.__roomDrawers = roomDrawers
     
     # Methods - Draw
-    def draw(self):
-        for room in self.__rooms.values():
-            self.__drawRoom(room)
-    
-    def __drawRoom(self, room: CartographyRoom):
-        collection = self.__createCollection(room.name)
-        
-        for point in room.points:
-            self.__drawPoint(point, collection)
-    
-    def __drawPoint(self, point: CartographyPoint, collection):
-        # Get template and create point
-        template = self.__template.objects.get(point.type, None)
-        if template == None:
-            self.__logger.warn('Template not found for type <' + point.type.name + '>')
-            return
-        object = self.__createObject(point.name, point.x, point.y, 0, template, collection)
-
-        # Get icon template and create image
-        if point.subType != None:
-            template = self.__template.objects.get(point.subType, None)
-            if template == None:
-                self.__logger.warn('Template not found for type <' + point.subType.name + '>')
-                return
-            
-            name = object.name + '_icon'
-            z = object.location.z + object.dimensions.z
-            self.__createObject(name, object.location.x, object.location.y, z, template, collection)
+    def draw(self, rooms):
+        for room in rooms:
+            collection = self.__createCollection(room.name)
+            for roomDrawer in self.__roomDrawers:
+                roomDrawer.draw(room, collection)
     
     # Methods - Tools
     def __createCollection(self, name: str):
         collection = bpy.data.collections.get(name)
         if collection != None:
             self.__logger.debug('Collection <' + name + '> already exists: complete delete')
-            bpy.data.collections.remove(collection)
+            self.__removeCollection(collection)
 
         self.__logger.debug('Create a new collection: <' + name + '>')
         collection = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(collection)
         return collection
+
+    def __removeCollection(self, collection):
+        # FIXME remove objects in collection not working (remove template object too)
+        # objects = [object for object in collection.objects \
+        #         if object.users == 1 and object not in self.__template.objects]
+        # while objects:
+        #     bpy.data.objects.remove(objects.pop())
+        bpy.data.collections.remove(collection)
+
+class CartographyRoomDrawer:
+    __logger = Logger('CartographyPointDrawer')
+
+    def __init__(self, template):
+        self._template = template
     
-    def __createObject(self, name: str, x: int, y: int, z: int, template, collection):
+    @abstractmethod
+    def draw(self, room: CartographyRoom, collection):
+        pass
+    
+    # Methods - Tools    
+    def _createObject(self, name: str, x: int, y: int, z: int, template, collection):
         object = template.copy()
         object.name = name
         object.location.x = x
@@ -605,6 +658,208 @@ class CartographyDrawer:
         object.location.z = z
         collection.objects.link(object)
         return object
+
+class CartographyPointDrawer(CartographyRoomDrawer):
+    __logger = Logger('CartographyPointDrawer')
+    
+    def __init__(self, template):
+        CartographyRoomDrawer.__init__(self, template)
+    
+    # Methods - Draw
+    def draw(self, room: CartographyRoom, collection):
+        for point in room.points:
+            self.__drawPoint(point, collection)
+
+    def __drawPoint(self, point: CartographyPoint, collection):
+        # Get template and create point
+        template = self._template.objects.get(point.category, None)
+        if template == None:
+            self.__logger.warn('Template not found for category <' + point.category.name + '>')
+            return
+        object = self._createObject(point.name, point.x, point.y, 0, template, collection)
+
+        # Icon
+        if point.itemType != None:
+            # Get icon template
+            template = self._template.objects.get(point.itemType, None)
+            if template == None:
+                self.__logger.warn('Template not found for item type <' + point.itemType.name + '>')
+                return
+            
+            # Create image
+            name = object.name + '_icon'
+            z = object.location.z + object.dimensions.z
+            self._createObject(name, object.location.x, object.location.y, z, template, collection)
+
+class CartographyPlaneDrawer(CartographyRoomDrawer):
+    __mesh = None
+    __bmesh = None
+    
+    __verticesByCategory = {}
+    __outlineVertices = []
+    
+    __edgesByCategory = {}
+    __outlineEdges = []
+    
+    __logger = Logger('CartographyPlaneDrawer')
+    
+    def __init__(self, template):
+        CartographyRoomDrawer.__init__(self, template)
+    
+    # Methods - Draw
+    def draw(self, room: CartographyRoom, collection):
+        # Get template
+        template = self._template.objects.get(CartographyObject.PLANE)
+        if template == None:
+            self.__logger.warn('Template not found for object <' + CartographyObject.PLANE.name + '>')
+            return
+        
+        # Create object
+        name = room.name + '_plane'
+        point = room.points[0]
+        object = self._createObject(name, 0, 0, 0, template, collection)
+        
+        # Update mesh
+        self.__updateMesh(room, object)
+    
+    def __updateMesh(self, room: CartographyRoom, object):
+        self.__logger.trace('Update mesh for room <' + room.name + '>')
+        self.__updateMeshInit(object)
+        self.__updateMeshCreateVertices(room)
+        self.__updateMeshCreateEdges()
+        self.__updateMeshCreateFaces()
+        self.__updateMeshLevelEdges()
+        self.__updateMeshApply()
+    
+    def __updateMeshInit(self, object):
+        self.__logger.trace('Update mesh initialization...')
+        # Get mesh instance
+        self.__mesh = object.data
+        bm = self.__bmesh = BlenderUtils.bmeshFromMesh(self.__mesh)
+
+        # Delete all vertices
+        bmesh.ops.delete(bm, geom=bm.verts)
+        
+        # Work variables
+        self.__verticesByCategory = {}
+        self.__outlineVertices = []
+        self.__edgesByCategory = {}
+        self.__outlineEdges = []
+        for category in iter(CartographyPointCategory):
+            self.__verticesByCategory[category] = []
+            self.__edgesByCategory[category] = []
+    
+    def __updateMeshCreateVertices(self, room: CartographyRoom):
+        self.__logger.trace('Update mesh - create vertices...')
+        points = [point for point in room.points \
+                if point.category != None and point.category.type == CartographyPointCategoryType.STRUCTURAL]
+        for point in points:
+            self.__logger.trace('Update mesh for point <' + point.name + '>')
+            self.__createVertex(point.x, point.y, 0, point.category)
+    
+    def __updateMeshCreateEdges(self):
+        self.__logger.trace('Update mesh - create edges...')
+        
+        # Create not outline edges
+        verticesByCategory = self.__verticesByCategory
+        for category in [c for c in verticesByCategory if not c.outline]:
+            vertices = verticesByCategory.get(category)
+            count = len(vertices)
+            if count > 1:
+                self.__logger.trace('Update mesh - create <' + str(count) + '> edges' \
+                        + ' for category <' + category.name + '>...')
+                for i in range(1, count):
+                    self.__createEdge(vertices[i - 1], vertices[i], category)
+                
+                # Close polygon
+                if count > 2:
+                    self.__logger.trace('Update mesh - close polygon for category <' + category.name + '>...')
+                    self.__createEdge(vertices[-1], vertices[0], category)
+
+        # Create outline edges
+        vertices = self.__outlineVertices
+        gateVertices = verticesByCategory.get(CartographyPointCategory.GATE)
+        count = len(vertices)
+        if count > 1:
+            self.__logger.trace('Update mesh - create <' + str(count) + '> edges for outline...')
+            for i in range(1, count):
+                prevVertice = vertices[i - 1]
+                currVertice = vertices[i]
+                category = CartographyPointCategory.GATE \
+                        if prevVertice in gateVertices and currVertice in gateVertices \
+                        else CartographyPointCategory.OUTLINE 
+                self.__createEdge(prevVertice, currVertice, category)
+            
+            # Close polygon
+            if count > 2:
+                self.__logger.trace('Update mesh - close polygon for outline...')
+                self.__createEdge(vertices[-1], vertices[0], category)
+
+    def __updateMeshCreateFaces(self):
+        self.__logger.trace('Update mesh - create faces...')
+        self.__createFaces(self.__bmesh.edges)
+    
+    # TODO apply rock_cliff on vertical faces
+    def __updateMeshLevelEdges(self):
+        self.__logger.trace('Update mesh - level edges...')
+        
+        # Level outline edges
+        gateEdges = self.__edgesByCategory.get(CartographyPointCategory.GATE)
+        outlineEdges = [e for e in self.__outlineEdges if e not in gateEdges]
+        self.__levelEdges(outlineEdges)
+
+        # Level edges specific categories        
+        for category in self.__edgesByCategory:
+            edges = self.__edgesByCategory.get(category)
+            if not category.outline and category.level and len(edges) > 2: # TODO <= 2 case
+                self.__levelEdges(edges, category.level, category.face)
+
+    def __updateMeshApply(self):
+        self.__logger.trace('Update mesh apply...')
+        BlenderUtils.bmeshToMesh(self.__bmesh, self.__mesh)
+    
+    # Method - Tools
+    def __createVertex(self, x: int, y: int, z: int, category: CartographyPointCategory):
+        vertex = self.__bmesh.verts.new((x, y, z))
+        
+        vertices = self.__verticesByCategory.get(category)
+        vertices.append(vertex)
+        
+        if category.outline:
+            self.__outlineVertices.append(vertex)
+        
+        return vertex
+    
+    def __createEdge(self, vertice1: BMVert, vertice2: BMVert, category: CartographyPointCategory):
+        edge = self.__bmesh.edges.new([vertice1, vertice2])
+        
+        edges = self.__edgesByCategory.get(category)
+        edges.append(edge)
+        
+        if category.outline:
+            self.__outlineEdges.append(edge)
+        
+        return edge
+
+    def __createFaces(self, edges):
+        fill = bmesh.ops.triangle_fill(self.__bmesh, use_beauty=True, use_dissolve=False, edges=edges)
+        return [g for g in fill['geom'] if isinstance(g, BMFace)]
+    
+    def __levelEdges(self, edges, z = 1, face = False):
+        self.__logger.trace('Level <' + str(len(edges)) + '> with z=<' + str(z) + '>')
+        bm = self.__bmesh
+
+        # Extrude edges
+        extruded = bmesh.ops.extrude_face_region(bm, geom=edges)
+        extrudedGeom = extruded['geom'];
+
+        translateVerts = [v for v in extrudedGeom if isinstance(v, BMVert)]
+        bmesh.ops.translate(bm, verts=translateVerts, vec=(0, 0, z))
+        
+        # Create faces of extrude part
+        if face:
+            translateEdges = [e for e in extrudedGeom if isinstance(e, BMEdge)]
+            self.__createFaces(translateEdges)
 
 # FRONTEND ====================================================================
 # Actions ---------------------------------------------------------------------
@@ -630,8 +885,11 @@ class CartographyCsvImportAction:
 
         # Draw points
         self.__logger.info('Draw <' + str(len(rooms)) + '> room(s)')
-        drawer = CartographyDrawer(rooms, template)
-        drawer.draw()
+        drawer = CartographyDrawer(template,
+            CartographyPointDrawer(template),
+            CartographyPlaneDrawer(template)
+        )
+        drawer.draw(rooms.values())
         self.__logger.info('<' + str(len(rooms)) + '> room(s) drawn with success!')
 
         self.__logger.info('Import finished with success!')
