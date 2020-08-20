@@ -351,13 +351,23 @@ class CartographyPoint:
         category: CartographyPointCategory, 
         x: int, 
         y: int, 
+		z: int,
         itemType: CartographyItemType = None
     ):
         self.name = name
         self.category = category
         self.x = x
         self.y = y
+        self.z = z
         self.itemType = itemType
+    
+    def __str__(self):
+        return '<carto-point' \
+            + ' name="' + self.name + '"' \
+            + ' category="' + self.category.name + '"' \
+            + ' x=' + str(self.x) + ' y=' + str(self.y) + ' z=' + str(self.z) \
+            + (' item-type="' + self.itemType.name + '"' if self.itemType else '') \
+            + ' />'
 
 class CartographyRoom:
     points = []
@@ -429,7 +439,7 @@ class CartographyReader:
         return self.__rooms
     
     def __readHeader(self, line: str):
-        self.__checkLine(line, 'header', ['X', 'Y', 'Observation.*'])
+        self.__checkLine(line, 'header', ['X', 'Y', 'Z', 'Observation.*'])
         self.__logger.trace('Header found!')
         self.__mode = CartographyReaderMode.ROOM
 
@@ -456,8 +466,8 @@ class CartographyReader:
         self.__mode =  CartographyReaderMode.POINT
 
     def __readPoint(self, line: str):
-        patterns = ['-?[0-9]+', '-?[0-9]+', '([A-Za-z].+)?']
-        matches = self.__checkLine(line, 'point', patterns, False, 2)
+        patterns = ['-?[0-9]+', '-?[0-9]+', '(-?[0-9]+)?', '([A-Za-z].+)?']
+        matches = self.__checkLine(line, 'point', patterns, False)
         if matches == None:
             try:
                 self.__readRoom(line)
@@ -466,17 +476,18 @@ class CartographyReader:
                         + ' or ' + '|'.join(patterns))
         elif self.__room is not None: # Always true in prod runtime
             self.__logger.trace('Point line found: #' + str(self.__row))
+            matchesCount = len(matches)
             
             # Determine coordinates
             x = int(matches[0].group(0))
             y = int(matches[1].group(0))
+            z = int(matches[2].group(0)) if matchesCount > 2 and matches[2].group(0) else 0
             
             # Determine name, point type and sub type
             pointType = self.__pointType
             itemType = None
-            if len(matches) > 2:
-                m = matches[2]
-                name = m.group(0)
+            if matchesCount > 3:
+                name = matches[3].group(0)
                 itemType = self.__checkSubType(name, itemType)
                 if itemType == None:
                     pointType = self.__checkPointType(name, pointType)
@@ -498,8 +509,8 @@ class CartographyReader:
             # Create and add point to current room
             self.__logger.debug('Create new point <name=' + name + ', type=' + pointType.name \
                     + itemType.name if itemType != None else '' \
-                    + ', x=' + str(x) + ', y=' + str(y) + '> for room <' + self.__room.name + '>')
-            point = CartographyPoint(name, pointType, x, y, itemType)
+                    + ', x=' + str(x) + ', y=' + str(y) + ', z=' + str(z) + '> for room <' + self.__room.name + '>')
+            point = CartographyPoint(name, pointType, x, y, z, itemType)
             self.__room.points.append(point)
         else:
             raise Exception('Point line found but no room found')
@@ -508,10 +519,11 @@ class CartographyReader:
         self.__ignoreLine(line)
     
     # Methods - Tools
-    def __checkLine(self, line: str, type: str, patterns: list, strict = True, columns = 0):
+    def __checkLine(self, line: str, type: str, patterns: list, strict = True):
         data = line.split(self.__separator)
         matches = []
-        count = max(len(data), columns) if columns else len(patterns)
+        columns = len([pattern for pattern in patterns if re.match('\\(.+\\)\\?', pattern)])
+        count = max(len(data), columns)
         
         # Check number of columns
         if len(data) < count:
@@ -539,7 +551,7 @@ class CartographyReader:
                     or re.match(pattern + '.*', value, re.IGNORECASE) != None \
                     or re.match('.*' + pattern + '.*', value, re.IGNORECASE) != None:
                 return self.__pointTypeMap[pattern]
-        if defaultValue != None:
+        if defaultValue == None:
             self.__raiseError(value, 'point type', '|'.join(self.__pointTypeMap.keys()))
         return defaultValue
 
@@ -676,7 +688,8 @@ class CartographyPointDrawer(CartographyRoomDrawer):
         if template == None:
             self.__logger.warn('Template not found for category <' + point.category.name + '>')
             return
-        object = self._createObject(point.name, point.x, point.y, 0, template, collection)
+        print(point)
+        object = self._createObject(point.name, point.x, point.y, point.z, template, collection)
 
         # Icon
         if point.itemType != None:

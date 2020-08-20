@@ -1,67 +1,67 @@
-X	Y	observation
+X	Y	Z	observation
 Salle 1 contour		
-2	0	Entrée 1 mur de droite
--3	0	Entrée 1 mur de gauche
--5	1	contour
--10	3	contour
--13	7	contour, début renfoncement
--15	6	contour
--17	7	contour
--17	11	contour
--15	11	contour
--14	9	contour, fin renfoncement
--13	12	contour
--12	16	contour, jonction avec le mur de escarpement 1, monte d’un mètre
--12	18	contour
--14	19	Entrée 2 mur de droite
--13	22	Entrée 2 mur de gauche
--10	23	contour,
--7	25	contour, jonction avec le mur de escarpement 1, monte d’un mètre
--5	29	contour
--3	30	contour
--2	30	Entrée 3 mur de droite
-3	30	Entrée 3 mur de gauche
-7	29	contour
-12	25	contour
-14	20	contour
-19	19	Entrée 4 mur de droite
-19	17	Entrée 4 mur de gauche
-17	15	contour
-17	10	contour
-15	6	contour
-10	2	contour
-5	0	contour
+2	0		Entrée 1 mur de droite
+-3	0		Entrée 1 mur de gauche
+-5	1		contour
+-10	3		contour
+-13	7		contour, début renfoncement
+-15	6		contour
+-17	7		contour
+-17	11		contour
+-15	11		contour
+-14	9		contour, fin renfoncement
+-13	12		contour
+-12	16	1	contour, jonction avec le mur de escarpement 1, monte d’un mètre
+-12	18	1	contour
+-14	19	1	Entrée 2 mur de droite
+-13	22	1	Entrée 2 mur de gauche
+-10	23	1	contour,
+-7	25	1	contour, jonction avec le mur de escarpement 1, monte d’un mètre
+-5	29		contour
+-3	30		contour
+-2	30		Entrée 3 mur de droite
+3	30		Entrée 3 mur de gauche
+7	29		contour
+12	25		contour
+14	20		contour
+19	19		Entrée 4 mur de droite
+19	17		Entrée 4 mur de gauche
+17	15		contour
+17	10		contour
+15	6		contour
+10	2		contour
+5	0		contour
 Salle 1 escarpement 1 :		
--10	17	
--7	23	
+-10	17	1	
+-7	23	1	
 Salle 1 gouffre 1 :		
-1	16	
--4	16	
--2	21	
-0	23	
-0	25	
-1	25	point d’escalade
-2	24	
-1	21	
-4	20	
+1	16		
+-4	16		
+-2	21		
+0	23		
+0	25		
+1	25		point d’escalade
+2	24		
+1	21		
+4	20		
 Salle 1 colonne 1 :		
-10	13	
-10	10	
-13	10	
-15	13	
-13	14	
+10	13		
+10	10		
+13	10		
+15	13		
+13	14		
 Salle 1 harvestables		
--8	6	lichen
--15	7	minerai
--16	10	minerai
--12	14	minerai
--6	20	lichen
--10	22	lichen
-7	17	lichen
-12	23	minerai
-8	2	minerai
+-8	6		lichen
+-15	7		minerai
+-16	10		minerai
+-12	14		minerai
+-6	20		lichen
+-10	22		lichen
+7	17		lichen
+12	23		minerai
+8	2		minerai
 Salle 1 objets anthropiques		
--5	26	deux petites caisses en arc de cercle entre là et le gouffre
+-5	26		deux petites caisses en arc de cercle entre là et le gouffre
 		
 Couloir de l’entrée 2		
 étroit, il faut ramper.		
