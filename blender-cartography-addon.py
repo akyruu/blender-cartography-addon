@@ -216,9 +216,11 @@ History:
 	+ add File > Import > Cartography (.csv, .tsv) menu item
 	+ add CSV reader (tabulation separator)
 	+ add .blend template reader
-2020/08/13: v0.0.2
+2020/08/13: v0.0.1
 	+ add creation of points
     + add creation of 3D plane (partial)
+2020/08/21: v0.0.1
+    + add z column + treatment for point drawer
 '''
 
 import bpy
@@ -241,7 +243,7 @@ from enum import auto, Enum, Flag
 bl_info = {
     'name': '[ΩP] Cartography addon',
     'author': 'Akyruu',
-    'version': (0,  0, 2),
+    'version': (0,  0, 1),
     'blender': (2, 83, 0),
     'location': 'File > Import > Cartography (.csv, .tsv)',
     'description': 'Import CSV file with locations from Cartographie',
