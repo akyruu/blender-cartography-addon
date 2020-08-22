@@ -56,7 +56,7 @@ Salle 1 harvestables
 -16	10		minerai
 -12	14		minerai
 -6	20		lichen
--10	22		lichen
+-10	22	1	lichen
 7	17		lichen
 12	23		minerai
 8	2		minerai

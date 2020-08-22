@@ -37,7 +37,7 @@ class CartographyCsvImportAction:
         self.__logger.info('CSV file <%s> read with success!', self.filepath)
 
         # Read .blend template
-        blend_path = os.path.join(bca_utils.workspace(), 'bca-template.blend')
+        blend_path = os.path.join(bca_utils.path_workspace(), 'bca-template.blend')
         self.__logger.info('Read .blend template <%s>', blend_path)
         reader = CartographyTemplateReader()
         template = reader.read(blend_path)
@@ -96,4 +96,4 @@ def unregister():
 
 # FIXME move this method in greater location
 def debug():
-    CartographyCsvImportAction(os.path.join(bca_utils.workspace(), 'samples/coordinates_01.tsv')).execute()
+    CartographyCsvImportAction(os.path.join(bca_utils.path_workspace(), 'samples/coordinates_01.tsv')).execute()

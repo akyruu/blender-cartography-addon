@@ -7,16 +7,30 @@ History:
     + add utility methods for matching
 """
 
+import math
 import os
 import re
 import sys
+from typing import Callable, Dict, Iterator, List, Optional, Tuple, TypeVar, Union
 
 import bmesh
 import bpy
+from mathutils import Vector
+
+# TYPES =======================================================================
+T = TypeVar('T')
+
+K = TypeVar('K')
+V = TypeVar('V')
 
 
 # METHODS =====================================================================
 # Blender - Meshing -----------------------------------------------------------
+def bmvert_global_coordinate(vert: bmesh.types.BMVert, obj: bpy.types.Object) -> Vector:
+    """Get global coordinate for a vertex"""
+    return obj.matrix_world @ vert.co  # noqa
+
+
 def bmesh_from_mesh(mesh: bpy.types.Mesh) -> bmesh.types.BMesh:
     """Create BMesh from Mesh"""
     if mesh.is_editmode:
@@ -36,15 +50,80 @@ def bmesh_to_mesh(bm: bmesh.types.BMesh, mesh: bpy.types.Mesh):
         mesh.update()
 
 
+def obj_get_mesh(obj: bpy.types.Object) -> bpy.types.Mesh:
+    return obj.data  # noqa
+
+
+# Dict ------------------------------------------------------------------------
+def dict_get_or_create(d: Dict[K, V], key: K, init: Union[V, Callable[[], V]]) -> V:
+    value = d.get(key)
+    if not value:
+        value = init() if callable(init) else init
+        d[key] = value
+    return value
+
+
+# List ------------------------------------------------------------------------
+def list_get_last(lst: List[T]) -> Optional[T]:
+    """Get last item in list"""
+    return lst[-1] if lst and len(lst) > 0 else None
+
+
+def list_next(iterator: Iterator[T], default_value: Optional[T] = None) -> Optional[T]:
+    try:
+        return next(iterator)
+    except StopIteration:
+        return default_value
+
+
+def list_reverse(lst: List[T]) -> List[T]:
+    lst.reverse()
+    return lst
+
+
+def list_sublist(
+        lst: List[T],
+        start: Union[int, Tuple[T, int], T],
+        end: Union[int, Tuple[T, int], T, None] = None
+) -> List[T]:
+    start_index = max(__list_sublist_index(lst, start, 0), 0)
+    end_index = min(__list_sublist_index(lst, end, len(lst)), len(lst))
+    return lst[start_index:end_index]
+
+
+def __list_sublist_index(lst: List[T], idx: Union[int, Tuple[T, int], T, None], dft: int):
+    if not idx:
+        return dft
+    elif isinstance(idx, int):
+        return idx
+    elif isinstance(idx, Tuple):
+        return lst.index(idx[0]) + idx[1]
+    return lst.index(idx)
+
+
+# Math ------------------------------------------------------------------------
+def math_3d_distance(p1: Vector, p2: Vector) -> float:
+    return math.sqrt(
+        math.pow(abs(p1.x - p2.x), 2)
+        + math.pow(abs(p1.y - p2.y), 2)
+        + math.pow(abs(p1.z - p2.z), 2)
+    )
+
+
 # Path ------------------------------------------------------------------------
-def workspace() -> os.path:
+def path_workspace() -> os.path:
     # FIXME ok for debug only
     paths = [path for path in sys.path if os.path.basename(path) == 'blender-cartography-addon']
     return paths[0]
 
 
 # String - Match --------------------------------------------------------------
-def match_around(pattern: str, value: str, flags=0) -> bool:
-    return re.match(pattern, value, flags) is not None \
-           or re.match(pattern + '.*', value, flags) is not None \
-           or re.match('.*' + pattern + '.*', value, flags) is not None
+def match_ignore_case(pattern: str, value: str, exact: bool = True) -> re.Match:
+    flags = re.IGNORECASE
+
+    m = re.match(pattern, value, flags)
+    if m is None and not exact:
+        m = re.match(pattern + '.*', value, flags)
+        if m is None:
+            m = re.match('.*' + pattern + '.*', value, flags)
+    return m

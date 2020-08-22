@@ -6,20 +6,26 @@ History:
     + add utility methods for bmesh/mesh conversion
 """
 
-from bca_types import CartographyPointCategory, CartographyInterestType, CartographyObjectType
+from bca_types import CartographyCategory, CartographyInterestType, CartographyObjectType
 
 # CONFIG ======================================================================
+# Cartography: join word for name concatenation
+cartography_point_name_join = ' - '
+
 # Type of cartography points
 cartography_point_category = {
-    '(Outline|Contour)': CartographyPointCategory.OUTLINE,
-    '(Gate|Porte|Entrée) ([0-9]+)': CartographyPointCategory.GATE,
-    '(Escarpment|Escarpement) ([0-9]+)': CartographyPointCategory.ESCARPMENT,
-    '(Column|Colonne) ([0-9]+)': CartographyPointCategory.COLUMN,
-    '(Chasm|Gouffre) ([0-9]+)': CartographyPointCategory.CHASM,
-    '(Climbing ?Point|Point( d[\'’ ]?)?escalade)': CartographyPointCategory.CLIMBING_POINT,
-    '(Harvestables?|Consommables?)': CartographyPointCategory.HARVESTABLE,
-    '((Anthropogenics? )?Objects?|Objets?( Anthropiques?))': CartographyPointCategory.ANTHROPOGENIC_OBJECT
+    '(Outline|Contour)': CartographyCategory.OUTLINE,
+    '(Gate|Porte|Entrée) ([0-9]+)': CartographyCategory.GATE,
+    '(Escarpment|Escarpement) ([0-9]+)': CartographyCategory.ESCARPMENT,
+    '(Column|Colonne) ([0-9]+)': CartographyCategory.COLUMN,
+    '(Chasm|Gouffre) ([0-9]+)': CartographyCategory.CHASM,
+    '(Climbing ?Point|Point( d[\'’ ]?)?escalade)': CartographyCategory.CLIMBING_POINT,
+    '(Harvestables?|Consommables?)': CartographyCategory.HARVESTABLE,
+    '((Anthropogenics? )?Objects?|Objets?( Anthropiques?))': CartographyCategory.ANTHROPOGENIC_OBJECT
 }
+
+# Cartography: pattern for determinate a junction
+cartography_junction_pattern = '(Jonction|Junction) .+ (' + '|'.join(cartography_point_category.keys()) + ')'
 
 # Type of cartography interest
 cartography_interest_type = {
@@ -31,14 +37,14 @@ cartography_interest_type = {
 # Type of cartography points
 cartography_object_type = {
     # Point categories
-    CartographyPointCategory.OUTLINE: 'contour',
-    CartographyPointCategory.GATE: 'Gate',
-    CartographyPointCategory.ESCARPMENT: 'elevation',
-    CartographyPointCategory.COLUMN: 'colonne',
-    CartographyPointCategory.CHASM: 'gouffre',
-    CartographyPointCategory.CLIMBING_POINT: 'escalade',
-    CartographyPointCategory.HARVESTABLE: 'ico_feces_Pilier',
-    CartographyPointCategory.ANTHROPOGENIC_OBJECT: None,
+    CartographyCategory.OUTLINE: 'contour',
+    CartographyCategory.GATE: 'Gate',
+    CartographyCategory.ESCARPMENT: 'elevation',
+    CartographyCategory.COLUMN: 'colonne',
+    CartographyCategory.CHASM: 'gouffre',
+    CartographyCategory.CLIMBING_POINT: 'escalade',
+    CartographyCategory.HARVESTABLE: 'ico_feces_Pilier',
+    CartographyCategory.ANTHROPOGENIC_OBJECT: None,
 
     # Interest types
     CartographyInterestType.BOX: 'Caisse_1.001',
