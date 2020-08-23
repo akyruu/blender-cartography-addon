@@ -16,7 +16,8 @@ import bpy
 import bpy_extras
 
 import bca_utils
-from drawing import CartographyDrawer, CartographyPointDrawer, CartographyPlaneDrawer
+from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyStructuralPointDrawer, \
+    CartographyPlaneDrawer
 from reading import CartographyReader
 from templating import CartographyTemplateReader
 
@@ -47,7 +48,8 @@ class CartographyCsvImportAction:
         self.__logger.info('Draw <%d> room(s)', len(rooms))
         drawer = CartographyDrawer(
             template,
-            CartographyPointDrawer(template),
+            CartographyInterestPointDrawer(template),
+            CartographyStructuralPointDrawer(template),
             CartographyPlaneDrawer(template)
         )
         drawer.draw(rooms.values())
@@ -68,7 +70,7 @@ class CartographyCsvImportOperator(bpy.types.Operator, bpy_extras.io_utils.Impor
     )
 
     def execute(self, context):
-        CartographyCsvImportAction(self.filepath).execute()
+        CartographyCsvImportAction(self.filepath).execute()  # noqa
         return {'FINISHED'}
 
 

@@ -6,7 +6,7 @@ History:
     + add cartography types
 """
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from mathutils import Vector
 
@@ -22,20 +22,20 @@ class CartographyCategoryType(Enum):
 class CartographyCategory(bytes, Enum):
     """Category of cartography group or points"""
 
-    def __new__(cls, value: str, cat_type: CartographyCategoryType, outline=False, level=0, face=False):
+    def __new__(cls, value: str, cat_type: CartographyCategoryType, outline=False, level=0, top_face=False):
         obj = bytes.__new__(cls, [value])  # noqa
         obj._value_ = value
         obj.type = cat_type
         obj.outline = outline
         obj.level = level
-        obj.face = face
+        obj.top_face = top_face
         return obj
 
     # Structural
     OUTLINE = (1, CartographyCategoryType.STRUCTURAL, True)
     GATE = (2, CartographyCategoryType.STRUCTURAL, True)
     ESCARPMENT = (3, CartographyCategoryType.STRUCTURAL)
-    COLUMN = (4, CartographyCategoryType.STRUCTURAL, False, 5, True)
+    COLUMN = (4, CartographyCategoryType.STRUCTURAL, False, 5, False)
     CHASM = (5, CartographyCategoryType.STRUCTURAL, False, -5, True)
 
     # Interest
@@ -45,10 +45,11 @@ class CartographyCategory(bytes, Enum):
 
 
 class CartographyInterestType(Enum):
-    """Type of item (only used by CartographyPoint with category type INTEREST"""
+    """Type of item (only used by CartographyPoint with category type INTEREST)"""
     BOX = 1
-    LICHEN = 2
-    ORE = 3
+    LITTLE_BOX = 2
+    LICHEN = 3
+    ORE = 4
 
 
 # Cartography - Object --------------------------------------------------------
@@ -68,23 +69,23 @@ class CartographyPoint:
             category: CartographyCategory,
             location: Vector,
             observations: List[str] = [],  # noqa
-            interest_type: CartographyInterestType = None,
+            interest: Optional[Tuple[CartographyInterestType, int]] = None,
     ):
         self.name: str = name
-        self.category: CartographyCategory = category
-        self.location: Vector = location
-        self.observations: List[str] = observations
-        self.interest_type: Optional[CartographyInterestType] = interest_type
+        self.category = category
+        self.location = location
+        self.observations = observations
+        self.interest = interest
         self.copy = False
 
     # Methods -----------------------------------------------------------------
     def __repr__(self):
-        return 'CartographyPoint(name={}, category={}, location={}, observations={}, interest_type={})' \
-            .format(self.name, self.category, self.location, self.observations, self.interest_type)
+        return 'CartographyPoint(name={}, category={}, location={}, observations={}, interest={})' \
+            .format(self.name, self.category, self.location, self.observations, self.interest)
 
     def __str__(self):
-        return '{{"name"="{}", "category"={}, "location"={}, "observations"={}, "interest_type"={}}}' \
-            .format(self.name, self.category, self.location, self.observations, self.interest_type)
+        return '{{"name"="{}", "category"={}, "location"={}, "observations"={}, "interest"={}}}' \
+            .format(self.name, self.category, self.location, self.observations, self.interest)
 
 
 class CartographyGroup:

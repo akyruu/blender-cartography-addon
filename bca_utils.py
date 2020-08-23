@@ -31,6 +31,22 @@ def bmvert_global_coordinate(vert: bmesh.types.BMVert, obj: bpy.types.Object) ->
     return obj.matrix_world @ vert.co  # noqa
 
 
+def bmesh_extrude(
+        bm: bmesh.types.BMesh,
+        geom: List[Union[bmesh.types.BMVert, bmesh.types.BMEdge, bmesh.types.BMFace]]
+) -> List[Union[bmesh.types.BMVert, bmesh.types.BMEdge, bmesh.types.BMFace]]:
+    """Extrude a geometry and return vertices, edges and faces created"""
+    prev_faces = [f for f in bm.faces]
+    extruded = bmesh.ops.extrude_face_region(bm, geom=geom)
+    extruded_geom = extruded['geom']
+
+    # FIXME Add missing faces created in extruded geom for some reason
+    if len(bm.faces) > len(prev_faces):
+        extruded_geom += [f for f in bm.faces if f not in prev_faces]
+
+    return extruded_geom
+
+
 def bmesh_from_mesh(mesh: bpy.types.Mesh) -> bmesh.types.BMesh:
     """Create BMesh from Mesh"""
     if mesh.is_editmode:
@@ -69,11 +85,11 @@ def list_get_last(lst: List[T]) -> Optional[T]:
     return lst[-1] if lst and len(lst) > 0 else None
 
 
-def list_next(iterator: Iterator[T], default_value: Optional[T] = None) -> Optional[T]:
+def list_next(iterator: Iterator[T], dft_value: Optional[T] = None) -> Optional[T]:
     try:
         return next(iterator)
     except StopIteration:
-        return default_value
+        return dft_value
 
 
 def list_reverse(lst: List[T]) -> List[T]:

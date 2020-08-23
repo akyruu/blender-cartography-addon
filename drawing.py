@@ -18,6 +18,7 @@ from mathutils import Vector
 
 import bca_config
 import bca_utils
+import mappings
 from bca_types import CartographyGroup, CartographyObjectType, CartographyPoint, CartographyCategory, \
     CartographyCategoryType, CartographyRoom
 from templating import CartographyTemplate
@@ -77,7 +78,7 @@ class CartographyRoomDrawer:
     # Methods -----------------------------------------------------------------
     # Draw
     @abstractmethod
-    def draw(self, room: CartographyRoom, collection):
+    def draw(self, room: CartographyRoom, collection: bpy.types.Collection):
         pass
 
     # Tools
@@ -97,11 +98,11 @@ class CartographyRoomDrawer:
         return template
 
 
-class CartographyPointDrawer(CartographyRoomDrawer):
-    """Drawer of points in room for cartography"""
+class CartographyStructuralPointDrawer(CartographyRoomDrawer):
+    """Drawer of structural points in room for cartography"""
 
     # Fields ------------------------------------------------------------------
-    __logger = logging.getLogger('CartographyPointDrawer')
+    __logger = logging.getLogger('CartographyStructuralPointDrawer')
 
     # Constructor -------------------------------------------------------------
     def __init__(self, template):
@@ -109,11 +110,56 @@ class CartographyPointDrawer(CartographyRoomDrawer):
 
     # Methods -----------------------------------------------------------------
     # Draw
-    def draw(self, room: CartographyRoom, collection):
-        for point in [p for p in room.all_points if not p.copy]:
+    def draw(self, room: CartographyRoom, collection: bpy.types.Collection):
+        for point in [p for p in room.all_points if
+                      not p.copy and p.category.type == CartographyCategoryType.STRUCTURAL]:
             self.__draw_point(point, collection)
 
     def __draw_point(self, point: CartographyPoint, collection):
+        template = self._get_template_object(point.category, 'category')
+        if template is None:
+            return
+        self._create_object(point.name, point.location, template, collection)
+
+
+class CartographyInterestPointDrawer(CartographyRoomDrawer):
+    """Drawer of interest points in room for cartography"""
+
+    # Fields ------------------------------------------------------------------
+    __logger = logging.getLogger('CartographyInterestPointDrawer')
+
+    # Constructor -------------------------------------------------------------
+    def __init__(self, template):
+        CartographyRoomDrawer.__init__(self, template)
+
+    # Methods -----------------------------------------------------------------
+    # Draw
+    def draw(self, room: CartographyRoom, collection: bpy.types.Collection):
+        for point in [p for p in room.all_points if p.category.type == CartographyCategoryType.INTEREST]:
+            if point.category == CartographyCategory.ANTHROPOGENIC_OBJECT:
+                self.__draw_anthropogenic_object(point, collection)
+            else:
+                self.__draw_other(point, collection)
+
+    def __draw_anthropogenic_object(self, point: CartographyPoint, collection: bpy.types.Collection):
+        # Check point
+        if point.interest is None:
+            self.__logger.warning('An interest required for anthropic object point type: %s (Ignored)', str(point))
+            return
+
+        # Get template
+        template = self._get_template_object(point.interest[0], 'interest type')
+        if template is None:
+            return
+
+        # Create objects
+        z = point.location.z
+        for i in range(point.interest[1]):
+            obj = self._create_object(point.name, Vector((point.location.x, point.location.y, z)), template, collection)
+            z += obj.dimensions.z  # noqa
+        return
+
+    def __draw_other(self, point: CartographyPoint, collection: bpy.types.Collection):
         # Get template and create point
         template = self._get_template_object(point.category, 'category')
         if template is None:
@@ -121,9 +167,9 @@ class CartographyPointDrawer(CartographyRoomDrawer):
         obj = self._create_object(point.name, point.location, template, collection)
 
         # Icon
-        if point.interest_type is not None:
+        if point.interest is not None:
             # Get icon template
-            template = self._get_template_object(point.interest_type, 'interest type')
+            template = self._get_template_object(point.interest[0], 'interest type')
             if template is None:
                 return
 
@@ -144,6 +190,8 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         CartographyRoomDrawer.__init__(self, template)
 
         self.__mesh: Optional[bpy.types.Mesh] = None
+        self.__mat_wall_index = None
+        self.__mat_climbing_index = None
         self.__bmesh: Optional[bmesh.types.BMesh] = None
 
         self.__vertices_by_group: Dict[CartographyGroup, List[bmesh.types.BMVert]] = {}
@@ -185,6 +233,10 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
 
         # Get mesh instance
         self.__mesh = bca_utils.obj_get_mesh(obj)
+        self.__mat_wall_index = self.__get_or_create_material(mappings.cartography_mat_wall)
+        self.__mat_climbing_index = self.__get_or_create_material(mappings.cartography_mat_climbing)
+
+        # Get bmesh instance
         bm = self.__bmesh = bca_utils.bmesh_from_mesh(self.__mesh)
 
         # Delete all vertices
@@ -243,7 +295,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         for z, edge in [(z, e) for z, edges in self.__edges_by_z.items() for e in edges if z != 0]:
             z0_edge = bca_utils.list_next(e for e in z0_edges if self.__one_edge_above_the_other(e, edge))
             if z0_edge:
-                self.__level_edges([z0_edge], z)
+                self.__level_edges([z0_edge], z, False, self.__mat_climbing_index if z == 1 else None)
 
         # Level outline edges
         outline_edges = [e for e in self.__outline_edges if e not in self.__gate_edges]
@@ -251,14 +303,14 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         for z, edges in self.__edges_by_z.items():
             edges = [e for e in edges if e in outline_edges]
             if len(edges) > 0:
-                self.__level_edges(edges, max_z - z)
+                self.__level_edges(edges, max_z - z, False, self.__mat_wall_index)
 
         # Level edges specific categories
         for group, edges in [
             (g, e) for g, e in self.__edges_by_group.items()
             if not g.category.outline and g.category.level and len(e) > 2
         ]:
-            self.__level_edges(edges, group.category.level, group.category.face)
+            self.__level_edges(edges, group.category.level, group.category.top_face, self.__mat_wall_index)
 
     def __update_mesh_end(self):
         bm = self.__bmesh
@@ -269,6 +321,13 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         bca_utils.bmesh_to_mesh(self.__bmesh, self.__mesh)
 
     # Method - Tools
+    def __get_or_create_material(self, mat_name: str) -> int:
+        material = self.__mesh.materials.get(mat_name)
+        if not material:
+            material = bpy.data.materials.get(mat_name)
+            self.__mesh.materials.append(material)
+        return self.__mesh.materials.values().index(material)
+
     def __create_vertex(self, vec: Vector, group: CartographyGroup, category: CartographyCategory = None) \
             -> bmesh.types.BMVert:
         vertex = self.__bmesh.verts.new(vec)  # noqa
@@ -310,20 +369,25 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         fill = bmesh.ops.triangle_fill(self.__bmesh, use_beauty=True, use_dissolve=False, edges=edges)  # noqa
         return [g for g in fill['geom'] if isinstance(g, bmesh.types.BMFace)]
 
-    def __level_edges(self, edges: List[bmesh.types.BMEdge], z: float, face: bool = False):
+    def __level_edges(self, edges: List[bmesh.types.BMEdge], z: float, top_face: bool = False, mat_index: int = None):
         self.__logger.debug('Level <%d> with z=<%d>', len(edges), z)
         bm = self.__bmesh
 
         # Extrude edges
-        extruded = bmesh.ops.extrude_face_region(bm, geom=edges)
-        extruded_geom = extruded['geom']
+        extruded = bca_utils.bmesh_extrude(bm, edges)
 
-        translate_verts = [v for v in extruded_geom if isinstance(v, bmesh.types.BMVert)]
+        translate_verts = [v for v in extruded if isinstance(v, bmesh.types.BMVert)]
         bmesh.ops.translate(bm, vec=(0, 0, z), verts=translate_verts)  # noqa
 
+        # Apply material for extruded faces
+        if mat_index is not None:
+            created_faces = [v for v in extruded if isinstance(v, bmesh.types.BMFace)]
+            for face in created_faces:
+                face.material_index = mat_index
+
         # Create faces of extrude part
-        if face:
-            translate_edges = [e for e in extruded_geom if isinstance(e, bmesh.types.BMEdge)]
+        if top_face:
+            translate_edges = [e for e in extruded if isinstance(e, bmesh.types.BMEdge)]
             self.__create_faces(translate_edges)
 
     @staticmethod

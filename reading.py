@@ -11,7 +11,7 @@ import os
 import re
 from copy import copy
 from enum import Enum
-from typing import Dict, Callable, List, Optional
+from typing import Dict, Callable, List, Optional, Tuple
 
 from mathutils import Vector
 
@@ -143,7 +143,7 @@ class CartographyReader:
         self.__mode = self.__mode.POINT
 
     def __read_point(self, line: str):
-        patterns = ['-?[0-9]+', '-?[0-9]+', '(-?[0-9]+)?', '([A-Za-z].+)?']
+        patterns = ['-?[0-9]+', '-?[0-9]+', '(-?[0-9]+)?', '([A-Za-z0-9].+)?']
         matches = self.__check_line(line, 'point', patterns, False)
         if matches is None:
             try:
@@ -163,16 +163,16 @@ class CartographyReader:
             ))
 
             # Determine name, point type and sub type
-            point_category = self.__group.category
-            interest_type = None
+            category = self.__group.category
+            interest = None
             observations = []
             if matches_count > 3:
                 name = matches[3].group(0)
-                interest_type = self.__check_interest_type(name, interest_type)
-                if interest_type is None:
-                    point_category = self.__check_point_category(name, point_category)
+                interest = self.__check_interest(name, interest)
+                if interest is None:
+                    category = self.__check_point_category(name, category)
                 observations = name.split(bca_config.obs_separator)
-            elif point_category is None:  # Always false in prod runtime
+            elif category is None:  # Always false in prod runtime
                 raise Exception('Point line found but not the point type: #' + str(self.__row))
             else:
                 name = self.__group.name
@@ -188,15 +188,8 @@ class CartographyReader:
             self.__point_names.append(name)
 
             # Create and add point to current room
-            self.__logger.debug(
-                'Create new point with params=<name:"%s", category:"%s", interest_type:%s location:%s>'
-                ' for room <%s>',
-                name, point_category.name,
-                '"{}"'.format(interest_type.name) if interest_type is not None else 'None',
-                str(location),
-                self.__room.name
-            )
-            point = CartographyPoint(name, point_category, location, observations, interest_type)
+            point = CartographyPoint(name, category, location, observations, interest)
+            self.__logger.debug('New point created: %s', str(point))
             self.__group.points.append(point)
         else:
             raise Exception('Point line found but no room found')
@@ -332,20 +325,22 @@ class CartographyReader:
 
         return matches
 
-    def __check_point_category(self, value: str, default_value=None) -> CartographyCategory:
+    def __check_point_category(self, value: str, dft_value=None) -> CartographyCategory:
         for pattern, category in mappings.cartography_point_category.items():
             if bca_utils.match_ignore_case(pattern, value, False):
                 return category
-        if default_value is None:
+        if dft_value is None:
             self.__raise_error(value, 'point category', '|'.join(mappings.cartography_point_category.keys()))
-        return default_value
+        return dft_value
 
     @staticmethod
-    def __check_interest_type(value: str, default_value=None) -> CartographyInterestType:
+    def __check_interest(value: str, dft_value: Optional[Tuple[CartographyInterestType, int]] = None) \
+            -> Tuple[Optional[CartographyInterestType], int]:
         for pattern, interest in mappings.cartography_interest_type.items():
-            if bca_utils.match_ignore_case(pattern, value, False):
-                return interest
-        return default_value
+            m = bca_utils.match_ignore_case('(([0-9]+) )?' + pattern, value, False)
+            if m:
+                return interest, int(m.group(2)) if m.group(2) else 1
+        return dft_value
 
     @staticmethod
     def __find_group(

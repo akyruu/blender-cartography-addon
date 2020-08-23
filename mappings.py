@@ -29,8 +29,8 @@ cartography_junction_pattern = '(Jonction|Junction) .+ (' + '|'.join(cartography
 
 # Type of cartography interest
 cartography_interest_type = {
-    '(Box(es)?|Caisses?)': CartographyInterestType.BOX,
-    'Lichens?': CartographyInterestType.LICHEN,
+    '(Little(s) box(es)?|Petite(s) caisses?)': CartographyInterestType.LITTLE_BOX,
+    '(Lichens?)': CartographyInterestType.LICHEN,
     '(Ores?|Minerai?)': CartographyInterestType.ORE
 }
 
@@ -47,10 +47,15 @@ cartography_object_type = {
     CartographyCategory.ANTHROPOGENIC_OBJECT: None,
 
     # Interest types
-    CartographyInterestType.BOX: 'Caisse_1.001',
+    CartographyInterestType.BOX: 'Caisse_1',
+    CartographyInterestType.LITTLE_BOX: 'Caisse_1.001',
     CartographyInterestType.LICHEN: 'ico_lichen_Ico',
     CartographyInterestType.ORE: 'ico_handMining_Ico',
 
     # Object types
     CartographyObjectType.PLANE: 'Plane'
 }
+
+# Material for specific items
+cartography_mat_wall = 'rock_cliff'
+cartography_mat_climbing = 'escalade'
