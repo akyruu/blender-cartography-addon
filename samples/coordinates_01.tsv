@@ -1,70 +1,67 @@
-X	Y	Z	observation
-Salle 1 contour		
-2	0		Entrée 1 mur de droite
--3	0		Entrée 1 mur de gauche
--5	1		contour
--10	3		contour
--13	7		contour, début renfoncement
--15	6		contour
--17	7		contour
--17	11		contour
--15	11		contour
--14	9		contour, fin renfoncement
--13	12		contour
--12	16	1	contour, jonction avec le mur de escarpement 1, monte d’un mètre
--12	18	1	contour
--14	19	1	Entrée 2 mur de droite
--13	22	1	Entrée 2 mur de gauche
--10	23	1	contour,
--7	25	1	contour, jonction avec le mur de escarpement 1, monte d’un mètre
--5	29		contour
--3	30		contour
--2	30		Entrée 3 mur de droite
-3	30		Entrée 3 mur de gauche
-7	29		contour
-12	25		contour
-14	20		contour
-19	19		Entrée 4 mur de droite
-19	17		Entrée 4 mur de gauche
-17	15		contour
-17	10		contour
-15	6		contour
-10	2		contour
-5	0		contour
-Salle 1 escarpement 1 :		
--10	17	1	
--7	23	1	
-Salle 1 gouffre 1 :		
-1	16		
--4	16		
--2	21		
-0	23		
-0	25		
-1	25		point d’escalade
-2	24		
-1	21		
-4	20		
-Salle 1 colonne 1 :		
-10	13		
-10	10		
-13	10		
-15	13		
-13	14		
-Salle 1 harvestables		
--8	6		lichen
--15	7		minerai
--16	10		minerai
--12	14		minerai
--6	20		lichen
--10	22	1	lichen
-7	17		lichen
-12	23		minerai
-8	2		minerai
-Salle 1 objets anthropiques		
--5	26		2 petites caisses en arc de cercle entre là et le gouffre
-		
-Couloir de l’entrée 2		
-étroit, il faut ramper.		
-avance en ligne droite sur environ 3m		
-tourne à gauche, environ 25°		
-puis avance sur 6m		
+position de 		Y	X
+position, de 2		scribe 1	scribe 2		explorateur
+distance 1-2	25	Manu	Tanki		Akyruu			méthode des cercles
+point :	côté : G/D	Distance à S1	Distance à S2	hauteur	observations			Y		X		Z					Adjacent (Y)
+point 1					contour, Entrée 1, mur de droite			2		0		0
+point 2					contour, Entrée 1, mur de gauche			-3		0		0
+point 3					contour			-5		1		0
+point 4					contour			-10		3		0
+point 5					contour, début renfoncement			-13		7		0
+point 6					contour			-15		6		0
+point 7					contour			-17		7		0
+point 8					contour			-17		11		0
+point 9					contour			-15		11		0
+point 10					contour, fin renfoncement			-14		9		0
+point 11					contour			-13		12		0
+point 12					contour, jonction avec le mur de escarpement 1, monte d’un mètre			-12		16		1
+point 13					contour			-12		18		1
+point 14					contour, Entrée 2, mur de droite			-14		19		1
+point 15					contour, Entrée 2, mur de gauche			-13		22		1
+point 16					contour,			-10		23		1
+point 17					contour, jonction avec le mur de escarpement 1, monte d’un mètre			-7		25		1
+point 18					contour			-5		29		0
+point 19					contour			-3		30		0
+point 20					contour, Entrée 3, mur de droite			-2		30		0
+point 21					contour, Entrée 3, mur de gauche			3		30		0
+point 22					contour			7		29		0
+point 23					contour			12		25		0
+point 24					contour			14		20		0
+point 25					contour, Entrée 4, mur de droite			19		19		0
+point 26					contour, Entrée 4, mur de gauche			19		17		0
+point 27					contour			17		15		0
+point 28					contour			17		10		0
+point 29					contour			15		6		0
+point 30					contour			10		2		0
+point 31					contour			5		0		0
+point 32					escarpement 1			-10		17		1
+point 33					escarpement 1			-7		23		1
+point 34					gouffre 1			1		16		0
+point 35					gouffre 1			-4		16		0
+point 36					gouffre 1			-2		21		0
+point 37					gouffre 1			0		23		0
+point 38					gouffre 1			0		25		0
+point 39					gouffre 1, point d’escalade			1		25		0
+point 40					gouffre 1			2		24		0
+point 41					gouffre 1			1		21		0
+point 42					gouffre 1			4		20		0
+point 43					colonne 1			10		13		0
+point 44					colonne 1			10		10		0
+point 45					colonne 1			13		10		0
+point 46					colonne 1			15		13		0
+point 47					colonne 1			13		14		0
+point 48					harvestables, lichen			-8		6		0
+point 49					harvestables, minerai			-15		7		0
+point 50					harvestables, minerai			-16		10		0
+point 51					harvestables, minerai			-12		14		0
+point 52					harvestables, lichen			-6		20		0
+point 53					harvestables, lichen			-10		22		1
+point 54					harvestables, lichen			7		17		0
+point 55					harvestables, minerai			12		23		0
+point 56					harvestables, minerai			8		2		0
+point 57					objets anthropiques, 2 petites caisses en arc de cercle entre là et le gouffre			-5		26		0
+
+# Couloir de l’entrée 2
+# étroit, il faut ramper.
+# avance en ligne droite sur environ 3m
+# tourne à gauche, environ 25°
+# puis avance sur 6m

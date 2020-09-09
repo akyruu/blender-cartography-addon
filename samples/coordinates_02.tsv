@@ -1,0 +1,104 @@
+position de 		Y	X
+position, de 2		scribe 1	scribe 2		explorateur
+distance 1-2	25	Manu	Tanki		Akyruu			méthode des cercles
+point :	côté : G/D	Distance à S1	Distance à S2	hauteur	observations			Y		X		Z					Adjacent (Y)
+point 1	D				contour porte 1 droite			0		2		0					#DIV/0!
+point 2	G				contour porte 1 gauche			0		-2		0
+point 3	G				contour			3		-4		0
+point 4	G				contour			8		-5		0
+point 5	G				contour			11		-7		0
+point 6	G				contour			13		-12		0
+point 7	G				contour porte 2 droite			16		-17		0
+point 8	G				contour porte 2 gauche			19		-17		0
+point 9	G				contour jonction avec escarpement 1			20		-16		0
+point 10	G			4	coutour jonction avec escarpement 1			26		-12		4
+point 11	G				contour			30		-8		0
+point 12	G				contour porte 3 droite			31		-2		0
+point 13	G				contour porte 3 gauche			31		2		0
+point 14	G				contour			30		8		0
+point 15	G				contour jonction escarpement 2			27		14		0
+point 16	G			3	contour porte 4 droite			25		18		3
+point 17	G			3	contour porte 4 gauche			21		20		3
+point 18	G				contour jonction escarpement 2			17		19		0
+point 19	G				contour			12		17		0
+point 20	G				contour			2		8		0
+point 21	G			4	Escarpement 1			18		-14		4
+point 22	G			5	Escarpement 1			19		-11		5
+point 23	G			5	Escarpement 1			22		-9		5
+point 24	G			1	Escarpement 2			25		14		1
+point 25	G			1	Escarpement 2			20		13		1
+point 26	G			1	Escarpement 2			17		17		1
+point 27	G				colonne 1			14		0		0
+point 28	G				colonne 1			16		-3		0
+point 29					colonne 1			19		-3		0
+point 30					colonne 1			21		0		0
+point 31					colonne 1			20		5		0
+point 32					colonne 1			18		5		0
+point 33					colonne 1			17		2		0
+point 34					colonne 1			15		2		0
+point 35					gouffre 1			4		1		0
+point 36					gouffre 1			3		-2		0
+point 37					gouffre 1			7		-3		0
+point 38					gouffre 1			7		0		0
+point 39					gouffre 2			6		2		0
+point 40					gouffre 2			8		4		0
+point 41					gouffre 2			6		7		0
+point 42					gouffre 2			4		5		0
+point 43					gouffre 2			4		2		0
+point 44					point d'escalade			23		19		0
+point 45
+point 46
+point 47
+point 48
+point 49
+point 50
+point 51
+point 52
+point 53
+point 54
+point 55
+point 56
+point 57
+point 58
+point 59
+point 60
+point 61
+point 62
+point 63
+point 64
+point 65
+point 66
+point 67
+point 68
+point 69
+point 70
+point 71
+point 72
+point 73
+point 74
+point 75
+point 76
+point 77
+point 78
+point 79
+point 80
+point 81
+point 82
+point 83
+point 84
+point 85
+point 86
+point 87
+point 88
+point 89
+point 90
+point 91
+point 92
+point 93
+point 94
+point 95
+point 96
+point 97
+point 98
+point 99
+point 100

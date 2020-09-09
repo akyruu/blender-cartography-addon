@@ -24,7 +24,7 @@ from bca_types import CartographyGroup, CartographyObjectType, CartographyPoint,
 from templating import CartographyTemplate
 
 
-# __classes__ =====================================================================
+# Classes =====================================================================
 class CartographyDrawer:
     """Drawer of cartography"""
 
@@ -38,11 +38,10 @@ class CartographyDrawer:
 
     # Methods -----------------------------------------------------------------
     # Draw
-    def draw(self, rooms: List[CartographyRoom]):
-        for room in rooms:
-            collection = self.__create_collection(room.name)
-            for roomDrawer in self.__room_drawers:
-                roomDrawer.draw(room, collection)
+    def draw(self, room: CartographyRoom):
+        collection = self.__create_collection(room.name)
+        for roomDrawer in self.__room_drawers:
+            roomDrawer.draw(room, collection)
 
     # Tools
     def __create_collection(self, name: str) -> bpy.types.Collection:
@@ -292,10 +291,13 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
 
         # Level edges between z axis for edge under another
         z0_edges = self.__edges_by_z.get(0)  # FIXME update for use another of 0 level
-        for z, edge in [(z, e) for z, edges in self.__edges_by_z.items() for e in edges if z != 0]:
-            z0_edge = bca_utils.list_next(e for e in z0_edges if self.__one_edge_above_the_other(e, edge))
-            if z0_edge:
-                self.__level_edges([z0_edge], z, False, self.__mat_climbing_index if z == 1 else None)
+        if not z0_edges:
+            self.__logger.warning('No edges found for z=0')
+        else:
+            for z, edge in [(z, e) for z, edges in self.__edges_by_z.items() for e in edges if z != 0]:
+                z0_edge = bca_utils.list_next(e for e in z0_edges if self.__one_edge_above_the_other(e, edge))
+                if z0_edge:
+                    self.__level_edges([z0_edge], z, False, self.__mat_climbing_index if z == 1 else None)
 
         # Level outline edges
         outline_edges = [e for e in self.__outline_edges if e not in self.__gate_edges]
@@ -350,7 +352,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         edges = bca_utils.dict_get_or_create(self.__edges_by_group, group, [])
         edges.append(edge)
 
-        if vert1 in self.__outline_vertices and vert2 in self.__outline_vertices:
+        if vert1 in self.__outline_vertices or vert2 in self.__outline_vertices:
             self.__outline_edges.append(edge)
         if vert1 in self.__gate_vertices and vert2 in self.__gate_vertices:
             self.__gate_edges.append(edge)

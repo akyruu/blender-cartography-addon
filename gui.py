@@ -6,23 +6,19 @@ History:
     + add CSV/TSV import action
     + add CSV/TSV import operator
     + add menu item in File > Import
+2020/09/01: v0.0.2
+    + update relating to reader/parser separation
 """
-
 import logging
-import os
 import sys
 
 import bpy
 import bpy_extras
 
-import bca_utils
-from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyStructuralPointDrawer, \
-    CartographyPlaneDrawer
-from reading import CartographyReader
-from templating import CartographyTemplateReader
+import bca_main
 
 
-# __classes__ =====================================================================
+# Classes =====================================================================
 # Actions ---------------------------------------------------------------------
 class CartographyCsvImportAction:
     __logger = logging.getLogger('CartographyCsvImportAction')
@@ -31,31 +27,7 @@ class CartographyCsvImportAction:
         self.filepath = filepath
 
     def execute(self):
-        # Read CSV file
-        self.__logger.info('Read CSV file <%s>', self.filepath)
-        reader = CartographyReader(self.filepath)
-        rooms = reader.read()
-        self.__logger.info('CSV file <%s> read with success!', self.filepath)
-
-        # Read .blend template
-        blend_path = os.path.join(bca_utils.path_workspace(), 'bca-template.blend')
-        self.__logger.info('Read .blend template <%s>', blend_path)
-        reader = CartographyTemplateReader()
-        template = reader.read(blend_path)
-        self.__logger.info('Template .blend <%s> read with success!', blend_path)
-
-        # Draw cartography
-        self.__logger.info('Draw <%d> room(s)', len(rooms))
-        drawer = CartographyDrawer(
-            template,
-            CartographyInterestPointDrawer(template),
-            CartographyStructuralPointDrawer(template),
-            CartographyPlaneDrawer(template)
-        )
-        drawer.draw(rooms.values())
-        self.__logger.info('<%d> room(s) drawn with success!', len(rooms))
-
-        self.__logger.info('Import finished with success!')
+        bca_main.read_csv_file(self.filepath)
 
 
 # Actions ---------------------------------------------------------------------
@@ -94,8 +66,3 @@ def register():
 def unregister():
     if 'DEBUG_MODE' not in sys.argv:
         bpy.types.TOPBAR_MT_file_import.remove(draw_menu)
-
-
-# FIXME move this method in greater location
-def debug():
-    CartographyCsvImportAction(os.path.join(bca_utils.path_workspace(), 'samples/coordinates_01.tsv')).execute()

@@ -10,6 +10,8 @@ from typing import List, Optional, Tuple
 
 from mathutils import Vector
 
+import bca_utils
+
 
 # CLASSES =====================================================================
 # Cartography - Commons -------------------------------------------------------
@@ -65,10 +67,10 @@ class CartographyPoint:
     # Constructor -------------------------------------------------------------
     def __init__(
             self,
-            name: str,
-            category: CartographyCategory,
-            location: Vector,
-            observations: List[str] = [],  # noqa
+            name: str = None,
+            category: CartographyCategory = None,
+            location: Vector = Vector((0, 0, 0)),
+            observations: List[str] = (),
             interest: Optional[Tuple[CartographyInterestType, int]] = None,
     ):
         self.name: str = name
@@ -80,12 +82,10 @@ class CartographyPoint:
 
     # Methods -----------------------------------------------------------------
     def __repr__(self):
-        return 'CartographyPoint(name={}, category={}, location={}, observations={}, interest={})' \
-            .format(self.name, self.category, self.location, self.observations, self.interest)
+        return bca_utils.object_to_repr(self)
 
     def __str__(self):
-        return '{{"name"="{}", "category"={}, "location"={}, "observations"={}, "interest"={}}}' \
-            .format(self.name, self.category, self.location, self.observations, self.interest)
+        return bca_utils.object_to_str(self)
 
 
 class CartographyGroup:
@@ -99,10 +99,10 @@ class CartographyGroup:
 
     # Methods -----------------------------------------------------------------
     def __repr__(self):
-        return 'CartographyGroup(name={}, category={}, points={})'.format(self.name, self.category, self.points)
+        return bca_utils.object_to_repr(self)
 
     def __str__(self):
-        return '{{"name"="{}", "category"={}, "points"={}}}'.format(self.name, self.category, self.points)
+        return bca_utils.object_to_str(self)
 
 
 class CartographyRoom:
@@ -118,6 +118,12 @@ class CartographyRoom:
     @property
     def all_points(self) -> List[CartographyPoint]:
         return [p for g in self.groups.values() for p in g.points]
+
+    def __repr__(self):
+        return bca_utils.object_to_repr(self)
+
+    def __str__(self):
+        return bca_utils.object_to_str(self)
 
 
 # [UN]REGISTER ================================================================

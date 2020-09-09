@@ -14,7 +14,7 @@ import bpy
 import mappings
 
 
-# __classes__ =====================================================================
+# Classes =====================================================================
 class CartographyTemplate:
     """Template for cartography"""
 

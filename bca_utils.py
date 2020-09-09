@@ -7,6 +7,7 @@ History:
     + add utility methods for matching
 """
 
+import json
 import math
 import os
 import re
@@ -79,6 +80,11 @@ def dict_get_or_create(d: Dict[K, V], key: K, init: Union[V, Callable[[], V]]) -
     return value
 
 
+# File ------------------------------------------------------------------------
+def file_format_line_for_logging(line: str) -> str:
+    return line.replace('\n', '\\n').replace('\t', '\\t')
+
+
 # List ------------------------------------------------------------------------
 def list_get_last(lst: List[T]) -> Optional[T]:
     """Get last item in list"""
@@ -124,6 +130,15 @@ def math_3d_distance(p1: Vector, p2: Vector) -> float:
         + math.pow(abs(p1.y - p2.y), 2)
         + math.pow(abs(p1.z - p2.z), 2)
     )
+
+
+# Object ----------------------------------------------------------------------
+def object_to_str(obj: any) -> str:
+    return str(vars(obj))
+
+
+def object_to_repr(obj: any) -> str:
+    return obj.__class__.__name__ + '@' + object_to_str(obj)
 
 
 # Path ------------------------------------------------------------------------

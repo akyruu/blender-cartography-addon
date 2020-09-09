@@ -29,7 +29,7 @@ cartography_junction_pattern = '(Jonction|Junction) .+ (' + '|'.join(cartography
 
 # Type of cartography interest
 cartography_interest_type = {
-    '(Little(s) box(es)?|Petite(s) caisses?)': CartographyInterestType.LITTLE_BOX,
+    '(Littles? box(es)?|Petites? caisses?)': CartographyInterestType.LITTLE_BOX,
     '(Lichens?)': CartographyInterestType.LICHEN,
     '(Ores?|Minerai?)': CartographyInterestType.ORE
 }

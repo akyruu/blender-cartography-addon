@@ -1,21 +1,25 @@
 import os
 import sys
 
-scriptsFolder = "D:/Dev/Blender/@Scripts"
-addonName = "blender-cartography-addon"
+# Script location
+scripts_folder = 'D:/Dev/Blender/@Scripts'
+addon_name = 'blender-cartography-addon'
 
-folder = os.path.join(scriptsFolder, addonName)
-initFile = "__init__.py"
+# Arguments
+action = 'read_csv_file'
+coords_name = 'coordinates_02.tsv'
+
+# Execution
+folder = os.path.join(scripts_folder, addon_name)
+init_file = "__init__.py"
+coords_file = os.path.join(scripts_folder, addon_name, 'samples', coords_name) if coords_name else None
+
+sys.argv.extend(['DEBUG_MODE', '-a', action])
+if coords_file:
+    sys.argv.extend(['-f', coords_file])
 
 if folder not in sys.path:
     sys.path.append(folder)
+file = os.path.join(folder, init_file)
 
-file = os.path.join(folder, initFile)
-
-if 'DEBUG_MODE' not in sys.argv:
-    sys.argv.append('DEBUG_MODE')
-
-exec(compile(open(file).read(), initFile, 'exec'))
-
-if 'DEBUG_MODE' in sys.argv:
-    sys.argv.remove('DEBUG_MODE')
+exec(compile(open(file).read(), init_file, 'exec'))

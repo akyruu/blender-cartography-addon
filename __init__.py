@@ -9,7 +9,7 @@ import bpy
 bl_info = {
     'name': '[ΩP] Cartography addon',
     'author': 'Akyruu',
-    'version': (0, 0, 1),
+    'version': (0, 0, 2),
     'blender': (2, 83, 0),
     'location': 'File > Import > Cartography (.csv, .tsv)',
     'description': 'Import CSV file with locations from Cartographie',
@@ -30,8 +30,11 @@ modulesNames = [
     # Service
     'mappings',  # Config
     'reading',
+    'parsing',
     'templating',
     'drawing',
+    # Main
+    'bca_main',
     # View
     'gui',
 ]
@@ -78,29 +81,24 @@ def unregister():
                     raise RuntimeError('Failed to unregister {0}. Cause: {1}'.format(cls, err))
 
 
-# Debug -----------------------------------------------------------------------
-def debug():
-    for module in modules():
-        if hasattr(module, 'debug'):
-            module.debug()
-
-
-# FIXME already exists in bca_utils.py
-def workspace() -> os.path:
-    # FIXME ok for debug only
-    paths = [path for path in sys.path if os.path.basename(path) == 'blender-cartography-addon']
-    return paths[0]
-
-
 # ENTRY POINT =================================================================
 if __name__ == "__main__":
-    work_path = workspace()
+    # Blender register modules
+    register()
+
+    # Import modules
+    import bca_utils
+    import bca_main
+
+    # Logging
+    work_path = bca_utils.path_workspace()
     print(work_path)
     logging.config.fileConfig(
         fname=os.path.join(work_path, 'logging.conf'),
         disable_existing_loggers=False
     )
 
-    register()
-    if 'DEBUG_MODE' in sys.argv:
-        debug()
+    # Direct launch mode
+    action = bca_main.args.action
+    if action:
+        bca_main.entry_point(action)
