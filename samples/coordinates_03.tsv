@@ -15,8 +15,8 @@ point 10	G	49	49		Contour, Pilier 1 (contact base pilier), Escarpement 0			33		3
 point 11	G	49	49	1,5	Contour, Pilier 1 (contact base pilier), Escarpement 0			33		37		1,5					
 point 12	G	53	43		Contour, Pilier 1 (contact base pilier), Escarpement 0			31		43		0					
 point 13	G	53	43	1,5	Contour, Pilier 1 (contact base pilier), Escarpement 0			31		43		1,5					
-point 14	G	57	38		Contour, Sous-bassement 1 droite (TODO doubler -1)			29		49		0					
-point 15	G	61	31		Contour, Sous-bassement 1 gauche (TODO doubler -1)			25		55		0					
+point 14	G	57	38		Contour, Soubassement 1 droite (TODO doubler -1)			29		49		0
+point 15	G	61	31		Contour, Soubassement 1 gauche (TODO doubler -1)			25		55		0
 point 16	G	66	25		Contour			22		62		0					
 point 17	G	69	17		Contour, Escarpement 1, début contact			16		67		0					
 point 18	G	69	17	1	Contour, Escarpement 1			16		67		1					
@@ -74,14 +74,14 @@ point 69	G	38	55		Gouffre 1, angle 1			29		26
 point 70	G	29	56		Gouffre 1, angle 2			21		21							
 point 71	G	29	60		Gouffre 1, point d'escalade			24		18							
 point 72	G	27	62		Gouffre 1, angle 3			22		15							
-point 73	G	53	32	-2	Sous-bassement 1, angle			21		49		-2					
-point 74	G	53	32		Sous-bassement 1, angle			21		49							
+point 73	G	53	32	-2	Soubassement 1, angle			21		49		-2
+point 74	G	53	32		Soubassement 1, angle			21		49
 point 75	D	62	25		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - mur)			21		59							
 point 76	D	43	47		Structure, 2 petites caisses			26		34							
-point 77	D	39	55	3	4 bonbonnes, 5 bidons			29		26		3					
-point 78	D	29	57	2	4 caisses empilées en 2 colonnes collées			21		20		2					
-point 79	D	33	60	2	échafaudage (3m de long, 1m de large, 3m de haut)			26		19		2					
-point 80	D	26	74		4 caisses empilées en 2 colonnes très proches			27		4							
+point 77	D	39	55	3	Objets, 4 bonbonnes, 5 bidons			29		26		3
+point 78	D	29	57	2	Objets, 4 caisses empilées en 2 colonnes collées			21		20		2
+point 79	D	33	60	2	Objets, échafaudage (3m de long, 1m de large, 3m de haut)			26		19		2
+point 80	D	26	74		Objets, 4 caisses empilées en 2 colonnes très proches			27		4
 point 81	D	15	69	4	talus de pierre (éboulis), rayon 2m			12		5		4					
 point 82	G	15	63		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - mur)			11		11							
 point 83	G	37	41		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - entre pilier 1 et 2)			13		34							

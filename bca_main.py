@@ -1,6 +1,8 @@
 import argparse
 import logging
 import os
+import bpy
+import io
 
 import bca_utils
 from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyStructuralPointDrawer, \
@@ -20,6 +22,11 @@ arg_parser.add_argument(
     help='Launch a main action directly'
 )
 arg_parser.add_argument(
+    '-e', '--export',
+    type=str,
+    help='Blend file to export created room'
+)
+arg_parser.add_argument(
     '-f', '--file',
     type=str,
     help='File with coordinates, required for certain actions'
@@ -32,12 +39,19 @@ def entry_point(action: str):
     """Entry point for execute an action"""
     __logger.info('Launch action <{}>...', action)
     if action == 'read_csv_file':
+        clear_scene()
         file = args.file
         if not file:
             raise Exception('A file required for action <{}>'.format(action))
         read_csv_file(file)
+        if args.export:
+            export(args.export)
     else:
         raise Exception('Unknown action: <{}>'.format(action))
+
+
+def clear_scene():
+    bpy.ops.object.delete({'selected_objects': [bpy.context.scene.objects['Cube']]})
 
 
 def read_csv_file(filepath: os.path):
@@ -78,3 +92,9 @@ def read_csv_file(filepath: os.path):
     __logger.info('<%s> room drawn with success!', room)
 
     __logger.info('Import finished with success!')
+
+
+def export(filepath: os.path):
+    if os.path.exists(filepath):
+        os.remove(filepath)
+    bpy.ops.wm.save_as_mainfile(filepath=filepath)

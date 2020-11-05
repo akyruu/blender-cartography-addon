@@ -133,7 +133,9 @@ class CartographyParser:
 
     def __determinate_group_name_category(self, line: CartographyFilePoint) -> Tuple[str, CartographyCategory]:
         categories = self.__parse_point_categories(', '.join(line.observations))
-        if len(categories) > 1:
+        if len(categories) == 0:
+          raise ValueError('Category not found in <' + ', '.join(line.observations) + '>')
+        elif len(categories) > 1:
             category_types = [c for c, m in categories]
             if CartographyCategory.OUTLINE in category_types and CartographyCategory.GATE in category_types:
                 category, cat_match = next((c, m) for c, m in categories if c == CartographyCategory.OUTLINE)

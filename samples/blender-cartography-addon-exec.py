@@ -2,7 +2,7 @@ import os
 import sys
 
 # Script location
-scripts_folder = 'D:/Dev/Blender/@Scripts'
+scripts_folder = '/home/Cyril.Audibert/.perso/workspace/pycharm'
 addon_name = 'blender-cartography-addon'
 
 # Arguments
@@ -12,11 +12,15 @@ coords_name = 'coordinates_02.tsv'
 # Execution
 folder = os.path.join(scripts_folder, addon_name)
 init_file = "__init__.py"
-coords_file = os.path.join(scripts_folder, addon_name, 'samples', coords_name) if coords_name else None
 
 sys.argv.extend(['DEBUG_MODE', '-a', action])
-if coords_file:
+if coords_name:
+    sample_folder = os.path.join(folder, 'samples')
+    coords_file = os.path.join(sample_folder, coords_name)
+    export_file = os.path.join(sample_folder, coords_name.replace('.tsv', '.blend'))
+
     sys.argv.extend(['-f', coords_file])
+    sys.argv.extend(['-e', export_file])
 
 if folder not in sys.path:
     sys.path.append(folder)

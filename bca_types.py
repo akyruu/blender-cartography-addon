@@ -37,13 +37,15 @@ class CartographyCategory(bytes, Enum):
     OUTLINE = (1, CartographyCategoryType.STRUCTURAL, True)
     GATE = (2, CartographyCategoryType.STRUCTURAL, True)
     ESCARPMENT = (3, CartographyCategoryType.STRUCTURAL)
-    COLUMN = (4, CartographyCategoryType.STRUCTURAL, False, 5, False)
-    CHASM = (5, CartographyCategoryType.STRUCTURAL, False, -5, True)
+    BASEMENT = (4, CartographyCategoryType.STRUCTURAL)
+    COLUMN = (5, CartographyCategoryType.STRUCTURAL, False, 5, False)
+    CHASM = (6, CartographyCategoryType.STRUCTURAL, False, -5, True)
 
     # Interest
-    CLIMBING_POINT = (6, CartographyCategoryType.INTEREST)
-    HARVESTABLE = (7, CartographyCategoryType.INTEREST)
-    ANTHROPOGENIC_OBJECT = (8, CartographyCategoryType.INTEREST)
+    CLIMBING_POINT = (10, CartographyCategoryType.INTEREST)
+    HARVESTABLE = (11, CartographyCategoryType.INTEREST)
+    ANTHROPOGENIC_OBJECT = (12, CartographyCategoryType.INTEREST)
+    BANK = (13, CartographyCategoryType.INTEREST)
 
 
 class CartographyInterestType(Enum):

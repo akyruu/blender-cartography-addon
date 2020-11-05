@@ -17,11 +17,13 @@ cartography_point_category = {
     '(Outline|Contour)': CartographyCategory.OUTLINE,
     '(Gate|Porte|Entrée) ([0-9]+)': CartographyCategory.GATE,
     '(Escarpment|Escarpement) ([0-9]+)': CartographyCategory.ESCARPMENT,
+    '(Soubassement|Basement) ([0-9]+)': CartographyCategory.BASEMENT,
     '(Column|Colonne) ([0-9]+)': CartographyCategory.COLUMN,
     '(Chasm|Gouffre) ([0-9]+)': CartographyCategory.CHASM,
+    '(Bank|Talus)': CartographyCategory.BANK,
     '(Climbing ?Point|Point( d[\'’ ]?)?escalade)': CartographyCategory.CLIMBING_POINT,
     '(Harvestables?|Consommables?)': CartographyCategory.HARVESTABLE,
-    '((Anthropogenics? )?Objects?|Objets?( Anthropiques?))': CartographyCategory.ANTHROPOGENIC_OBJECT
+    '((Anthropogenics? )?Objects?|Objets?( Anthropiques?)?)': CartographyCategory.ANTHROPOGENIC_OBJECT
 }
 
 # Cartography: pattern for determinate a junction
