@@ -4,7 +4,7 @@ import os
 import bpy
 import io
 
-import bca_utils
+import utils
 from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyStructuralPointDrawer, \
     CartographyPlaneDrawer
 from parsing import CartographyParser
@@ -74,7 +74,7 @@ def read_csv_file(filepath: os.path):
     __logger.info('CSV file <%s> parsed with success!', filepath)
 
     # Read .blend template
-    blend_path = os.path.join(bca_utils.path_workspace(), 'bca-template.blend')
+    blend_path = os.path.join(utils.io.path.workspace(), 'bca-template.blend')
     __logger.info('Read .blend template <%s>', blend_path)
     reader = CartographyTemplateReader()
     template = reader.read(blend_path)
@@ -89,7 +89,7 @@ def read_csv_file(filepath: os.path):
         CartographyPlaneDrawer(template)
     )
     drawer.draw(room)
-    __logger.info('<%s> room drawn with success!', room)
+    __logger.info('<%s> room drawn with success!', room.name)
 
     __logger.info('Import finished with success!')
 

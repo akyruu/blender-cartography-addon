@@ -12,10 +12,9 @@ import re
 from copy import copy
 from typing import Dict, List, Optional, Tuple
 
-import bca_utils
 import mappings
-from bca_types import CartographyGroup, CartographyCategory, CartographyPoint, CartographyInterestType, \
-    CartographyRoom
+import utils
+from model import CartographyGroup, CartographyCategory, CartographyPoint, CartographyInterestType, CartographyRoom
 from reading import CartographyFile, CartographyFilePoint
 
 
@@ -25,7 +24,7 @@ class CartographyParserException(Exception):
     def __init__(self, row: int, value: str, inv_type: str, pattern: str):
         Exception.__init__(self, 'Invalid {}: <{}> (l.{}). Expected: <{}> (case insensitive)'.format(
             inv_type,
-            bca_utils.file_format_line_for_logging(value),
+            utils.io.file.format_line_for_logging(value),
             row,
             pattern
         ))
@@ -134,7 +133,7 @@ class CartographyParser:
     def __determinate_group_name_category(self, line: CartographyFilePoint) -> Tuple[str, CartographyCategory]:
         categories = self.__parse_point_categories(', '.join(line.observations))
         if len(categories) == 0:
-          raise ValueError('Category not found in <' + ', '.join(line.observations) + '>')
+            raise ValueError('Category not found in <' + ', '.join(line.observations) + '>')
         elif len(categories) > 1:
             category_types = [c for c, m in categories]
             if CartographyCategory.OUTLINE in category_types and CartographyCategory.GATE in category_types:
@@ -161,7 +160,7 @@ class CartographyParser:
         # Search observation sentence
         match = None
         for observation in ext_point.observations:
-            m = bca_utils.match_ignore_case(mappings.cartography_junction_pattern, observation, False)
+            m = utils.string.match_ignore_case(mappings.cartography_junction_pattern, observation, False)
             if m:
                 match = m
                 break
@@ -179,7 +178,7 @@ class CartographyParser:
             return
 
         # Set junction start/end in group
-        junction_group = bca_utils.dict_get_or_create(
+        junction_group = utils.collection.dict.get_or_create(
             self.__junctions, int_group.name,
             lambda: CartographyParser.__JunctionGroup(self.__room, int_group)
         )
@@ -222,9 +221,10 @@ class CartographyParser:
         self.__logger.debug('Update groups for junction group <%s>...', int_group.name)
         try:
             # Split external points
-            fst_ext_points: list = bca_utils.list_sublist(ext_points, 0, junction.start.point)
-            mid_ext_points: list = bca_utils.list_sublist(ext_points, junction.start.point, (junction.end.point, 1))
-            lst_ext_points: list = bca_utils.list_sublist(ext_group.points, (junction.end.point, 1))
+            fst_ext_points: list = utils.collection.list.sublist(ext_points, 0, junction.start.point)
+            mid_ext_points: list = utils.collection.list.sublist(ext_points, junction.start.point,
+                                                                 (junction.end.point, 1))
+            lst_ext_points: list = utils.collection.list.sublist(ext_group.points, (junction.end.point, 1))
 
             # Update external points
             ext_points.clear()
@@ -245,7 +245,7 @@ class CartographyParser:
             )
 
             # Update internal points
-            int_points += bca_utils.list_reverse(mid_ext_points)  # Reverse for keep order in new group
+            int_points += utils.collection.list.reverse(mid_ext_points)  # Reverse for keep order in new group
             self.__logger.debug(
                 '<%d> points transferred from group <%s> to <%s>',
                 len(mid_ext_points), ext_group.name, int_group.name)
@@ -263,7 +263,7 @@ class CartographyParser:
         """
         categories = []
         for pattern, category in mappings.cartography_point_category.items():
-            m = bca_utils.match_ignore_case(pattern, value, False)
+            m = utils.string.match_ignore_case(pattern, value, False)
             if m:
                 categories.append((category, m))
         return categories
@@ -286,7 +286,10 @@ class CartographyParser:
         """
         categories = self.__parse_point_categories(value)
         if categories:
-            return bca_utils.list_next(((c, m) for c, m in categories if c not in categories_to_ignore), categories[0])
+            return utils.collection.list.inext(
+                ((c, m) for c, m in categories if c not in categories_to_ignore),
+                categories[0]
+            )
         elif dft_value is None:
             raise CartographyParserException(
                 self.__row,
@@ -301,10 +304,10 @@ class CartographyParser:
             -> Tuple[Optional[CartographyInterestType], int]:
         for pattern, interest in mappings.cartography_interest_type.items():
             # FIXME '(([0-9]+) )?' not working :(
-            m = bca_utils.match_ignore_case('([0-9]+) ' + pattern, value, False)
+            m = utils.string.match_ignore_case('([0-9]+) ' + pattern, value, False)
             if m:
                 return interest, int(m.group(1))
-            m = bca_utils.match_ignore_case(pattern, value, False)
+            m = utils.string.match_ignore_case(pattern, value, False)
             if m:
                 return interest, 1
         return dft_value
@@ -317,7 +320,7 @@ class CartographyParser:
     ) -> Optional[CartographyGroup]:
         groups = [
             g for g in room.groups.values()
-            if g.category == category and bca_utils.match_ignore_case(partial_name, g.name, False)
+            if g.category == category and utils.string.match_ignore_case(partial_name, g.name, False)
         ]
         count = len(groups)
         if count > 1:

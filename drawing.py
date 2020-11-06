@@ -16,10 +16,10 @@ import bmesh
 import bpy
 from mathutils import Vector
 
-import bca_config
-import bca_utils
+import config
+import utils
 import mappings
-from bca_types import CartographyGroup, CartographyObjectType, CartographyPoint, CartographyCategory, \
+from model import CartographyGroup, CartographyObjectType, CartographyPoint, CartographyCategory, \
     CartographyCategoryType, CartographyRoom
 from templating import CartographyTemplate
 
@@ -231,12 +231,12 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         self.__logger.debug('Update mesh initialization...')
 
         # Get mesh instance
-        self.__mesh = bca_utils.obj_get_mesh(obj)
+        self.__mesh = utils.blender.meshing.obj_get_mesh(obj)
         self.__mat_wall_index = self.__get_or_create_material(mappings.cartography_mat_wall)
         self.__mat_climbing_index = self.__get_or_create_material(mappings.cartography_mat_climbing)
 
         # Get bmesh instance
-        bm = self.__bmesh = bca_utils.bmesh_from_mesh(self.__mesh)
+        bm = self.__bmesh = utils.blender.meshing.bmesh_from_mesh(self.__mesh)
 
         # Delete all vertices
         bmesh.ops.delete(bm, geom=bm.verts)  # noqa
@@ -295,13 +295,13 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
             self.__logger.warning('No edges found for z=0')
         else:
             for z, edge in [(z, e) for z, edges in self.__edges_by_z.items() for e in edges if z != 0]:
-                z0_edge = bca_utils.list_next(e for e in z0_edges if self.__one_edge_above_the_other(e, edge))
+                z0_edge = utils.collection.list.inext(e for e in z0_edges if self.__one_edge_above_the_other(e, edge))
                 if z0_edge:
                     self.__level_edges([z0_edge], z, False, self.__mat_climbing_index if z == 1 else None)
 
         # Level outline edges
         outline_edges = [e for e in self.__outline_edges if e not in self.__gate_edges]
-        max_z = max(self.__edges_by_z.keys()) + bca_config.outline_z
+        max_z = max(self.__edges_by_z.keys()) + config.outline_z
         for z, edges in self.__edges_by_z.items():
             edges = [e for e in edges if e in outline_edges]
             if len(edges) > 0:
@@ -320,7 +320,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
 
     def __update_mesh_apply(self):
         self.__logger.debug('Update mesh apply...')
-        bca_utils.bmesh_to_mesh(self.__bmesh, self.__mesh)
+        utils.blender.meshing.bmesh_to_mesh(self.__bmesh, self.__mesh)
 
     # Method - Tools
     def __get_or_create_material(self, mat_name: str) -> int:
@@ -334,7 +334,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
             -> bmesh.types.BMVert:
         vertex = self.__bmesh.verts.new(vec)  # noqa
 
-        vertices = bca_utils.dict_get_or_create(self.__vertices_by_group, group, [])
+        vertices = utils.collection.dict.get_or_create(self.__vertices_by_group, group, [])
         vertices.append(vertex)
 
         category = category if category else group.category
@@ -349,7 +349,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
             -> bmesh.types.BMEdge:
         edge = self.__bmesh.edges.new([vert1, vert2])  # noqa
 
-        edges = bca_utils.dict_get_or_create(self.__edges_by_group, group, [])
+        edges = utils.collection.dict.get_or_create(self.__edges_by_group, group, [])
         edges.append(edge)
 
         if vert1 in self.__outline_vertices or vert2 in self.__outline_vertices:
@@ -362,7 +362,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         if z1 != z2:
             self.__logger.warning('The edge <%s> has multiple z axis: v1=<%d> v2=<%d> (Ignored)', str(edge), z1, z2)
         else:
-            z_edges = bca_utils.dict_get_or_create(self.__edges_by_z, z1, [])
+            z_edges = utils.collection.dict.get_or_create(self.__edges_by_z, z1, [])
             z_edges.append(edge)
 
         return edge
@@ -376,7 +376,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         bm = self.__bmesh
 
         # Extrude edges
-        extruded = bca_utils.bmesh_extrude(bm, edges)
+        extruded = utils.blender.meshing.bmesh_extrude(bm, edges)
 
         translate_verts = [v for v in extruded if isinstance(v, bmesh.types.BMVert)]
         bmesh.ops.translate(bm, vec=(0, 0, z), verts=translate_verts)  # noqa

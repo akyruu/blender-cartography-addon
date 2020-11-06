@@ -22,11 +22,11 @@ bl_info = {
 # MODULES =====================================================================
 modulesNames = [
     # Configuration
-    'bca_config',
+    'config',
     # Model
-    'bca_types',
+    'model',
     # Tools
-    'bca_utils',
+    'utils',
     # Service
     'mappings',  # Config
     'reading',
@@ -87,11 +87,11 @@ if __name__ == "__main__":
     register()
 
     # Import modules
-    import bca_utils
+    import utils
     import bca_main
 
     # Logging
-    work_path = bca_utils.path_workspace()
+    work_path = utils.io.path.workspace()
     print(work_path)
     logging.config.fileConfig(
         fname=os.path.join(work_path, 'logging.conf'),

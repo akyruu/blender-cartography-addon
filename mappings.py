@@ -1,39 +1,49 @@
 """
-Mappings
-
-History:
-2020/08/21: v0.0.1
-    + add utility methods for bmesh/mesh conversion
+Mappings for parsing
 """
 
-from bca_types import CartographyCategory, CartographyInterestType, CartographyObjectType
+from typing import List
+
+import config
+from model import CartographyCategory, CartographyInterestType, CartographyObjectType
+
+
+# INTERNAL ====================================================================
+def __build_regex(words: List[str], has_number: bool) -> str:
+    return '(' + '|'.join(words) + ')' + (' ([0-9]+)' if has_number else '')
+
 
 # CONFIG ======================================================================
 # Cartography: join word for name concatenation
 cartography_point_name_join = ' - '
 
 # Type of cartography points
+__category_words = config.mappings.words['category']
 cartography_point_category = {
-    '(Outline|Contour)': CartographyCategory.OUTLINE,
-    '(Gate|Porte|Entrée) ([0-9]+)': CartographyCategory.GATE,
-    '(Escarpment|Escarpement) ([0-9]+)': CartographyCategory.ESCARPMENT,
-    '(Soubassement|Basement) ([0-9]+)': CartographyCategory.BASEMENT,
-    '(Column|Colonne) ([0-9]+)': CartographyCategory.COLUMN,
-    '(Chasm|Gouffre) ([0-9]+)': CartographyCategory.CHASM,
-    '(Bank|Talus)': CartographyCategory.BANK,
-    '(Climbing ?Point|Point( d[\'’ ]?)?escalade)': CartographyCategory.CLIMBING_POINT,
-    '(Harvestables?|Consommables?)': CartographyCategory.HARVESTABLE,
-    '((Anthropogenics? )?Objects?|Objets?( Anthropiques?)?)': CartographyCategory.ANTHROPOGENIC_OBJECT
+    # Structure
+    __build_regex(__category_words['OUTLINE'], False): CartographyCategory.OUTLINE,
+    __build_regex(__category_words['GATE'], True): CartographyCategory.GATE,
+    __build_regex(__category_words['ESCARPMENT'], True): CartographyCategory.ESCARPMENT,
+    __build_regex(__category_words['BASEMENT'], True): CartographyCategory.BASEMENT,
+    __build_regex(__category_words['COLUMN'], True): CartographyCategory.COLUMN,
+    __build_regex(__category_words['CHASM'], True): CartographyCategory.CHASM,
+    # Interest
+    __build_regex(__category_words['CLIMBING_POINT'], False): CartographyCategory.CLIMBING_POINT,
+    __build_regex(__category_words['HARVESTABLE'], False): CartographyCategory.HARVESTABLE,
+    __build_regex(__category_words['ANTHROPOGENIC_OBJECT'], False): CartographyCategory.ANTHROPOGENIC_OBJECT,
+    __build_regex(__category_words['BANK'], False): CartographyCategory.BANK,
+    __build_regex(__category_words['STRUCTURE'], False): CartographyCategory.STRUCTURE
 }
 
 # Cartography: pattern for determinate a junction
 cartography_junction_pattern = '(Jonction|Junction) .+ (' + '|'.join(cartography_point_category.keys()) + ')'
 
 # Type of cartography interest
+__category_words = config.mappings.words['interest_type']
 cartography_interest_type = {
-    '(Littles? box(es)?|Petites? caisses?)': CartographyInterestType.LITTLE_BOX,
-    '(Lichens?)': CartographyInterestType.LICHEN,
-    '(Ores?|Minerai?)': CartographyInterestType.ORE
+    __build_regex(__category_words['LITTLE_BOX'], False): CartographyInterestType.LITTLE_BOX,
+    __build_regex(__category_words['LICHEN'], False): CartographyInterestType.LICHEN,
+    __build_regex(__category_words['ORE'], False): CartographyInterestType.ORE
 }
 
 # Type of cartography points
@@ -42,6 +52,7 @@ cartography_object_type = {
     CartographyCategory.OUTLINE: 'contour',
     CartographyCategory.GATE: 'Gate',
     CartographyCategory.ESCARPMENT: 'elevation',
+    CartographyCategory.BASEMENT: 'elevation',
     CartographyCategory.COLUMN: 'colonne',
     CartographyCategory.CHASM: 'gouffre',
     CartographyCategory.CLIMBING_POINT: 'escalade',

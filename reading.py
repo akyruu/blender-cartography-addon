@@ -19,8 +19,8 @@ from typing import List, Optional
 
 from mathutils import Vector
 
-import bca_config
-import bca_utils
+import config
+import utils
 
 
 # CLASSES =====================================================================
@@ -35,10 +35,10 @@ class CartographyFileLine:
 
     # Methods -----------------------------------------------------------------
     def __repr__(self):
-        return bca_utils.object_to_repr(self)
+        return utils.object.to_repr(self)
 
     def __str__(self):
-        return bca_utils.object_to_str(self)
+        return utils.object.to_str(self)
 
 
 class CartographyFileSide(Enum):
@@ -75,10 +75,10 @@ class CartographyFilePoint(CartographyFileLine):
 
     # Methods -----------------------------------------------------------------
     def __repr__(self):
-        return bca_utils.object_to_repr(self)
+        return utils.object.to_repr(self)
 
     def __str__(self):
-        return bca_utils.object_to_str(self)
+        return utils.object.to_str(self)
 
 
 class CartographyFile:
@@ -92,10 +92,10 @@ class CartographyFile:
 
     # Methods -----------------------------------------------------------------
     def __repr__(self):
-        return bca_utils.object_to_repr(self)
+        return utils.object.to_repr(self)
 
     def __str__(self):
-        return bca_utils.object_to_str(self)
+        return utils.object.to_str(self)
 
 
 # Reader ----------------------------------------------------------------------
@@ -121,7 +121,7 @@ class CartographyReaderException(Exception):
     def __init__(self, reader: CartographyReader, value: str, inv_type: str, pattern: str):
         Exception.__init__(self, 'Invalid {}: <{}> (l.{}, c.{}). Expected: <{}> (case insensitive)'.format(
             inv_type,
-            bca_utils.file_format_line_for_logging(value),
+            utils.io.file.format_line_for_logging(value),
             reader.row(),
             reader.column(),
             pattern
@@ -258,9 +258,9 @@ class CartographyCsvReader(AbstractCartographyReader):
             else:
                 self.__logger.warning('No point side found. Use the last side used: <%s>', self.__last_point_side)
                 point.side = self.__last_point_side
-        elif bca_utils.match_ignore_case('[GL]', side):
+        elif utils.string.match_ignore_case('[GL]', side):
             point.side = CartographyFileSide.LEFT
-        elif bca_utils.match_ignore_case('[DR]', side):
+        elif utils.string.match_ignore_case('[DR]', side):
             point.side = CartographyFileSide.RIGHT
 
         if not point.side:
@@ -270,7 +270,7 @@ class CartographyCsvReader(AbstractCartographyReader):
         # Determine observations
         observations = matches[5].group(0)
         if observations:
-            point.observations = [o.strip() for o in observations.split(bca_config.obs_separator)]
+            point.observations = [o.strip() for o in observations.split(config.obs_separator)]
 
         # Add line to file
         self.__logger.debug('Add point line to file: %s', str(point))
@@ -305,7 +305,7 @@ class CartographyCsvReader(AbstractCartographyReader):
             self._column = i + 1
             pattern = patterns[i] if patterns[i] else '^$'
             value = data[i]
-            m = bca_utils.match_ignore_case(pattern, value)
+            m = utils.string.match_ignore_case(pattern, value)
             if m is None:
                 if strict:
                     raise CartographyReaderException(self, value, line_type, pattern)
@@ -315,7 +315,7 @@ class CartographyCsvReader(AbstractCartographyReader):
         return matches
 
     def __ignore_line(self, line: str):
-        self.__logger.info('Ignore <%s> (l.%d)', bca_utils.file_format_line_for_logging(line), self._row)
+        self.__logger.info('Ignore <%s> (l.%d)', utils.io.file.format_line_for_logging(line), self._row)
 
 
 class CartographyTsvReader(CartographyCsvReader):

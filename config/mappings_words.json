@@ -1,0 +1,21 @@
+{
+  "category": {
+    "OUTLINE": ["Outline", "Contour"],
+    "GATE": ["Gate", "Porte", "Entr[ée]e"],
+    "ESCARPMENT": ["Escarpment", "Escarpement"],
+    "BASEMENT": ["Basement","Soubassement"],
+    "COLUMN": ["Column", "Colonn?e", "Pilier"],
+    "COLUMN_BASE": ["Column base", "Base colonn?e", "Base pilier"],
+    "CHASM": ["Chasm", "Gouffre"],
+    "BANK": ["Bank", "Talus", "Ebouli"],
+    "CLIMBING_POINT": ["Climbing ?Point", "Point( d['’ ]?)?escalade"],
+    "HARVESTABLE": ["Harvestables?", "Consommables?"],
+    "ANTHROPOGENIC_OBJECT": ["(Anthropogenics? )?Objects?", "Objets?( Anthropiques?)?"],
+    "STRUCTURE": ["Structure"]
+  },
+  "interest_type": {
+    "LITTLE_BOX": ["Littles? box(es)?", "Petites? caisses?"],
+    "LICHEN": ["Lichens?"],
+    "ORE": ["Ores?", "Minerai?"]
+  }
+}
