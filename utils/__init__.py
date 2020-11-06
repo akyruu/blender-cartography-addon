@@ -1,7 +1,1 @@
-from . import blender
-from . import collection
-from . import io
-
-from . import math
-from . import object
-from . import string
+from . import blender, collection, io, math, object, string

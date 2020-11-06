@@ -1,2 +1,1 @@
-from . import file
-from . import path
+from . import file, path
