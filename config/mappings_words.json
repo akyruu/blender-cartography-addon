@@ -17,5 +17,6 @@
     "LITTLE_BOX": ["Littles? box(es)?", "Petites? caisses?"],
     "LICHEN": ["Lichens?"],
     "ORE": ["Ores?", "Minerai?"]
-  }
+  },
+  "proximity": ["proximity", "near", "proximité", "proche"]
 }

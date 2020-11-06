@@ -12,13 +12,14 @@ import re
 from copy import copy
 from typing import Dict, List, Optional, Tuple
 
+import config
 import mappings
 import utils
 from model import CartographyGroup, CartographyCategory, CartographyPoint, CartographyInterestType, CartographyRoom
 from reading import CartographyFile, CartographyFilePoint
 
 
-# Classes =====================================================================
+# CLASSES =====================================================================
 class CartographyParserException(Exception):
     # Constructor -------------------------------------------------------------
     def __init__(self, row: int, value: str, inv_type: str, pattern: str):
@@ -141,9 +142,10 @@ class CartographyParser:
             else:
                 category, cat_match = categories[0]
             self.__logger.warning(
-                'Group - Multiple category found: <%s>. Use category: <%s>',
+                'Group - Multiple category found: <%s>. Use category: <%s> (observations: <%s>)',
                 ','.join([c.name for c, m in categories]),
-                category
+                category.name,
+                ', '.join(line.observations)
             )
         else:
             category, cat_match = categories[0]
@@ -258,15 +260,27 @@ class CartographyParser:
         """
         Parse value to extract point categories.
 
-        :param value: Text to parse
-        :return: List of categories found
+        :param value Text to parse
+        :return List of categories found
         """
         categories = []
         for pattern, category in mappings.cartography_point_category.items():
-            m = utils.string.match_ignore_case(pattern, value, False)
-            if m:
-                categories.append((category, m))
+            for part in value.split(config.obs_separator):
+                m = CartographyParser.__match_category_in_observation(pattern, part)
+                if m:
+                    categories.append((category, m))
         return categories
+
+    @staticmethod
+    def __match_category_in_observation(pattern: str, value: str) -> re.Match:
+        m = utils.string.match_ignore_case(pattern, value, True)
+        if not m:
+            pattern = '(?!(' + '|'.join(config.mappings.words['proximity']) + ').)* ' + pattern
+            m = utils.string.match_ignore_case(pattern, value, True)
+            if not m:
+                pattern += '.*'
+                m = utils.string.match_ignore_case(pattern, value, True)
+        return m
 
     def __check_point_category(
             self,

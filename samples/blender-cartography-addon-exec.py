@@ -7,7 +7,7 @@ addon_name = 'blender-cartography-addon'
 
 # Arguments
 action = 'read_csv_file'
-coords_name = 'coordinates_02.tsv'
+coords_name = 'coordinates_03.tsv'
 
 # Execution
 folder = os.path.join(scripts_folder, addon_name)
