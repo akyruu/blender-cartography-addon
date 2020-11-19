@@ -5,10 +5,10 @@ Module for parser
 import logging
 import os
 
-from model import CartographyPoint, CartographyRoom
+from model import CartographyCategory, CartographyPoint, CartographyRoom
 from reading import CartographyFile, CartographyFilePoint
-from . import __utils as parse_utils
-from .__model import ParseContext
+from . import utils as parse_utils
+from .model import ParseContext
 
 
 # CLASSES =====================================================================
@@ -58,6 +58,7 @@ class CartographyParser:
         group = parse_utils.group.get_or_create_group(self.__context, file_point)
 
         # Determine category and interest type
+        point.category = CartographyCategory.UNKNOWN
         category = group.category
         if file_point.observations:
             observations = ', '.join(file_point.observations)

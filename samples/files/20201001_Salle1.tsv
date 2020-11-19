@@ -1,4 +1,4 @@
-position de		Y	X														
+position de 		Y	X														
 position, de 2		scribe 1	scribe 2		explorateur												
 distance 1-2	73	Manu	Akyruu		Armades			méthode des cercles									
 point :	côté : G/D	Distance à S1	Distance à S2	hauteur	observations			Y		X		z					Adjacent (Y)
@@ -15,8 +15,8 @@ point 10	G	49	49		Contour, Pilier 1 (contact base pilier), Escarpement 0			33		3
 point 11	G	49	49	1,5	Contour, Pilier 1 (contact base pilier), Escarpement 0			33		37		1,5					
 point 12	G	53	43		Contour, Pilier 1 (contact base pilier), Escarpement 0			31		43		0					
 point 13	G	53	43	1,5	Contour, Pilier 1 (contact base pilier), Escarpement 0			31		43		1,5					
-point 14	G	57	38		Contour, Soubassement 1 droite (TODO doubler -1)			29		49		0					
-point 15	G	61	31		Contour, Soubassement 1 gauche (TODO doubler -1)			25		55		0					
+point 14	G	57	38		Contour, Sous-bassement 1 droite (TODO doubler -1)			29		49		0					
+point 15	G	61	31		Contour, Sous-bassement 1 gauche (TODO doubler -1)			25		55		0					
 point 16	G	66	25		Contour			22		62		0					
 point 17	G	69	17		Contour, Escarpement 1, début contact			16		67		0					
 point 18	G	69	17	1	Contour, Escarpement 1			16		67		1					
@@ -46,45 +46,45 @@ point 41	D	25	58		Escarpement 4, angle 2			18		18		0
 point 42	D	37	67	3	Contour, Escarpement 4, fin			34		15		3					
 point 43	D	37	67		Contour, Escarpement 4, fin			34		15		0					
 point 44	D	28	79	3	Contour, talus de pierre 1 début			28		-1		3					
-point 45	D	18	81		Contour, talus de pierre 1 fin			18		-6		0					
-point 46	D	5	76		Contour, entrée 1 droite (hauteur 1m)			0		-3		0					
-point 47	G	42	51	1	Pilier 1, Escarpement 0, angle 1 (pilier à 1m du bord de l'escarpement)			29		31		1					
-point 48	G	42	51		Pilier 1, Escarpement 0, angle 1			29		31		0					
-point 49	G	41	46	1	Pilier 1, Escarpement 0, angle 2			24		34		1					
-point 50	G	41	46		Pilier 1, Escarpement 0, angle 2			24		34		0					
-point 51	G	48	38	1	Pilier 1, Escarpement 0, angle 3			22		42		1					
-point 52	G	48	38		Pilier 1, Escarpement 0, angle 3			22		42		0					
-point 53	G	47	35	1	Pilier 2, Escarpement 5, angle 1 (pilier à 1m du bord de l'escarpement)			18		43		1					
-point 54	G	47	35		Pilier 2, Escarpement 5, angle 1			18		43		0					
-point 55	G	42	36	1	Pilier 2, Escarpement 5, angle 2			14		40		1					
-point 56	G	42	36		Pilier 2, Escarpement 5, angle 2			14		40		0					
-point 57	G	42	33	1	Pilier 2, Escarpement 5, angle 3			8		41		1					
-point 58	G	42	33		Pilier 2, Escarpement 5, angle 3			8		41		0					
-point 59	G	51	24	1	Pilier 2, Escarpement 5, angle 4			7		50		1					
-point 60	G	51	24		Pilier 2, Escarpement 5, angle 4			7		50		0					
-point 61	G	54	27	1	Pilier 2, Escarpement 5, angle 5			16		51		1					
-point 62	G	54	27		Pilier 2, Escarpement 5, angle 5			16		51		0					
-point 63	G	26	47		Pilier 3, angle 1			0		26		0					
-point 64	G	31	43		Pilier 3, angle 2			0		30		0					
-point 65	G	44	29		Pilier 3, angle 3 (proche pilier 2)			0		44		0					
-point 66	G	46	28		Pilier 3, angle 4			7		46		0					
-point 67	G	38	38		Pilier 3, angle 5			12		37		0					
-point 68	G	29	47		Pilier 3, angle 6			10		27		0					
-point 69	G	38	55		Gouffre 1, angle 1			29		26		0					
-point 70	G	29	56		Gouffre 1, angle 2			21		21		0					
-point 71	G	29	60		Gouffre 1, point d'escalade			24		18		0					
-point 72	G	27	62		Gouffre 1, angle 3			22		15		0					
-point 73	G	53	32	-2	Soubassement 1, angle			21		49		-2					
-point 74	G	53	32		Soubassement 1, angle			21		49		0					
-point 75	D	62	25		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - mur)			21		59		0					
-point 76	D	43	47		Structure, 2 petites caisses			26		34		0					
-point 77	D	39	55	3	Objets, 4 bonbonnes, 5 bidons			29		26		3					
-point 78	D	29	57	2	Objets, 4 caisses empilées en 2 colonnes collées			21		20		2					
-point 79	D	33	60	2	Objets, échafaudage (3m de long, 1m de large, 3m de haut)			26		19		2					
-point 80	D	26	74		Objets, 4 caisses empilées en 2 colonnes très proches			27		4		0					
-point 81	D	15	69	4	talus de pierre (éboulis), rayon 2m			12		5		4					
-point 82	G	15	63		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - mur)			11		11		0					
-point 83	G	37	41		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - entre pilier 1 et 2)			13		34		0					
+point 45	D	18	81		Contour, talus de pierre 1 fin			18		-6		0
+point 46	D	5	76		Contour, entrée 1 droite (hauteur 1m)			0		-3		0
+point 47	G	42	51	1	Pilier 1, Escarpement 0, angle 1 (pilier à 1m du bord de l'escarpement)			29		31		1
+point 48	G	42	51		Pilier 1, Escarpement 0, angle 1			29		31		0
+point 49	G	41	46	1	Pilier 1, Escarpement 0, angle 2			24		34		1
+point 50	G	41	46		Pilier 1, Escarpement 0, angle 2			24		34		0
+point 51	G	48	38	1	Pilier 1, Escarpement 0, angle 3			22		42		1
+point 52	G	48	38		Pilier 1, Escarpement 0, angle 3			22		42		0
+point 53	G	47	35	1	Pilier 2, Escarpement 5, angle 1 (pilier à 1m du bord de l'escarpement)			18		43		1
+point 54	G	47	35		Pilier 2, Escarpement 5, angle 1			18		43		0
+point 55	G	42	36	1	Pilier 2, Escarpement 5, angle 2			14		40		1
+point 56	G	42	36		Pilier 2, Escarpement 5, angle 2			14		40		0
+point 57	G	42	33	1	Pilier 2, Escarpement 5, angle 3			8		41		1
+point 58	G	42	33		Pilier 2, Escarpement 5, angle 3			8		41		0
+point 59	G	51	24	1	Pilier 2, Escarpement 5, angle 4			7		50		1
+point 60	G	51	24		Pilier 2, Escarpement 5, angle 4			7		50		0
+point 61	G	54	27	1	Pilier 2, Escarpement 5, angle 5			16		51		1
+point 62	G	54	27		Pilier 2, Escarpement 5, angle 5			16		51		0
+point 63	G	26	47		Pilier 3, angle 1			0		26		0
+point 64	G	31	43		Pilier 3, angle 2			0		30		0
+point 65	G	44	29		Pilier 3, angle 3 (proche pilier 2)			0		44		0
+point 66	G	46	28		Pilier 3, angle 4			7		46		0
+point 67	G	38	38		Pilier 3, angle 5			12		37		0
+point 68	G	29	47		Pilier 3, angle 6			10		27		0
+point 69	G	38	55		Gouffre 1, angle 1			29		26		0
+point 70	G	29	56		Gouffre 1, angle 2			21		21		0
+point 71	G	29	60		Gouffre 1, point d'escalade			24		18		0
+point 72	G	27	62		Gouffre 1, angle 3			22		15		0
+point 73	G	53	32	-2	Sous-bassement 1, angle			21		49		-2
+point 74	G	53	32		Sous-bassement 1, angle			21		49		0
+point 75	D	62	25		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - mur)			21		59		0
+point 76	D	43	47		Structure, 2 petites caisses			26		34		0
+point 77	D	39	55	3	4 bonbonnes, 5 bidons			29		26		3
+point 78	D	29	57	2	4 caisses empilées en 2 colonnes collées			21		20		2
+point 79	D	33	60	2	échafaudage (3m de long, 1m de large, 3m de haut)			26		19		2
+point 80	D	26	74		4 caisses empilées en 2 colonnes très proches			27		4		0
+point 81	D	15	69	4	talus de pierre (éboulis), rayon 2m			12		5		4
+point 82	G	15	63		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - mur)			11		11		0
+point 83	G	37	41		Structure, 2 lampes (milieu, bout), 1 spot, 3 petites caisses, 1 échafaudage (repère: lampe centre, orientation: lampe bout - entre pilier 1 et 2)			13		34		0
 point 84								#NUM!		37							
 point 85								#NUM!		37							
 point 86								#NUM!		37							

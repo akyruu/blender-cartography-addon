@@ -8,10 +8,9 @@ from typing import Optional, Tuple
 import config
 import utils
 from model import CartographyCategory, CartographyGroup, CartographyRoom
-from parsing.__model import ParseContext
+from parsing.model import ParseContext
 from reading import CartographyFilePoint
 from . import category as category_utils
-from ..exception import CartographyParserException
 
 
 # METHODS =====================================================================
@@ -35,29 +34,28 @@ def find_group(
 def get_or_create_group(context: ParseContext, point: CartographyFilePoint) -> CartographyGroup:
     name, category = determinate_group_name_category(context, point)
     group = context.room.groups.get(name, None)
-    if group is None:
-        context.logger.debug('Create new group <%s>', name)
-        group = CartographyGroup(name, category)
-        context.room.groups[name] = group
+    if not group:
+        if category.outline:
+            group = context.room.outline_group
+        if not group:
+            context.logger.debug('Create new group <%s>', name)
+            group = CartographyGroup(name, category)
+            context.room.groups[name] = group
 
-        if group.category.outline:
-            if context.room.outline_group is not None and context.room.outline_group != group:
-                raise CartographyParserException(
-                    context.row,
-                    group.name,
-                    'group category',
-                    'Only one outline for each room'
-                )
-            context.room.outline_group = group
+            if category.outline:
+                context.room.outline_group = group
     else:
         context.logger.debug('Use existing group <%s>', name)
     return group
 
 
 def determinate_group_name_category(context, point: CartographyFilePoint) -> Tuple[str, CartographyCategory]:
-    categories = category_utils.parse_point_categories(', '.join(point.observations))
+    observations = ', '.join(point.observations)
+    categories = category_utils.parse_point_categories(observations)
     if len(categories) == 0:
-        raise ValueError('Category not found in <' + ', '.join(point.observations) + '>')
+        category = CartographyCategory.UNKNOWN
+        cat_match = utils.string.match_ignore_case('.*', category.name)
+        context.logger.warning('Category not found in <%s>. Use category: <%s>', observations, category.name)
     elif len(categories) > 1:
         category_types = [c for c, m in categories]
         if CartographyCategory.OUTLINE in category_types and CartographyCategory.GATE in category_types:
@@ -68,7 +66,7 @@ def determinate_group_name_category(context, point: CartographyFilePoint) -> Tup
             'Group - Multiple category found: <%s>. Use category: <%s> (observations: <%s>)',
             ','.join([c.name for c, m in categories]),
             category.name,
-            ', '.join(point.observations)
+            observations
         )
     else:
         category, cat_match = categories[0]

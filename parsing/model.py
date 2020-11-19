@@ -1,5 +1,5 @@
 """
-Module for common methods relative to parsing
+Module for private entities relative to parsing
 """
 
 from logging import Logger

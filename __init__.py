@@ -1,9 +1,8 @@
+import bpy
 import importlib
 import logging.config
 import os
 import sys
-
-import bpy
 
 # BLENDER INFORMATION =========================================================
 bl_info = {
@@ -34,16 +33,19 @@ modulesNames = [
     'templating',
     'drawing',
     # Main
+    'action',
     'bca_main',
     # View
     'gui',
 ]
 
 # Importation --------------------------------------------------------------
-modulesFullNames = [('{}'.format(moduleName)
-                     if 'DEBUG_MODE' in sys.argv
-                     else '{}.{}'.format(__name__, moduleName))
-                    for moduleName in modulesNames]
+modulesFullNames = [
+    ('{}'.format(moduleName)
+     if 'DEBUG_MODE' in sys.argv
+     else '{}.{}'.format(__name__, moduleName))
+    for moduleName in modulesNames
+]
 for moduleFullName in modulesFullNames:
     if moduleFullName in sys.modules:
         importlib.reload(sys.modules[moduleFullName])
@@ -91,14 +93,16 @@ if __name__ == "__main__":
     import bca_main
 
     # Logging
-    work_path = utils.io.path.workspace()
-    print(work_path)
+    workspace = utils.io.path.workspace()
+    print('Workspace:', workspace)
     logging.config.fileConfig(
-        fname=os.path.join(work_path, 'logging.conf'),
+        fname=os.path.join(workspace, 'logging.conf'),
         disable_existing_loggers=False
     )
 
     # Direct launch mode
+    print('Args:', vars(bca_main.args))
+    print('Args:', ', '.join(sys.argv))
     action = bca_main.args.action
     if action:
         bca_main.entry_point(action)

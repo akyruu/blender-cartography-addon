@@ -1,5 +1,5 @@
 """
-Module for utility methods
+Module for utility object methods
 """
 
 

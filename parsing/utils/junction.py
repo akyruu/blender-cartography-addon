@@ -7,7 +7,7 @@ import utils
 from model import CartographyGroup, CartographyPoint
 from parsing.exception import CartographyParserException
 from . import common, category as category_utils, group as group_utils
-from ..__model import JunctionGroup, ParseContext, PointGroupTuple
+from ..model import JunctionGroup, ParseContext, PointGroupTuple
 
 
 # METHODS =====================================================================

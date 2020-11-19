@@ -3,7 +3,7 @@ Module for templating
 
 History:
 2020/08/21: v0.0.1
-    + add cartography template with reader
+    + add cartography template with writer
 """
 
 import logging
@@ -25,7 +25,7 @@ class CartographyTemplate:
 
 
 class CartographyTemplateReader:
-    """Template reader (.blend) for cartography"""
+    """Template writer (.blend) for cartography"""
 
     # Fields ------------------------------------------------------------------
     __logger = logging.getLogger('CartographyTemplateReader')

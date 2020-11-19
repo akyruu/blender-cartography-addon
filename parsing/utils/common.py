@@ -8,7 +8,7 @@ from typing import Optional, Tuple
 import mappings
 import utils
 from model import CartographyInterestType, CartographyPoint
-from ..__model import ParseContext
+from ..model import ParseContext
 
 
 # METHODS =====================================================================

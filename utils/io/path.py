@@ -3,14 +3,11 @@ Module for utility path methods
 """
 
 import os
-import sys
 
 
 # METHODS =====================================================================
 def workspace() -> os.path:
-    # FIXME ok for debug only
-    paths = [path for path in sys.path if os.path.basename(path) == 'blender-cartography-addon']
-    return paths[0]
+    return os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..'))
 
 
 def get(path: str) -> os.path:

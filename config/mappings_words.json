@@ -3,7 +3,7 @@
     "OUTLINE": ["Outline", "Contour"],
     "GATE": ["Gate", "Porte", "Entr[ée]e"],
     "ESCARPMENT": ["Escarpment", "Escarpement"],
-    "BASEMENT": ["Basement","Soubassement"],
+    "BASEMENT": ["Basement","Sou(s-)?bassement"],
     "COLUMN": ["Column", "Colonn?e", "Pilier"],
     "COLUMN_BASE": ["Column base", "Base colonn?e", "Base pilier"],
     "CHASM": ["Chasm", "Gouffre"],

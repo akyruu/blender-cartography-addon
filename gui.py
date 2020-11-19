@@ -7,7 +7,7 @@ History:
     + add CSV/TSV import operator
     + add menu item in File > Import
 2020/09/01: v0.0.2
-    + update relating to reader/parser separation
+    + update relating to writer/parser separation
 """
 import logging
 import sys

@@ -9,6 +9,7 @@ class CartographyCategoryType(Enum):
     """Type of CartographyPointCategory"""
     INTEREST = 1
     STRUCTURAL = 2
+    UNKNOWN = 99
 
 
 class CartographyCategory(bytes, Enum):
@@ -37,6 +38,9 @@ class CartographyCategory(bytes, Enum):
     ANTHROPOGENIC_OBJECT = (12, CartographyCategoryType.INTEREST)
     BANK = (13, CartographyCategoryType.INTEREST)
     STRUCTURE = (14, CartographyCategoryType.INTEREST)
+
+    # Others
+    UNKNOWN = (99, CartographyCategoryType.UNKNOWN)
 
 
 class CartographyInterestType(Enum):

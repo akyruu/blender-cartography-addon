@@ -9,7 +9,7 @@ import config
 import mappings
 import utils
 from model import CartographyCategory
-from ..__model import ParseContext
+from ..model import ParseContext
 from ..exception import CartographyParserException
 
 
