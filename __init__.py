@@ -34,7 +34,7 @@ modulesNames = [
     'drawing',
     # Main
     'action',
-    'bca_main',
+    'main',
     # View
     'gui',
 ]
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     # Import modules
     import utils
-    import bca_main
+    import main
 
     # Logging
     workspace = utils.io.path.workspace()
@@ -101,8 +101,6 @@ if __name__ == "__main__":
     )
 
     # Direct launch mode
-    print('Args:', vars(bca_main.args))
-    print('Args:', ', '.join(sys.argv))
-    action = bca_main.args.action
+    action = main.args.action
     if action:
-        bca_main.entry_point(action)
+        main.entry_point(action)

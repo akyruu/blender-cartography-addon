@@ -25,7 +25,9 @@ cartography_point_category = {
     __build_regex(__category_words['GATE'], True): CartographyCategory.GATE,
     __build_regex(__category_words['ESCARPMENT'], True): CartographyCategory.ESCARPMENT,
     __build_regex(__category_words['BASEMENT'], True): CartographyCategory.BASEMENT,
+    __build_regex(__category_words['LANDING'], True): CartographyCategory.LANDING,
     __build_regex(__category_words['COLUMN'], True): CartographyCategory.COLUMN,
+    __build_regex(__category_words['COLUMN_BASE'], True): CartographyCategory.COLUMN_BASE,
     __build_regex(__category_words['CHASM'], True): CartographyCategory.CHASM,
     # Interest
     __build_regex(__category_words['CLIMBING_POINT'], False): CartographyCategory.CLIMBING_POINT,

@@ -1,15 +1,8 @@
 """
-Module for drawing
-
-History:
-2020/08/21: v0.0.1
-    + add cartography drawing
-    + add cartography room drawing (point + plane)
+Module for plane drawer
 """
 
 import logging
-from abc import abstractmethod
-from enum import Enum
 from typing import Dict, List, Optional
 
 import bmesh
@@ -17,167 +10,15 @@ import bpy
 from mathutils import Vector
 
 import config
-import utils
 import mappings
-from model import CartographyGroup, CartographyObjectType, CartographyPoint, CartographyCategory, \
+import utils
+from model import CartographyGroup, CartographyObjectType, CartographyCategory, \
     CartographyCategoryType, CartographyRoom
 from templating import CartographyTemplate
+from .common import CartographyRoomDrawer
 
 
 # Classes =====================================================================
-class CartographyDrawer:
-    """Drawer of cartography"""
-
-    # Fields ------------------------------------------------------------------
-    __logger = logging.getLogger('CartographyDrawer')
-
-    # Constructor -------------------------------------------------------------
-    def __init__(self, template: CartographyTemplate, *room_drawers):
-        self.__template = template
-        self.__room_drawers = room_drawers
-
-    # Methods -----------------------------------------------------------------
-    # Draw
-    def draw(self, room: CartographyRoom):
-        collection = self.__create_collection(room.name)
-        for roomDrawer in self.__room_drawers:
-            roomDrawer.draw(room, collection)
-
-    # Tools
-    def __create_collection(self, name: str) -> bpy.types.Collection:
-        collection = bpy.data.collections.get(name)
-        if collection is not None:
-            self.__logger.debug('Collection <%s> already exists: complete delete', name)
-            self.__remove_collection(collection)
-
-        self.__logger.debug('Create a new collection: <%s>', name)
-        collection = bpy.data.collections.new(name)
-        bpy.context.scene.collection.children.link(collection)
-        return collection
-
-    def __remove_collection(self, collection: bpy.types.Collection):
-        # FIXME remove objects in collection not working (remove template object too)
-        # objects = [object for object in collection.objects \
-        #         if object.users == 1 and object not in self.__template.objects]
-        # while objects:
-        #     bpy.data.objects.remove(objects.pop())
-        bpy.data.collections.remove(collection)
-
-
-class CartographyRoomDrawer:
-    """Abstract drawer of room for cartography"""
-
-    # Fields ------------------------------------------------------------------
-    __logger = logging.getLogger('CartographyRoomDrawer')
-
-    # Constructor -------------------------------------------------------------
-    def __init__(self, template: CartographyTemplate):
-        self._template = template
-
-    # Methods -----------------------------------------------------------------
-    # Draw
-    @abstractmethod
-    def draw(self, room: CartographyRoom, collection: bpy.types.Collection):
-        pass
-
-    # Tools
-    @staticmethod
-    def _create_object(name: str, location: Vector, template: bpy.types.Object, collection: bpy.types.Collection) \
-            -> bpy.types.Object:
-        obj = template.copy()
-        obj.name = name
-        obj.location = location
-        collection.objects.link(obj)
-        return obj
-
-    def _get_template_object(self, enum: Enum, enum_type: str) -> bpy.types.Object:
-        template = self._template.objects.get(enum, None)
-        if template is None:
-            self.__logger.warning('Template not found for %s <%s>', enum_type, enum.name)
-        return template
-
-
-class CartographyStructuralPointDrawer(CartographyRoomDrawer):
-    """Drawer of structural points in room for cartography"""
-
-    # Fields ------------------------------------------------------------------
-    __logger = logging.getLogger('CartographyStructuralPointDrawer')
-
-    # Constructor -------------------------------------------------------------
-    def __init__(self, template):
-        CartographyRoomDrawer.__init__(self, template)
-
-    # Methods -----------------------------------------------------------------
-    # Draw
-    def draw(self, room: CartographyRoom, collection: bpy.types.Collection):
-        for point in [p for p in room.all_points if
-                      not p.copy and p.category.type == CartographyCategoryType.STRUCTURAL]:
-            self.__draw_point(point, collection)
-
-    def __draw_point(self, point: CartographyPoint, collection):
-        template = self._get_template_object(point.category, 'category')
-        if template is None:
-            return
-        self._create_object(point.name, point.location, template, collection)
-
-
-class CartographyInterestPointDrawer(CartographyRoomDrawer):
-    """Drawer of interest points in room for cartography"""
-
-    # Fields ------------------------------------------------------------------
-    __logger = logging.getLogger('CartographyInterestPointDrawer')
-
-    # Constructor -------------------------------------------------------------
-    def __init__(self, template):
-        CartographyRoomDrawer.__init__(self, template)
-
-    # Methods -----------------------------------------------------------------
-    # Draw
-    def draw(self, room: CartographyRoom, collection: bpy.types.Collection):
-        for point in [p for p in room.all_points if p.category.type == CartographyCategoryType.INTEREST]:
-            if point.category == CartographyCategory.ANTHROPOGENIC_OBJECT:
-                self.__draw_anthropogenic_object(point, collection)
-            else:
-                self.__draw_other(point, collection)
-
-    def __draw_anthropogenic_object(self, point: CartographyPoint, collection: bpy.types.Collection):
-        # Check point
-        if point.interest is None:
-            self.__logger.warning('An interest required for anthropic object point type: %s (Ignored)', str(point))
-            return
-
-        # Get template
-        template = self._get_template_object(point.interest[0], 'interest type')
-        if template is None:
-            return
-
-        # Create objects
-        z = point.location.z
-        for i in range(point.interest[1]):
-            obj = self._create_object(point.name, Vector((point.location.x, point.location.y, z)), template, collection)
-            z += obj.dimensions.z  # noqa
-        return
-
-    def __draw_other(self, point: CartographyPoint, collection: bpy.types.Collection):
-        # Get template and create point
-        template = self._get_template_object(point.category, 'category')
-        if template is None:
-            return
-        obj = self._create_object(point.name, point.location, template, collection)
-
-        # Icon
-        if point.interest is not None:
-            # Get icon template
-            template = self._get_template_object(point.interest[0], 'interest type')
-            if template is None:
-                return
-
-            # Create image
-            name = obj.name + '_icon'
-            z = obj.location.z + obj.dimensions.z  # noqa
-            self._create_object(name, Vector((obj.location.x, obj.location.y, z)), template, collection)  # noqa
-
-
 class CartographyPlaneDrawer(CartographyRoomDrawer):
     """Drawer of points in room for cartography"""
 
@@ -212,7 +53,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
 
         # Create object
         name = room.name + '_plane'
-        obj = self._create_object(name, Vector((0, 0, 0)), template, collection)
+        obj = utils.blender.object.create(name, Vector((0, 0, 0)), template, collection)
 
         # Update mesh
         self.__update_mesh(room, obj)
@@ -396,12 +237,3 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
     def __one_edge_above_the_other(edge1: bmesh.types.BMEdge, edge2: bmesh.types.BMEdge):
         return edge1.verts[0].co.x == edge2.verts[0].co.x and edge1.verts[0].co.y == edge2.verts[0].co.y \
                and edge1.verts[1].co.x == edge2.verts[1].co.x and edge1.verts[1].co.y == edge2.verts[1].co.y
-
-
-# [UN]REGISTER ================================================================
-__classes__ = (
-    # CartographyDrawer,
-    # CartographyRoomDrawer,
-    # CartographyPointDrawer,
-    # CartographyPlaneDrawer,
-)

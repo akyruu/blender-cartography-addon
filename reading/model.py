@@ -111,6 +111,6 @@ class ReadContext:
 
     def __init__(self, separator: str, logger: Logger):
         self.separator = separator
-        self.row: int = 0
-        self.column: int = 0
+        self.row: int = 1
+        self.column: int = 1
         self.logger: Logger = logger

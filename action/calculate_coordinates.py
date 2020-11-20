@@ -10,11 +10,21 @@ from reading import CartographyCsvReader, CartographyFile, CartographyFileSide, 
 from writing import CartographyCsvWriter, CartographyTsvWriter
 
 # VARIABLES ===================================================================
-__logger = logging.getLogger('calculate_coordinates')
+name = 'calculate_coordinates'
+__logger = logging.getLogger(name)
 
 
 # METHODS =====================================================================
-def calculate_coordinates(filepath: os.path, target_path: os.path):
+def entry_point(args: any):
+    file = args.file
+    if not file:
+        raise Exception('A file required for action <{}>'.format(name))
+
+    target_path = args.output if args.output else file
+    execute(file, target_path)
+
+
+def execute(filepath: os.path, target_path: os.path):
     """Read a CSV file, calculate coordinates and update the CSV file"""
     __logger.info('Calculation of coordinates start...')
     file = __read_csv_file(filepath)

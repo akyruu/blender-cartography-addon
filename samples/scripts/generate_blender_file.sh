@@ -7,11 +7,11 @@ fi
 
 action="generate_blender_file";
 file=$1;
-export=${file/%.tsv/.blend};
-export=${export/%.csv/.blend};
-export=${export/files/generated};
+output=${file/%.tsv/.blend};
+output=${output/%.csv/.blend};
+output=${output/files/generated};
 
 echo "Launch python script in blender"
-echo "Parameters: action=$action, file=$file, export=$export"
+echo "Parameters: action=$action, file=$file, output=$output"
 blender --background --python samples/blender-cartography-addon-exec.py --\
-  -a $action -f $file -e $export
+  -a $action -f $file -o $output

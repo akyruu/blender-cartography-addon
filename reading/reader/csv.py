@@ -78,7 +78,7 @@ class CartographyCsvReader(CartographyReader):
         if self.__header_info < 0 and read_utils.line.check(self.__context, line, 'header', [
             'position, de 2', '', 'scribe 1', 'scribe 2', '', 'explorateur'
         ], False):
-            self.__logger.debug('Header of information found!')
+            self.__logger.debug('Header of information found: <%d>', self.__context.row)
             self.__header_info = 0
         elif read_utils.line.check(self.__context, line, 'header', [
             'point :',
@@ -86,13 +86,13 @@ class CartographyCsvReader(CartographyReader):
             'Distance (à|to) S1',
             'Distance (à|to) S2',
             '(Hauteur|Height)',
-            'Observations?', '', '',
-            'Y', '',
+            '(Observations?)', '', '',
             'X', '',
+            'Y', '',
             'Z', '', '', '', '',
             'Adjacent \\(Y\\)'
         ], False):
-            self.__logger.debug('Header of point table found!')
+            self.__logger.debug('Header of point table found: <%d>', self.__context.row)
             self.__header = False
 
     def __read_header_info(self, line: str) -> bool:
@@ -107,9 +107,17 @@ class CartographyCsvReader(CartographyReader):
         ]
         matches = read_utils.line.check(self.__context, line, 'header', patterns, False)
         if not matches:
+            self.__logger.warning('Header information line <%d> not match with excepted pattern', self.__context.row)
+            self.__logger.debug(
+                'Header information line <%d> not match with expected pattern:\n\tpattern=<%s>\n\tline=<%s>',
+                self.__context.row,
+                utils.io.file.format_line_for_logging(self.__context.separator.join(patterns)),
+                utils.io.file.format_line_for_logging(line)
+            )
+            self.__header_info = 99
             return False
 
-        self.__logger.debug('Header information line found: #%d', self.__context.row)
+        self.__logger.debug('Header information line found: <%d>', self.__context.row)
         info = CartographyFileInfo(self.__context.row, line)
         info.s1s2_distance = int(matches[1].group(0))
         info.scribes1 = matches[2].group(0).split(', ?')
@@ -129,11 +137,11 @@ class CartographyCsvReader(CartographyReader):
             '([0-9]+)?',  # Distance to S1 (2)
             '([0-9]+)?',  # Distance to S2 (3)
             '-?([0-9]+)?',  # Height (4)
-            '([A-Za-z0-9].+)', '', '',  # Observations (5)
-            '-?[0-9]+', '',  # Y (8)
-            '-?[0-9]+', '',  # X (10)
-            '-?[0-9]+', '', '', '', '',  # Z (12)
-            '(.+)?'  # Adjacent Y (17)
+            '([A-Za-z0-9].+)', '',  # Observations (5)
+            '(-?[0-9]+)?', '-?[0-9]+',  # calc + X (8)
+            '(-?[0-9]+)?', '-?[0-9]+',  # calc + Y (10)
+            '', '-?[0-9]+',  # Z (12)
+            '', '', '', '', '(.+)?'  # Adjacent Y (17)
         ]
         matches = read_utils.line.check(self.__context, line, 'point', patterns, False)
         if not matches:
@@ -186,8 +194,15 @@ class CartographyCsvReader(CartographyReader):
 
         # Determine observations
         observations = matches[5].group(0)
-        if observations:
-            point.observations = [o.strip() for o in observations.split(config.obs_separator)]
+        if not observations and not observations.strip():
+            raise CartographyReaderException(
+                self.__context.row,
+                self.__context.column,
+                '',
+                'point observations',
+                'not_blank'
+            )
+        point.observations = [o.strip() for o in observations.split(config.obs_separator)]
 
         # Add line to file
         self.__logger.debug('Add point line to file: %s', str(point))

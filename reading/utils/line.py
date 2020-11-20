@@ -37,27 +37,28 @@ def check(context: ReadContext, line: str, line_type: str, patterns: list, stric
             )
         return None
     elif data_count > count and not ignore_reduced:
-        context.logger.warning('Data ignored for line "<%d>": ' + str(data_count - count) + ' column(s) ignored')
+        context.logger.warning('Data ignored for line <%d>: <%d> column(s) ignored', context.row, data_count - count)
         context.logger.debug(
-            'Data ignored for line "<%d>":\n\tcurrent: [count: <%d>, data: <%s>]\n\texpected: [count: <%d>, data: <%s>]',
-            context.row, data_count, ', '.join(data), count, ', '.join(patterns)
+            'Data ignored for line <%d> (case insensitive):'
+            '\n\tpattern: [count: <%d>, data: <%s>]'
+            '\n\tline: [count: <%d>, data: <%s>]',
+            context.row,
+            count, utils.io.file.format_line_for_logging(context.separator.join(patterns)),
+            data_count, utils.io.file.format_line_for_logging(context.separator.join(data))
         )
 
     # Check data
-    print('########')
     for i in range(count):
         context.column = i + 1
         pattern = patterns[i] if patterns[i] else '^$'
         value = data[i]
         m = utils.string.match_ignore_case(pattern, value)
-        print(pattern, '/', value, '->', m)
         if m is None:
             if strict:
                 raise CartographyReaderException(context.row, context.column, value, line_type, pattern)
             return None
         matches.append(m)
 
-    print('---------')
     return matches
 
 

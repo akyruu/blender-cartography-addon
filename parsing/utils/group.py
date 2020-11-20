@@ -3,7 +3,7 @@ Module for treat groups
 """
 
 import re
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 import config
 import utils
@@ -31,8 +31,8 @@ def find_group(
     return groups[0] if count == 1 else None
 
 
-def get_or_create_group(context: ParseContext, point: CartographyFilePoint) -> CartographyGroup:
-    name, category = determinate_group_name_category(context, point)
+def get_or_create_group(context: ParseContext, observations: List[str]) -> CartographyGroup:
+    name, category = __determinate_group_name_category(context, observations)
     group = context.room.groups.get(name, None)
     if not group:
         if category.outline:
@@ -49,29 +49,34 @@ def get_or_create_group(context: ParseContext, point: CartographyFilePoint) -> C
     return group
 
 
-def determinate_group_name_category(context, point: CartographyFilePoint) -> Tuple[str, CartographyCategory]:
-    observations = ', '.join(point.observations)
-    categories = category_utils.parse_point_categories(observations)
+def __determinate_group_name_category(context, observations: List[str]) -> Tuple[str, CartographyCategory]:
+    categories = category_utils.parse_categories(observations)
     if len(categories) == 0:
         category = CartographyCategory.UNKNOWN
-        cat_match = utils.string.match_ignore_case('.*', category.name)
-        context.logger.warning('Category not found in <%s>. Use category: <%s>', observations, category.name)
+        name = category.name
+        context.logger.warning(
+            'Category not found in <%s>. Use category: <%s>',
+            config.obs_separator.join(observations), category.name
+        )
     elif len(categories) > 1:
         category_types = [c for c, m in categories]
         if CartographyCategory.OUTLINE in category_types and CartographyCategory.GATE in category_types:
-            category, cat_match = next((c, m) for c, m in categories if c == CartographyCategory.OUTLINE)
+            category = CartographyCategory.OUTLINE
+            name = category.name
         else:
             category, cat_match = categories[0]
+            name = cat_match.group(0)
         context.logger.warning(
             'Group - Multiple category found: <%s>. Use category: <%s> (observations: <%s>)',
             ','.join([c.name for c, m in categories]),
             category.name,
-            observations
+            config.obs_separator.join(observations)
         )
     else:
         category, cat_match = categories[0]
+        name = CartographyCategory.OUTLINE.name.capitalize() if category.outline else cat_match.group(0)
 
-    return cat_match.group(0), category
+    return name, category
 
 
 def match_category_in_observation(pattern: str, value: str) -> re.Match:

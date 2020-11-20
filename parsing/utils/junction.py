@@ -61,7 +61,9 @@ def update_groups_for_junctions(context: ParseContext):
 
 def __check_junction(context: ParseContext, junction: JunctionGroup):
     if junction.end is None:
-        raise CartographyParserException(context.row, junction.group.name, 'junction', '2 junctions: start and end')
+        context.logger.warning('No end found for junction group <%s>. Use the start point', junction.group.name)
+        junction.end = junction.start
+        # raise CartographyParserException(context.row, junction.group.name, 'junction', '2 junctions: start and end')
     elif junction.start.point == junction.end.point:
         raise CartographyParserException(
             context.row,

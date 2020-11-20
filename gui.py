@@ -15,7 +15,7 @@ import sys
 import bpy
 import bpy_extras
 
-import bca_main
+import main
 
 
 # Classes =====================================================================
@@ -27,7 +27,7 @@ class CartographyCsvImportAction:
         self.filepath = filepath
 
     def execute(self):
-        bca_main.read_csv_file(self.filepath)
+        main.read_csv_file(self.filepath)
 
 
 # Actions ---------------------------------------------------------------------

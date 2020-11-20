@@ -8,15 +8,11 @@ from typing import Optional, Tuple
 import mappings
 import utils
 from model import CartographyInterestType, CartographyPoint
-from ..model import ParseContext
 
 
 # METHODS =====================================================================
-def check_interest(
-        context: ParseContext,
-        value: str,
-        dft_value: Optional[Tuple[CartographyInterestType, int]] = None
-) -> Tuple[Optional[CartographyInterestType], int]:
+def check_interest(value: str, dft_value: Optional[Tuple[CartographyInterestType, int]] = None) \
+        -> Tuple[Optional[CartographyInterestType], int]:
     for pattern, interest in mappings.cartography_interest_type.items():
         # FIXME '(([0-9]+) )?' not working :(
         m = utils.string.match_ignore_case('([0-9]+) ' + pattern, value, False)

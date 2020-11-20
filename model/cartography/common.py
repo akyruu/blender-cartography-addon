@@ -29,8 +29,13 @@ class CartographyCategory(bytes, Enum):
     GATE = (2, CartographyCategoryType.STRUCTURAL, True)
     ESCARPMENT = (3, CartographyCategoryType.STRUCTURAL)
     BASEMENT = (4, CartographyCategoryType.STRUCTURAL)
-    COLUMN = (5, CartographyCategoryType.STRUCTURAL, False, 5, False)
-    CHASM = (6, CartographyCategoryType.STRUCTURAL, False, -5, True)
+    LANDING = (5, CartographyCategoryType.STRUCTURAL)
+    COLUMN = (6, CartographyCategoryType.STRUCTURAL, False, 5, False)
+    COLUMN_BASE = (7, CartographyCategoryType.STRUCTURAL)
+    CHASM = (8, CartographyCategoryType.STRUCTURAL, False, -5, True)
+
+    # TODO Structural and interest
+    RECESS = (9, CartographyCategoryType.STRUCTURAL)
 
     # Interest
     CLIMBING_POINT = (10, CartographyCategoryType.INTEREST)
