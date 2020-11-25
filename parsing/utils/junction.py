@@ -33,7 +33,7 @@ def __determinate_junction(context: ParseContext, ext_point: CartographyPoint, e
     category, cat_match = category_utils.parse_point_category(context, partial_name)
 
     # Search group
-    int_group = group_utils.find_group(context, partial_name, category, context.room)
+    int_group = group_utils.find(context, partial_name, category, context.room)
     if not int_group:
         context.logger.warning('Junction group <%s> not found for point <%s>', partial_name, ext_point.name)
         return

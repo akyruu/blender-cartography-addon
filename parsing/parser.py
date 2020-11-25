@@ -56,7 +56,7 @@ class CartographyParser:
             point.observations = [observation]
 
             # Get or create group
-            group = parse_utils.group.get_or_create_group(self.__context, point.observations)
+            group = parse_utils.group.get_or_create(self.__context, point.observations)
 
             # Determine category and interest type
             point.category = CartographyCategory.UNKNOWN

@@ -9,17 +9,12 @@ import config
 import utils
 from model import CartographyCategory, CartographyGroup, CartographyRoom
 from parsing.model import ParseContext
-from reading import CartographyFilePoint
 from . import category as category_utils
 
 
 # METHODS =====================================================================
-def find_group(
-        context: ParseContext,
-        partial_name: str,
-        category: CartographyCategory,
-        room: CartographyRoom
-) -> Optional[CartographyGroup]:
+def find(context: ParseContext, partial_name: str, category: CartographyCategory, room: CartographyRoom) \
+        -> Optional[CartographyGroup]:
     groups = [
         g for g in room.groups.values()
         if g.category == category and utils.string.match_ignore_case(partial_name, g.name, False)
@@ -31,7 +26,7 @@ def find_group(
     return groups[0] if count == 1 else None
 
 
-def get_or_create_group(context: ParseContext, observations: List[str]) -> CartographyGroup:
+def get_or_create(context: ParseContext, observations: List[str]) -> CartographyGroup:
     name, category = __determinate_group_name_category(context, observations)
     group = context.room.groups.get(name, None)
     if not group:
@@ -74,9 +69,9 @@ def __determinate_group_name_category(context, observations: List[str]) -> Tuple
         )
     else:
         category, cat_match = categories[0]
-        name = CartographyCategory.OUTLINE.name.capitalize() if category.outline else cat_match.group(0)
+        name = CartographyCategory.OUTLINE.name if category.outline else cat_match.group(0)
 
-    return name, category
+    return name.strip().capitalize(), category
 
 
 def match_category_in_observation(pattern: str, value: str) -> re.Match:
