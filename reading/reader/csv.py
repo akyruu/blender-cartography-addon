@@ -152,7 +152,7 @@ class CartographyCsvReader(CartographyReader):
                     self.__context.column,
                     line,
                     'point',
-                    '|'.join(patterns)
+                    self.__context.separator.join(patterns)
                 )
             read_utils.line.ignore(self.__context, line)
             return

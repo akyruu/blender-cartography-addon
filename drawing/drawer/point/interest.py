@@ -47,8 +47,9 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
         # Create objects
         z = point.location.z
         for i in range(point.interest[1]):
-            obj = utils.blender.object.create(point.name, Vector((point.location.x, point.location.y, z)), template,
-                                              collection)
+            location = Vector((point.location.x, point.location.y, z))
+            obj = utils.blender.object.create(point.get_label(), location, template, collection)
+
             z += obj.dimensions.z  # noqa
         return
 
@@ -57,7 +58,7 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
         template = self._get_template_object(point.category, 'category')
         if template is None:
             return
-        obj = utils.blender.object.create(point.name, point.location, template, collection)
+        obj = utils.blender.object.create(point.get_label(), point.location, template, collection)
 
         # Icon
         if point.interest is not None:

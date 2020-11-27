@@ -1,1 +1,1 @@
-from . import collection, io, meshing, object, scene
+from . import bmesh, collection, io, mesh, object, scene

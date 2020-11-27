@@ -59,7 +59,7 @@ def parse_point_category(
         context: ParseContext,
         values: List[str] or str,
         dft_value: Optional[CartographyCategory] = None,
-        categories_to_ignore: List[CartographyCategory] = ()
+        categories_to_ignore: List[CartographyCategory] = []  # noqa
 ) -> Tuple[CartographyCategory, Optional[re.Match]]:
     """
     Get the first category that match with value.

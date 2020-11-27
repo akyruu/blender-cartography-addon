@@ -1,41 +1,44 @@
 """
 Module for common cartography models
 """
-from enum import Enum
+from enum import Enum, Flag, auto
 
 
 # CLASSES =====================================================================
-class CartographyCategoryType(Enum):
-    """Type of CartographyPointCategory"""
-    INTEREST = 1
-    STRUCTURAL = 2
-    UNKNOWN = 99
+class CartographyCategoryType(Flag):
+    """Type of CartographyCategory"""
+    INTEREST = auto()
+    STRUCTURAL = auto()
+    UNKNOWN = auto()
 
 
 class CartographyCategory(bytes, Enum):
     """Category of cartography group or points"""
 
-    def __new__(cls, value: str, cat_type: CartographyCategoryType, outline=False, level=0, top_face=False):
+    # TODO outline/level/top_face only used for structural
+    def __new__(
+            cls, value: str, cat_type: CartographyCategoryType,  # required
+            outline=False, level=0, ground=False  # options
+    ):
         obj = bytes.__new__(cls, [value])  # noqa
         obj._value_ = value
         obj.type = cat_type
         obj.outline = outline
         obj.level = level
-        obj.top_face = top_face
+        obj.ground = ground
         return obj
 
     # Structural
-    OUTLINE = (1, CartographyCategoryType.STRUCTURAL, True)
-    GATE = (2, CartographyCategoryType.STRUCTURAL, True)
-    ESCARPMENT = (3, CartographyCategoryType.STRUCTURAL)
-    BASEMENT = (4, CartographyCategoryType.STRUCTURAL)
-    LANDING = (5, CartographyCategoryType.STRUCTURAL)
-    COLUMN = (6, CartographyCategoryType.STRUCTURAL, False, 5, False)
-    COLUMN_BASE = (7, CartographyCategoryType.STRUCTURAL)
-    CHASM = (8, CartographyCategoryType.STRUCTURAL, False, -5, True)
+    OUTLINE = (1, CartographyCategoryType.STRUCTURAL, True, 2, True)  # outline
+    GATE = (2, CartographyCategoryType.STRUCTURAL, True)  # outline
+    ESCARPMENT = (3, CartographyCategoryType.STRUCTURAL, False, 0, True)  # leveled
+    BASEMENT = (4, CartographyCategoryType.STRUCTURAL, False, 0, True)  # leveled
+    LANDING = (5, CartographyCategoryType.STRUCTURAL, False, 0, True)  # leveled
+    COLUMN = (6, CartographyCategoryType.STRUCTURAL, False, 5)  # extruded
+    COLUMN_BASE = (7, CartographyCategoryType.STRUCTURAL, False, 0, True)  # leveled
+    CHASM = (8, CartographyCategoryType.STRUCTURAL, False, -5, True)  # extruded
 
-    # TODO Structural and interest
-    RECESS = (9, CartographyCategoryType.STRUCTURAL)
+    RECESS = (9, CartographyCategoryType.STRUCTURAL & CartographyCategoryType.INTEREST)
 
     # Interest
     CLIMBING_POINT = (10, CartographyCategoryType.INTEREST)

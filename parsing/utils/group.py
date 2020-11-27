@@ -69,7 +69,11 @@ def __determinate_group_name_category(context, observations: List[str]) -> Tuple
         )
     else:
         category, cat_match = categories[0]
-        name = CartographyCategory.OUTLINE.name if category.outline else cat_match.group(0)
+        if category.outline:
+            category = CartographyCategory.OUTLINE
+            name = CartographyCategory.OUTLINE.name
+        else:
+            name = cat_match.group(0)
 
     return name.strip().capitalize(), category
 

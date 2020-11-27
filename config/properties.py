@@ -1,2 +1,2 @@
 obs_separator = ','  # Separator for observations
-outline_z = 1  # Size of walls for outline
+max_climbing_height = 1  # Max size for a climbing wall

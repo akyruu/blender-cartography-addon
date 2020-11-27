@@ -12,7 +12,7 @@ import config
 import mappings
 import utils
 from drawing.drawer.common import CartographyRoomDrawer
-from model import CartographyObjectType, CartographyCategoryType, CartographyRoom
+from model import CartographyObjectType, CartographyCategory, CartographyCategoryType, CartographyRoom
 from templating import CartographyTemplate
 from . import utils as plane_utils
 from .model import CartographyPlaneContext
@@ -63,12 +63,12 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
         self.__logger.debug('Update mesh initialization...')
 
         # Get mesh instance
-        self.__context.mesh = utils.blender.meshing.obj_get_mesh(obj)
+        self.__context.mesh = utils.blender.object.get_mesh(obj)
         self.__context.mat_wall_index = self.__get_or_create_material(mappings.cartography_mat_wall)
         self.__context.mat_climbing_index = self.__get_or_create_material(mappings.cartography_mat_climbing)
 
         # Get bmesh instance
-        bm = self.__context.bmesh = utils.blender.meshing.bmesh_from_mesh(self.__context.mesh)
+        bm = self.__context.bmesh = utils.blender.mesh.edit(self.__context.mesh)
 
         # Delete all vertices
         bmesh.ops.delete(bm, geom=bm.verts)  # noqa
@@ -103,7 +103,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
             # Determine the number of levels
             levels = 1
             for v in vertices:
-                levels = max(len([v0 for v0 in vertices if v0.co.x == v.co.x and v0.co.y == v.co.y]), levels)
+                levels = max(len([v0 for v0 in vertices if utils.blender.bmesh.vert.same_2d_position(v0, v)]), levels)
             self.__logger.info('<%d> levels of vertices found for group <%s>', levels, group.name)
 
             if levels == 2:
@@ -163,7 +163,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
 
         # Level outline edges
         outline_edges = [e for e in self.__context.outline_edges if e not in self.__context.gate_edges]
-        max_z = max(self.__context.edges_by_z.keys()) + config.outline_z
+        max_z = max(self.__context.edges_by_z.keys()) + CartographyCategory.OUTLINE.level
         for z, edges in self.__context.edges_by_z.items():
             edges = [e for e in edges if e in outline_edges]
             if len(edges) > 0:
@@ -174,7 +174,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
             (g, e) for g, e in self.__context.edges_by_group.items()
             if not g.category.outline and g.category.level and len(e) > 2
         ]:
-            plane_utils.edge.level(self.__context, edges, group.category.level, group.category.top_face,
+            plane_utils.edge.level(self.__context, edges, group.category.level, group.category.ground,
                                    self.__context.mat_wall_index)
 
     def __update_mesh_end(self):
@@ -183,7 +183,7 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
 
     def __update_mesh_apply(self):
         self.__logger.debug('Update mesh apply...')
-        utils.blender.meshing.bmesh_to_mesh(self.__context.bmesh, self.__context.mesh)
+        utils.blender.mesh.update(self.__context.bmesh, self.__context.mesh)
 
     # Method - Tools
     def __get_or_create_material(self, mat_name: str) -> int:
@@ -195,5 +195,5 @@ class CartographyPlaneDrawer(CartographyRoomDrawer):
 
     @staticmethod
     def __one_edge_above_the_other(edge1: bmesh.types.BMEdge, edge2: bmesh.types.BMEdge):
-        return edge1.verts[0].co.x == edge2.verts[0].co.x and edge1.verts[0].co.y == edge2.verts[0].co.y \
-               and edge1.verts[1].co.x == edge2.verts[1].co.x and edge1.verts[1].co.y == edge2.verts[1].co.y
+        return utils.blender.bmesh.vert.same_2d_position(edge1.verts[0], edge2.verts[0]) \
+               and utils.blender.bmesh.vert.same_2d_position(edge1.verts[1], edge2.verts[1])

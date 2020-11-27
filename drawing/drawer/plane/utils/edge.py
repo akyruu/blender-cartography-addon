@@ -54,18 +54,17 @@ def level(
     bm = context.bmesh
 
     # Extrude edges
-    extruded = utils.blender.meshing.bmesh_extrude(bm, edges)
+    extruded = utils.blender.bmesh.ops.extrude(bm, edges)
 
-    translate_vertices = [v for v in extruded if isinstance(v, bmesh.types.BMVert)]
-    bmesh.ops.translate(bm, vec=(0, 0, z), verts=translate_vertices)  # noqa
+    bmesh.ops.translate(bm, vec=(0, 0, z), verts=extruded.vertices)  # noqa
 
     # Apply material for extruded faces
     if mat_index is not None:
-        created_faces = [v for v in extruded if isinstance(v, bmesh.types.BMFace)]
+        created_faces = extruded.faces
         for face in created_faces:
             face.material_index = mat_index
 
     # Create faces of extrude part
     if top_face:
-        translate_edges = [e for e in extruded if isinstance(e, bmesh.types.BMEdge)]
+        translate_edges = extruded.edges
         face_utils.create(context, translate_edges)

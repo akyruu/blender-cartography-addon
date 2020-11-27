@@ -1,45 +1,89 @@
 """
-Module for utility list (List) methods
+Module for utility list methods
 """
 
-from typing import Iterator, List, Optional, Tuple, Union
+from typing import Callable, Iterator, List, Optional, Tuple, Union
 
-from utils.common import T
+from utils.common import T, Predicate
+
+# TYPES =======================================================================
+DynamicIndex = Union[Predicate, Tuple[Predicate, int]]
+StaticIndex = Union[int, Tuple[T, int], T]
+GenericIndex = Union[DynamicIndex, StaticIndex]
 
 
 # METHODS =====================================================================
+def contains_all(lst: List[T], sub_lst: List[T]) -> bool:
+    return inext(e for e in sub_lst if e not in lst) is None
+
+
 def get_last(lst: List[T]) -> Optional[T]:
     """Get last item in list"""
     return lst[-1] if lst and len(lst) > 0 else None
 
 
-def inext(iterator: Iterator[T], dft_value: Optional[T] = None) -> Optional[T]:
+def inext(iterator: Iterator[T], dft_value: Optional[T] = None) -> Optional[T]:  # noqa
     try:
         return next(iterator)
     except StopIteration:
         return dft_value
 
 
-def reverse(lst: List[T]) -> List[T]:
-    lst.reverse()
-    return lst
+def pnext(lst: List[T], predicate: Predicate, dft_value: Optional[T] = None) -> Optional[T]:  # noqa
+    return inext((e for e in lst if predicate(e)), dft_value)
 
 
-def sublist(
-        lst: List[T],
-        start: Union[int, Tuple[T, int], T],
-        end: Union[int, Tuple[T, int], T, None] = None
-) -> List[T]:
-    start_index = max(__sublist_index(lst, start, 0), 0)
-    end_index = min(__sublist_index(lst, end, len(lst)), len(lst))
-    return lst[start_index:end_index]
+# Extraction ------------------------------------------------------------------
+def sublist(lst: List[T], start: StaticIndex, end: Optional[StaticIndex] = None) -> List[T]:
+    return lst[__start_index(lst, start):__end_index(lst, end)]
 
 
-def __sublist_index(lst: List[T], idx: Union[int, Tuple[T, int], T, None], dft: int):
-    if not idx:
+# Finding
+def find_sublist(lst: List[T], start: DynamicIndex, end: Optional[DynamicIndex] = None) -> List[T]:
+    return lst[__start_index(lst, start):__end_index(lst, end)]
+
+
+# Insertion -------------------------------------------------------------------
+def insert_values(lst: List[T], start: int, values: List[T]):
+    i = start
+    for e in values:
+        lst.insert(i, e)
+        i += 1
+
+
+# Removing --------------------------------------------------------------------
+def remove_values(lst: List[T], values: List[T]):
+    for value in values:
+        lst.remove(value)
+
+
+def remove_sublist(lst: List[T], start: StaticIndex, end: Optional[StaticIndex] = None):
+    start_index = __start_index(lst, start)
+    for i in range(start_index, __end_index(lst, end)):
+        lst.pop(start_index)
+
+
+def remove_duplicates(lst: List[T]) -> List[T]:
+    return list(dict.fromkeys(lst))
+
+
+# METHODS - INTERNAL ==========================================================
+def __start_index(lst: List[T], start: GenericIndex) -> int:
+    return max(__determine_index(lst, start, 0), 0)
+
+
+def __end_index(lst: List[T], end: Optional[GenericIndex]) -> int:
+    return min(__determine_index(lst, end, len(lst)), len(lst))
+
+
+def __determine_index(lst: List[T], dyn_index: Optional[GenericIndex], dft: int):
+    if not dyn_index:
         return dft
-    elif isinstance(idx, int):
-        return idx
-    elif isinstance(idx, Tuple):
-        return lst.index(idx[0]) + idx[1]
-    return lst.index(idx)
+    elif isinstance(dyn_index, int):
+        return dyn_index
+    elif isinstance(dyn_index, Tuple):
+        dyn_index, added = dyn_index
+        return __determine_index(lst, dyn_index, dft) + added
+    elif isinstance(dyn_index, Callable):
+        return lst.index(inext(e for e in lst if dyn_index(e)))
+    return lst.index(dyn_index)

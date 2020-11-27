@@ -82,7 +82,7 @@ class CartographyFilePoint(CartographyFileLine):
             row: int,
             text: str,
             location: Vector = Vector((0, 0, 0)),
-            observations: List[str] = (),
+            observations: List[str] = None,
             point_name: str = '',
             side: CartographyFileSide = None,
             s1_distance: int = 0,
@@ -91,7 +91,7 @@ class CartographyFilePoint(CartographyFileLine):
     ):
         CartographyFileLine.__init__(self, row, text)
         self.location = location
-        self.observations = observations
+        self.observations = observations or []
         self.point_name = point_name
         self.side = side
         self.s1_distance = s1_distance

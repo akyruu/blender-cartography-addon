@@ -9,17 +9,17 @@ point 4	D	15	73		Contour 2		1	15	-1,457142857	-1		0
 point 5	D	24	73	-1.5	Contour 3 (affaissement 0,5m pour se cacher)		1	24	1,05	1		-1.5					
 point 6	D	26	71		Contour 4		1	26	3,821428571	4		0					
 point 7	D	28	68	1	Contour 5, base colonne 1 (point 1)		1	27	7,571428571	8		1					
-point 8	D	28	68		Contour 5, base colonne 1 (point 1)		1	27	7,571428571	8		0					
-point 9	D	32	59	1	Contour 6, base colonne 1 (point 2)		1	27	17,45	17		1					
-point 10	D	32	59		Contour 6, base colonne 1 (point 2)		1	27	17,45	17		0					
-point 11	D	23	67	1	Base colonne 1 (point 3)		1	22	6,714285714	7		1					
-point 12	D	23	67		Base colonne 1 (point 3)		1	22	6,714285714	7		0					
-point 13	D	19	62	1	Base colonne 1 (point 4)		1	16	10,12142857	10		1					
-point 14	D	19	62		Base colonne 1 (point 4)		1	16	10,12142857	10		0					
-point 15	D	27	55	1	Base colonne 1 (point 5)		1	20	18,6	19		1					
-point 16	D	27	55		Base colonne 1 (point 5)		1	20	18,6	19		0					
-point 17	D	30	56	1	Base colonne 1 (point 6)		1	23	19,02857143	19		1					
-point 18	D	30	56		Base colonne 1 (point 6)		1	23	19,02857143	19		0					
+point 8	D	28	68		Contour 5, base colonne 1 (point 1)		1	27	7,571428571	8		0
+point 9	D	23	67	1	Base colonne 1 (point 2)		1	22	6,714285714	7		1
+point 10	D	23	67		Base colonne 1 (point 2)		1	22	6,714285714	7		0
+point 11	D	19	62	1	Base colonne 1 (point 3)		1	16	10,12142857	10		1
+point 12	D	19	62		Base colonne 1 (point 3)		1	16	10,12142857	10		0
+point 13	D	27	55	1	Base colonne 1 (point 4)		1	20	18,6	19		1
+point 14	D	27	55		Base colonne 1 (point 4)		1	20	18,6	19		0
+point 15	D	30	56	1	Base colonne 1 (point 5)		1	23	19,02857143	19		1
+point 16	D	30	56		Base colonne 1 (point 5)		1	23	19,02857143	19		0
+point 17	D	32	59	1	Contour 6, base colonne 1 (point 6)		1	27	17,45	17		1
+point 18	D	32	59		Contour 6, base colonne 1 (point 6)		1	27	17,45	17		0
 point 19	D	40	51		Entrée 2 (côté gauche)		1	29	27,85	28		0					
 point 20	D	42	43		Entrée 2 (côté droite)		1	24	34,39285714	34		0					
 point 21	D	47	35		Contour, Renfoncement 1 (côté gauche)		1	21	42,02857143	42		0					
@@ -37,15 +37,15 @@ point 32	G	50	57	1	Entrée 3 (côté droit)		-1	-40	29,65	30		1
 point 33	G	50	57		Entrée 3 (côté droit)		-1	-40	29,65	30		0					
 point 34	G	41	60		Contour 13		-1	-35	21,29285714	21		0					
 point 35	G	40	63		Contour, Renfoncement 2 (côté gauche)		-1	-36	18,07857143	18		0					
-point 36	G	37	70	4	Renfoncement 2 (fond), plateau 1 (début)		-1	-37	9,778571429	10		4					
-point 37	G	37	70	1	Contour, Renfoncement 2 (fond)		-1	-37	9,778571429	10		1					
+point 36	G	37	70	4	Contour, Renfoncement 2 (fond), plateau 1 (début)		-1	-37	9,778571429	10		4					
+point 37	G	37	70	1	Contour, Renfoncement 2 (fond), plateau 1 (début)		-1	-37	9,778571429	10		1					
 point 38	G	34	61	4	Renfoncement 2 (côté droit), plateau 1 (angle 1)		-1	-30	16,67857143	17		4					
 point 39	G	34	61		Renfoncement 2 (côté droit), plateau 1 (angle 1)		-1	-30	16,67857143	17		0					
 point 40	G	23	63	4	Plateau 1 (angle 2)		-1	-20	10,42857143	10		4					
 point 41	G	23	63		Plateau 1 (angle 2), jonction éboulis 2		-1	-20	10,42857143	10		0					
 point 42	G	24	72	4	Contour 14, plateau 1 (fin)		-1	-24	2,085714286	2		4					
 point 43	G	24	72		Contour 14, plateau 1 (fin)		-1	-24	2,085714286	2		0					
-point 44	G	13	69	2	Contour 15		-1	-13	2,2	2		2					
+point 44	G	13	69	2	Contour 15, plateau 2 (début)		-1	-13	2,2	2		2					
 point 45	G	13	69		Contour 15, plateau 2 (début), éboulis 2 (début)		-1	-13	2,2	2		0					
 point 46	G	22	57	2	Plateau 2 (angle 1)		-1	-16	15,25	15		2					
 point 47	G	22	57		Plateau 2 (angle 1), éboulis 2 (fin)		-1	-16	15,25	15		0					
@@ -53,14 +53,14 @@ point 48	G	22	50	2	Plateau 2 (angle 2)		-1	-8	20,6	21		2
 point 49	G	22	50		Plateau 2 (angle 2)		-1	-8	20,6	21		0					
 point 50	G	11	60	2	Plateau 2 (angle 3)		-1	-4	10,15	10		2					
 point 51	G	11	60		Plateau 2 (angle 3) (accès au plateau)		-1	-4	10,15	10		0					
-point 52	G	5	68	2	Plateau 2 (angle 4) (fin), entrée 1 (côté gauche)		-1	-5	2,15	2		2					
-point 53	G	5	68	1	Plateau 2 (angle 4) (fin), entrée 1 (côté gauche)		-1	-5	2,15	2		1					
-point 54	G	5	68		Plateau 2 (angle 4) (fin), entrée 1 (côté gauche)		-1	-5	2,15	2		0					
-point 55	D	25	65		Colonne 1 (point 1)		1	23	9,285714286	9		0					
-point 56	D	22	63		Colonne 1 (point 2)		1	20	10,10714286	10		0					
-point 57	D	26	57		Colonne 1 (point 3)		1	20	16,62142857	17		0					
-point 58	D	28	57		Colonne 1 (point 4)		1	22	17,39285714	17		0					
-point 59	D	29	64		Colonne 1 (point 5)		1	27	11,75	12		0					
+point 52	G	5	68	2	Plateau 2 (angle 4) (fin), Contour		-1	-5	2,15	2		2
+point 53	G	5	68	1	Plateau 2 (angle 4) (fin), Entrée 1 (côté gauche)		-1	-5	2,15	2		1
+point 54	G	5	68		Plateau 2 (angle 4) (fin), Entrée 1 (côté gauche)		-1	-5	2,15	2		0
+point 55	D	25	65	1	Colonne 1 (point 1)		1	23	9,285714286	9		1					
+point 56	D	22	63	1	Colonne 1 (point 2)		1	20	10,10714286	10		1					
+point 57	D	26	57	1	Colonne 1 (point 3)		1	20	16,62142857	17		1					
+point 58	D	28	57	1	Colonne 1 (point 4)		1	22	17,39285714	17		1					
+point 59	D	29	64	1	Colonne 1 (point 5)		1	27	11,75	12		1					
 point 60	G	42	41	1	Base colonne 2 (Point 1)		-1	-22	35,59285714	36		1					
 point 61	G	42	41		Base colonne 2 (Point 1)		-1	-22	35,59285714	36		0					
 point 62	G	45	50	1	Base colonne 2 (Point 2)		-1	-32	31,60714286	32		1					
@@ -71,11 +71,11 @@ point 66	G	34	55	1	Base colonne 2 (Point 4)		-1	-26	21,65	22		1
 point 67	G	34	55		Base colonne 2 (Point 4)		-1	-26	21,65	22		0					
 point 68	G	32	50	1	Base colonne 2 (Point 5)		-1	-21	24,45714286	24		1					
 point 69	G	32	50		Base colonne 2 (Point 5)		-1	-21	24,45714286	24		0					
-point 70	G	41	44		Colonne 2 (Point 1)		-1	-24	33,17857143	33		0					
-point 71	G	42	50		Colonne 2 (Point 2)		-1	-30	29,74285714	30		0					
-point 72	G	38	52		Colonne 2 (Point 3)		-1	-28	26	26		0					
-point 73	G	34	51		Colonne 2 (Point 4)		-1	-23	24,67857143	25		0					
-point 74	G	37	46		Colonne 2 (Point 5)		-1	-22	29,66428571	30		0					
+point 70	G	41	44	1	Colonne 2 (Point 1)		-1	-24	33,17857143	33		1					
+point 71	G	42	50	1	Colonne 2 (Point 2)		-1	-30	29,74285714	30		1					
+point 72	G	38	52	1	Colonne 2 (Point 3)		-1	-28	26	26		1					
+point 73	G	34	51	1	Colonne 2 (Point 4)		-1	-23	24,67857143	25		1					
+point 74	G	37	46	1	Colonne 2 (Point 5)		-1	-22	29,66428571	30		1					
 point 75	G	60	38		Gouffre 1 (Point 1), Point d'escalade		-1	-33	50,4	50		0					
 point 76	G	61	34		Gouffre 1 (Point 2)		-1	-30	53,32142857	53		0					
 point 77	G	61	31		Gouffre 1 (Point 3)		-1	-27	54,71428571	55		0					
