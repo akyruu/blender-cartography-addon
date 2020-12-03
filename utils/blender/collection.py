@@ -13,7 +13,10 @@ __logger = logging.Logger('blender_collection')
 # METHODS =====================================================================
 def create(name: str, parent: bpy.types.Collection = None, erase=False) -> bpy.types.Collection:
     collection = bpy.data.collections.get(name)
-    if collection is not None and erase:
+    if collection:
+        if not erase:
+            return collection  # TODO add check parent
+
         __logger.debug('Collection <%s> already exists: delete previous instance', name)
         remove(collection)
 

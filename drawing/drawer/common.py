@@ -20,7 +20,8 @@ class CartographyRoomDrawer:
     __logger = logging.getLogger('CartographyRoomDrawer')
 
     # Constructor -------------------------------------------------------------
-    def __init__(self, template: CartographyTemplate):
+    def __init__(self, name: str, template: CartographyTemplate):
+        self.name = name
         self._template = template
 
     # Methods -----------------------------------------------------------------

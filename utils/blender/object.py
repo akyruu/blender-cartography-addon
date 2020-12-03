@@ -4,11 +4,12 @@ Module for utility blender object methods
 
 import bpy
 from bpy.types import Collection, Mesh, Object
-from mathutils import Vector
+
+from utils.math import Location
 
 
 # METHODS =====================================================================
-def create(name: str, location: Vector, template: Object, collection: Collection) \
+def create(name: str, location: Location, template: Object, collection: Collection) \
         -> bpy.types.Object:
     obj = template.copy()
     obj.name = name

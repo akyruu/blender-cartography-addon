@@ -38,6 +38,7 @@ class CartographyCategory(bytes, Enum):
     COLUMN_BASE = (7, CartographyCategoryType.STRUCTURAL, False, 0, True)  # leveled
     CHASM = (8, CartographyCategoryType.STRUCTURAL, False, -5, True)  # extruded
 
+    # Structural/Interest
     RECESS = (9, CartographyCategoryType.STRUCTURAL & CartographyCategoryType.INTEREST)
 
     # Interest
@@ -57,3 +58,4 @@ class CartographyInterestType(Enum):
     LITTLE_BOX = 2
     LICHEN = 3
     ORE = 4
+    UNKNOWN = 99

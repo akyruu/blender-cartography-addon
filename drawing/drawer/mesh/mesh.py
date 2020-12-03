@@ -27,7 +27,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
 
     # Constructor -------------------------------------------------------------
     def __init__(self, template: CartographyTemplate):
-        CartographyRoomDrawer.__init__(self, template)
+        CartographyRoomDrawer.__init__(self, 'mesh', template)
         self.__outline_drawer = CartographyMeshOutlineGroupDrawer()
         self.__drawers = {
             lambda c: c.outline: self.__outline_drawer,

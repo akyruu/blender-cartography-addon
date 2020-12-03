@@ -29,11 +29,12 @@ cartography_point_category = {
     __build_regex(__category_words['COLUMN'], True): CartographyCategory.COLUMN,
     __build_regex(__category_words['COLUMN_BASE'], True): CartographyCategory.COLUMN_BASE,
     __build_regex(__category_words['CHASM'], True): CartographyCategory.CHASM,
+    # Obstacle
+    __build_regex(__category_words['BANK'], False): CartographyCategory.BANK,
     # Interest
     __build_regex(__category_words['CLIMBING_POINT'], False): CartographyCategory.CLIMBING_POINT,
     __build_regex(__category_words['HARVESTABLE'], False): CartographyCategory.HARVESTABLE,
     __build_regex(__category_words['ANTHROPOGENIC_OBJECT'], False): CartographyCategory.ANTHROPOGENIC_OBJECT,
-    __build_regex(__category_words['BANK'], False): CartographyCategory.BANK,
     __build_regex(__category_words['STRUCTURE'], False): CartographyCategory.STRUCTURE
 }
 
@@ -60,12 +61,14 @@ cartography_object_type = {
     CartographyCategory.CLIMBING_POINT: 'escalade',
     CartographyCategory.HARVESTABLE: 'ico_feces_Pilier',
     CartographyCategory.ANTHROPOGENIC_OBJECT: None,
+    CartographyCategory.UNKNOWN: 'ico_unknown_Pilier',
 
     # Interest types
     CartographyInterestType.BOX: 'Caisse_1',
     CartographyInterestType.LITTLE_BOX: 'Caisse_1.001',
     CartographyInterestType.LICHEN: 'ico_lichen_Ico',
     CartographyInterestType.ORE: 'ico_handMining_Ico',
+    CartographyInterestType.UNKNOWN: 'ico_unknown_Ico',
 
     # Object types
     CartographyObjectType.PLANE: 'Plane'

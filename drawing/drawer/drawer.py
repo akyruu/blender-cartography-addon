@@ -28,6 +28,7 @@ class CartographyDrawer:
 
     # Methods -----------------------------------------------------------------
     def draw(self, room: CartographyRoom):
-        collection = utils.blender.collection.create(room.name)
+        parent = utils.blender.collection.create(room.name)
         for roomDrawer in self.__room_drawers:
+            collection = utils.blender.collection.create(roomDrawer.name, parent)
             roomDrawer.draw(room, collection)

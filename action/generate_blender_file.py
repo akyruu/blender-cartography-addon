@@ -3,7 +3,7 @@ import os
 
 import utils
 from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyStructuralPointDrawer, \
-    CartographyPlaneDrawer, CartographyMeshDrawer
+    CartographyMeshDrawer
 from parsing import CartographyParser
 from reading import CartographyCsvReader, CartographyTsvReader
 from templating import CartographyTemplateReader
@@ -68,9 +68,8 @@ def __draw_blender_model(room, template):
     __logger.info('Draw room <%s>', room.name)
     drawer = CartographyDrawer(
         template,
-        # CartographyInterestPointDrawer(template),
-        CartographyStructuralPointDrawer(template),
-        # CartographyPlaneDrawer(template)
+        CartographyInterestPointDrawer(template),
+        # CartographyStructuralPointDrawer(template),
         CartographyMeshDrawer(template)
     )
     drawer.draw(room)

@@ -7,7 +7,7 @@ import logging
 import bpy
 
 import utils
-from drawing.drawer.common import CartographyRoomDrawer
+from drawing.drawer.common import CartographyRoomDrawer, CartographyTemplate
 from model import CartographyPoint, CartographyCategory, \
     CartographyCategoryType, CartographyRoom
 
@@ -25,8 +25,8 @@ class CartographyStructuralPointDrawer(CartographyRoomDrawer):
     }
 
     # Constructor -------------------------------------------------------------
-    def __init__(self, template):
-        CartographyRoomDrawer.__init__(self, template)
+    def __init__(self, template: CartographyTemplate):
+        CartographyRoomDrawer.__init__(self, '', template)
 
     # Methods -----------------------------------------------------------------
     # Draw
