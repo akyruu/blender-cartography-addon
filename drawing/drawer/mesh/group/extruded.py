@@ -86,7 +86,6 @@ class CartographyMeshExtrudedGroupDrawer(CartographyMeshGroupDrawer):
     # Faces
     def _draw_faces(self, context: CartographyMeshGroupContext) -> List[BMFace]:  # overridden
         group_category = context.group.category
-        print('_draw_faces', context.group.name)
 
         height = group_category.level
         vert_z_list = [v.co.z for v in self._vertices]
