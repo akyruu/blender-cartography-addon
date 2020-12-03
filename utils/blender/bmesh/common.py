@@ -2,17 +2,25 @@
 Module for utility blender mesh methods
 """
 
-from typing import List, Union
+from typing import List, Optional, Union
 
 from bmesh.types import BMEdge, BMFace, BMVert
+
+import utils
 
 
 # CLASSES =====================================================================
 class Geometry:
     # Constructor -------------------------------------------------------------
-    def __init__(self, _all: List[Union[BMVert, BMEdge, BMFace]] = None):
-        self.all = _all or []
-        self.vertices = [e for e in self.all if isinstance(e, BMVert)]
+    def __init__(
+            self,
+            _all: List[Union[BMVert, BMEdge, BMFace]] = None,
+            verts: Optional[List[BMVert]] = None,
+            edges: Optional[List[BMEdge]] = None,
+            faces: Optional[List[BMFace]] = None
+    ):
+        self.all = (_all or []) + (verts or []) + (edges or []) + (faces or [])
+        self.vertices = [e for e in self.all if isinstance(e, BMVert)]  # TODO rename vertices to vert (apply to all ?)
         self.edges = [e for e in self.all if isinstance(e, BMEdge)]
         self.faces = [e for e in self.all if isinstance(e, BMFace)]
 
@@ -43,3 +51,13 @@ class Geometry:
         self.vertices.clear()
         self.edges.clear()
         self.faces.clear()
+
+    def __repr__(self):
+        return 'Geometry(verts=' + str([v.co for v in self.vertices]) \
+               + ', edges=' + str([[v.co for v in e.verts] for e in self.edges]) \
+               + ', faces=' + str([[v.co for v in f.verts] for f in self.faces]) + ')'
+
+    def __str__(self):
+        return 'Geometry(verts=' + str([v.co for v in self.vertices]) \
+               + ', edges=' + str([[v.co for v in e.verts] for e in self.edges]) \
+               + ', faces=' + str([[v.co for v in f.verts] for f in self.faces]) + ')'
