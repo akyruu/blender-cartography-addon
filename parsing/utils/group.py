@@ -3,13 +3,13 @@ Module for treat groups
 """
 
 import re
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import config
 import utils
 from model import CartographyCategory, CartographyGroup, CartographyRoom
 from parsing.model import ParseContext
-from . import category as category_utils
+from .category import is_outline
 
 
 # METHODS =====================================================================
@@ -26,56 +26,34 @@ def find(context: ParseContext, partial_name: str, category: CartographyCategory
     return groups[0] if count == 1 else None
 
 
-def get_or_create(context: ParseContext, observations: List[str]) -> CartographyGroup:
-    name, category = __determinate_group_name_category(context, observations)
-    group = context.room.groups.get(name, None)
+def get_or_create(
+        context: ParseContext,
+        category: CartographyCategory,
+        group_name: Optional[str] = None,
+        group_identifier: Optional[int] = None
+) -> CartographyGroup:
+    group_name, group_category = (build_group_name(CartographyCategory.OUTLINE.name), CartographyCategory.OUTLINE) \
+        if is_outline(category) \
+        else (build_group_name(group_name or category.name, group_identifier), category)
+
+    group = context.room.groups.get(group_name, None)
     if not group:
-        if category.outline:
+        if is_outline(group_category):
             group = context.room.outline_group
         if not group:
-            context.logger.debug('Create new group <%s>', name)
-            group = CartographyGroup(name, category)
-            context.room.groups[name] = group
+            context.logger.debug('Create new group <%s>', group_name)
+            group = CartographyGroup(group_name, group_category)
+            context.room.groups[group_name] = group
 
-            if category.outline:
+            if is_outline(group_category):
                 context.room.outline_group = group
     else:
-        context.logger.debug('Use existing group <%s>', name)
+        context.logger.debug('Use existing group <%s>', group_name)
     return group
 
 
-def __determinate_group_name_category(context, observations: List[str]) -> Tuple[str, CartographyCategory]:
-    categories = category_utils.parse_categories(observations)
-    if len(categories) == 0:
-        category = CartographyCategory.UNKNOWN
-        name = category.name
-        context.logger.warning(
-            'Category not found in <%s>. Use category: <%s>',
-            config.obs_separator.join(observations), category.name
-        )
-    elif len(categories) > 1:
-        category_types = [c for c, m in categories]
-        if CartographyCategory.OUTLINE in category_types and CartographyCategory.GATE in category_types:
-            category = CartographyCategory.OUTLINE
-            name = category.name
-        else:
-            category, cat_match = categories[0]
-            name = cat_match.group(0)
-        context.logger.warning(
-            'Group - Multiple category found: <%s>. Use category: <%s> (observations: <%s>)',
-            ','.join([c.name for c, m in categories]),
-            category.name,
-            config.obs_separator.join(observations)
-        )
-    else:
-        category, cat_match = categories[0]
-        if category.outline:
-            category = CartographyCategory.OUTLINE
-            name = CartographyCategory.OUTLINE.name
-        else:
-            name = cat_match.group(0)
-
-    return name.strip().capitalize(), category
+def build_group_name(group_base_name: str, group_identifier: Optional[int] = None) -> str:
+    return group_base_name.strip().capitalize() + (' ' + str(group_identifier) if group_identifier else '')
 
 
 def match_category_in_observation(pattern: str, value: str) -> re.Match:

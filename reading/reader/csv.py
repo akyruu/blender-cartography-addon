@@ -6,10 +6,9 @@ import logging
 import os
 from typing import Optional
 
-from mathutils import Vector
-
 import config
 import utils
+from mathutils import Vector
 from .common import CartographyReader
 from .. import utils as read_utils
 from ..exception import CartographyReaderException
@@ -77,7 +76,7 @@ class CartographyCsvReader(CartographyReader):
         self.__file.headers.append(CartographyFileLine(self.__context.row, line))
         if self.__header_info < 0 and read_utils.line.check(self.__context, line, 'header', [
             'position, de 2', '', 'scribe 1', 'scribe 2', '', 'explorateur'
-        ], False):
+        ], strict=False, log_warns=False):
             self.__logger.debug('Header of information found: <%d>', self.__context.row)
             self.__header_info = 0
         elif read_utils.line.check(self.__context, line, 'header', [
@@ -86,12 +85,14 @@ class CartographyCsvReader(CartographyReader):
             'Distance (à|to) S1',
             'Distance (à|to) S2',
             '(Hauteur|Height)',
+            '(Cat[ée]gories?)',
+            '(N°|#)',
+            '(Type de ponctuel?)',
             '(Observations?)', '', '',
             'X', '',
             'Y', '',
-            'Z', '', '', '', '',
-            'Adjacent \\(Y\\)'
-        ], False):
+            'Z'
+        ], strict=False, log_warns=False):
             self.__logger.debug('Header of point table found: <%d>', self.__context.row)
             self.__header = False
 
@@ -102,10 +103,10 @@ class CartographyCsvReader(CartographyReader):
             '([0-9]+)',  # Distance between S1 and S2
             '(.+)',  # Scribe 1
             '(.+)', '',  # Scribe 2
-            '(.+)', '', '',  # Explorer
+            '(.+)', '', '', '', '', '',  # Explorer
             'méthode des cercles'  # Coordinates label
         ]
-        matches = read_utils.line.check(self.__context, line, 'header', patterns, False)
+        matches = read_utils.line.check(self.__context, line, 'header', patterns, strict=False, log_warns=False)
         if not matches:
             self.__logger.warning('Header information line <%d> not match with excepted pattern', self.__context.row)
             self.__logger.debug(
@@ -132,20 +133,22 @@ class CartographyCsvReader(CartographyReader):
     def __read_point(self, line: str):
         # Check line describe a point
         patterns = [
-            'point [0-9]+',  # Point name (0)
+            'point [0-9]+(.[0-9]+)?',  # Point name (0)
             '[DGRL]?',  # Side (1)
             '([0-9]+)?',  # Distance to S1 (2)
             '([0-9]+)?',  # Distance to S2 (3)
             '-?([0-9]+)?',  # Height (4)
-            '([A-Za-z0-9].+)', '',  # Observations (5)
-            '(-?[0-9]+)?', '-?[0-9]+',  # calc + X (8)
-            '(-?[0-9]+)?', '-?[0-9]+',  # calc + Y (10)
-            '', '-?[0-9]+',  # Z (12)
-            '', '', '', '', '(.+)?'  # Adjacent Y (17)
+            '([A-Za-z0-9].+)',  # Category (5)
+            '([0-9]+)?',  # Identifier (6)
+            '([A-Za-z0-9].+)?',  # Interest type (7)
+            '([A-Za-z0-9].+)?', '', '-?1?',  # Observations (8)
+            '(-?[0-9]+)?', '-?[0-9]+',  # calc + X (11)
+            '(-?[0-9]+)?', '',  # calc + Y (13)
+            '-?[0-9]+',  # Z (15)
         ]
         matches = read_utils.line.check(self.__context, line, 'point', patterns, False)
         if not matches:
-            matches = read_utils.line.check(self.__context, line, 'point', ['point [0-9]+'], False, True)
+            matches = read_utils.line.check(self.__context, line, 'point', [patterns[0]], False, True)
             if not matches:
                 raise CartographyReaderException(
                     self.__context.row,
@@ -169,9 +172,9 @@ class CartographyCsvReader(CartographyReader):
 
         # Determine coordinates
         point.location = Vector((
-            int(matches[8].group(0)),
-            int(matches[10].group(0)),
-            int(matches[12].group(0))
+            int(matches[11].group(0)),
+            int(matches[13].group(0)),
+            int(matches[15].group(0))
         ))
 
         # Determine point side
@@ -189,20 +192,20 @@ class CartographyCsvReader(CartographyReader):
             point.side = CartographyFileSide.RIGHT
 
         if not point.side:
-            raise CartographyReaderException(self, side, 'point side', '[DGRL]')
-        self.__last_point_side = point.side
-
-        # Determine observations
-        observations = matches[5].group(0)
-        if not observations and not observations.strip():
             raise CartographyReaderException(
                 self.__context.row,
                 self.__context.column,
-                '',
-                'point observations',
-                'not_blank'
+                side,
+                'point side',
+                '[DGRL]'
             )
-        point.observations = [o.strip() for o in observations.split(config.obs_separator)]
+        self.__last_point_side = point.side
+
+        # Determine infos
+        point.category = matches[5].group(0)
+        point.group_identifier = int(matches[6].group(0)) if matches[6].group(0) else 0
+        point.interest_type = matches[7].group(0)
+        point.observations = [o.strip() for o in matches[8].group(0).split(config.obs_separator)]
 
         # Add line to file
         self.__logger.debug('Add point line to file: %s', str(point))

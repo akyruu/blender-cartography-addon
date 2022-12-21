@@ -5,9 +5,8 @@ Module for interest point drawer
 import logging
 
 import bpy
-from mathutils import Vector
-
 import utils
+from mathutils import Vector
 from model import CartographyPoint, CartographyCategory, CartographyCategoryType, CartographyInterestType, \
     CartographyRoom
 from ..common import CartographyRoomDrawer, CartographyTemplate
@@ -32,6 +31,12 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
                 point_collection = utils.blender.collection.create('Objects', collection)
                 drawn = self.__draw_anthropogenic_object(point, point_collection)
             else:
+                # FIXME add average algorithm for draw only one point or other solution
+                #  (colored translucent mesh for example ?)
+                if point.category.options.structured:
+                    self.__logger.warning('Structured point ignored (not supported for the moment): %s', point.name)
+                    continue
+
                 point_collection = utils.blender.collection.create('Others', collection)
                 drawn = self.__draw_other(point, point_collection)
 
@@ -46,21 +51,18 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
             self.__logger.warning('An interest is required for anthropic object point: <%s>.', str(point))
             return False
         else:
-            interest = point.interest[0]  # TODO treat multiple interests
+            interest = point.interest
             template = self._get_template_object(interest, 'interest type')
 
         # Get template
         if template is None:
-            self.__logger.error('No template found for anthropogenic object: <%s>. Ignored', point.interest[0])
+            self.__logger.error('No template found for anthropogenic object: <%s>. Ignored', point.interest)
             return False
 
         # Create objects
-        z = point.location.z
-        for i in range(point.interest[1]):
-            location = Vector((point.location.x, point.location.y, z))
-            obj = utils.blender.object.create(point.get_label(), location, template, collection)
+        location = Vector((point.location.x, point.location.y, point.location.z))
+        utils.blender.object.create(point.get_label(), location, template, collection)
 
-            z += obj.dimensions.z  # noqa
         return True
 
     def __draw_other(self, point: CartographyPoint, collection: bpy.types.Collection) -> bool:
@@ -75,7 +77,7 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
 
         # Icon
         if point.interest is not None:
-            interest = point.interest[0]  # TODO treat multiple interests
+            interest = point.interest
 
             # Get icon template
             template = self._get_template_object(interest, 'interest type')

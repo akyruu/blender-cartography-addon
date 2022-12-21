@@ -57,7 +57,7 @@ class CartographyMeshLeveledGroupDrawer(CartographyMeshGroupDrawer):
         self._bottom_edges = []
 
     # Vertices
-    def _create_vertex(self, bm: BMesh, point: CartographyPoint) -> BMVert:
+    def _create_vertex(self, bm: BMesh, point: CartographyPoint, append=True) -> BMVert:
         vertex = CartographyMeshGroupDrawer._create_vertex(self, bm, point)
         if point.has_category(CartographyCategory.OUTLINE):
             self._outline_vertices.append(vertex)

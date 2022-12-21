@@ -7,9 +7,8 @@ from enum import Enum
 from logging import Logger
 from typing import List, Optional
 
-from mathutils import Vector
-
 import utils
+from mathutils import Vector
 
 
 # CLASSES =====================================================================
@@ -82,6 +81,9 @@ class CartographyFilePoint(CartographyFileLine):
             row: int,
             text: str,
             location: Vector = Vector((0, 0, 0)),
+            category: str = None,
+            identifier: int = None,
+            interest_type: str = None,
             observations: List[str] = None,
             point_name: str = '',
             side: CartographyFileSide = None,
@@ -91,6 +93,9 @@ class CartographyFilePoint(CartographyFileLine):
     ):
         CartographyFileLine.__init__(self, row, text)
         self.location = location
+        self.category = category
+        self.group_identifier = identifier
+        self.interest_type = interest_type
         self.observations = observations or []
         self.point_name = point_name
         self.side = side

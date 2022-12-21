@@ -7,4 +7,4 @@ from enum import Enum
 # CLASSES =====================================================================
 class CartographyObjectType(Enum):
     """Cartography object type"""
-    PLANE = 1
+    PLANE = 'plane'

@@ -8,12 +8,56 @@ from typing import List, Optional, Tuple
 import config
 import mappings
 import utils
-from model import CartographyCategory
+from model import CartographyCategory, CartographyCategoryType
 from ..exception import CartographyParserException
 from ..model import ParseContext
 
 
 # METHODS =====================================================================
+def is_outline(category: CartographyCategory):
+    return category.type == CartographyCategoryType.STRUCTURAL and category.options.outline
+
+
+def require_interest(category: CartographyCategory):
+    return category.type == CartographyCategoryType.INTEREST and category.options.detailed_required
+
+
+def parse_point_category_v1p2(
+        context: ParseContext,
+        category_label: str,
+        dft_value: Optional[CartographyCategory] = None,
+        required: bool = True
+) -> Optional[CartographyCategory]:
+    """
+    Get the category corresponding to label (use the configuration mapping).
+
+    :param context Parse context
+    :param category_label Value(s) to parse
+    :param dft_value Default category to return if no category found (optional, None by default)
+    :param required If category is required (raise an exception if None)
+    :return Category if found or dft_value otherwise
+    """
+    categories = [category for pattern, category in mappings.cartography_point_category.items()
+                  if utils.string.match_ignore_case(pattern, category_label)]
+    categories_len = len(categories)
+    if categories_len == 0:
+        category = dft_value
+    elif categories_len == 1:
+        category = categories[0]
+    else:
+        raise Exception('Invalid mapping configuration: too much categories {} found for <{}>'
+                        .format(category_label, str(mappings.cartography_point_category.keys())))
+
+    if category is None and required:
+        raise CartographyParserException(
+            context.row,
+            category_label,
+            'point category',
+            '|'.join(mappings.cartography_point_category.keys())
+        )
+    return category
+
+
 def parse_categories(values: List[str] or str, required=False) -> List[Tuple[CartographyCategory, re.Match]]:
     """
     Parse value(s) to extract categories for value(s).<br />

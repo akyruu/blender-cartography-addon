@@ -87,12 +87,12 @@ class CartographyMeshExtrudedGroupDrawer(CartographyMeshGroupDrawer):
     def _draw_faces(self, context: CartographyMeshGroupContext) -> List[BMFace]:  # overridden
         group_category = context.group.category
 
-        height = group_category.level
+        height = group_category.options.level
         vert_z_list = [v.co.z for v in self._vertices]
         limit_z = min(vert_z_list) if height < 0 else max(vert_z_list)
         self._draw_wall_face(context.bm, limit_z + height)
 
-        if group_category.ground:
+        if group_category.options.ground:
             self._draw_ground_face(context)
 
         return self._faces

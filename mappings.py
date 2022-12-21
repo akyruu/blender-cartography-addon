@@ -9,8 +9,8 @@ from model import CartographyCategory, CartographyInterestType, CartographyObjec
 
 
 # INTERNAL ====================================================================
-def __build_regex(words: List[str], has_number: bool) -> str:
-    return '(' + '|'.join(words) + ')' + (' ([0-9]+)' if has_number else '')
+def __build_regex(words: List[str]) -> str:
+    return '(' + '|'.join(words) + ')'
 
 
 # CONFIG ======================================================================
@@ -21,32 +21,34 @@ cartography_point_name_join = ' - '
 __category_words = config.mappings.words['category']
 cartography_point_category = {
     # Structure
-    __build_regex(__category_words['OUTLINE'], False): CartographyCategory.OUTLINE,
-    __build_regex(__category_words['GATE'], True): CartographyCategory.GATE,
-    __build_regex(__category_words['ESCARPMENT'], True): CartographyCategory.ESCARPMENT,
-    __build_regex(__category_words['BASEMENT'], True): CartographyCategory.BASEMENT,
-    __build_regex(__category_words['LANDING'], True): CartographyCategory.LANDING,
-    __build_regex(__category_words['COLUMN'], True): CartographyCategory.COLUMN,
-    __build_regex(__category_words['COLUMN_BASE'], True): CartographyCategory.COLUMN_BASE,
-    __build_regex(__category_words['CHASM'], True): CartographyCategory.CHASM,
+    __build_regex(__category_words['OUTLINE']): CartographyCategory.OUTLINE,
+    __build_regex(__category_words['GATE']): CartographyCategory.GATE,
+    __build_regex(__category_words['ESCARPMENT']): CartographyCategory.ESCARPMENT,
+    __build_regex(__category_words['BASEMENT']): CartographyCategory.BASEMENT,
+    __build_regex(__category_words['LANDING']): CartographyCategory.LANDING,
+    __build_regex(__category_words['COLUMN']): CartographyCategory.COLUMN,
+    __build_regex(__category_words['COLUMN_BASE']): CartographyCategory.COLUMN_BASE,
+    __build_regex(__category_words['CHASM']): CartographyCategory.CHASM,
+    __build_regex(__category_words['RECESS']): CartographyCategory.RECESS,
     # Obstacle
-    __build_regex(__category_words['BANK'], False): CartographyCategory.BANK,
+    __build_regex(__category_words['BANK']): CartographyCategory.BANK,
     # Interest
-    __build_regex(__category_words['CLIMBING_POINT'], False): CartographyCategory.CLIMBING_POINT,
-    __build_regex(__category_words['HARVESTABLE'], False): CartographyCategory.HARVESTABLE,
-    __build_regex(__category_words['ANTHROPOGENIC_OBJECT'], False): CartographyCategory.ANTHROPOGENIC_OBJECT,
-    __build_regex(__category_words['STRUCTURE'], False): CartographyCategory.STRUCTURE
+    __build_regex(__category_words['CLIMBING_POINT']): CartographyCategory.CLIMBING_POINT,
+    __build_regex(__category_words['HARVESTABLE']): CartographyCategory.HARVESTABLE,
+    __build_regex(__category_words['ANTHROPOGENIC_OBJECT']): CartographyCategory.ANTHROPOGENIC_OBJECT,
+    __build_regex(__category_words['STRUCTURE']): CartographyCategory.STRUCTURE
 }
 
 # Cartography: pattern for determinate a junction
 cartography_junction_pattern = '(Jonction|Junction) .+ (' + '|'.join(cartography_point_category.keys()) + ')'
 
 # Type of cartography interest
-__category_words = config.mappings.words['interest_type']
+__interest_type_words = config.mappings.words['interest_type']
 cartography_interest_type = {
-    __build_regex(__category_words['LITTLE_BOX'], False): CartographyInterestType.LITTLE_BOX,
-    __build_regex(__category_words['LICHEN'], False): CartographyInterestType.LICHEN,
-    __build_regex(__category_words['ORE'], False): CartographyInterestType.ORE
+    __build_regex(__interest_type_words['LITTLE_BOX']): CartographyInterestType.LITTLE_BOX,
+    __build_regex(__interest_type_words['BOX']): CartographyInterestType.BOX,
+    __build_regex(__interest_type_words['LICHEN']): CartographyInterestType.LICHEN,
+    __build_regex(__interest_type_words['ORE']): CartographyInterestType.ORE
 }
 
 # Type of cartography points

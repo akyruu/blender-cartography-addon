@@ -13,16 +13,18 @@ __logger = logging.getLogger('parsing_utils_junction')
 
 
 # METHODS =====================================================================
-def create_junctions(context: ParseContext, groups_points: List[Tuple[CartographyGroup, CartographyPoint]]):
-    count = len(groups_points)
+def create_junctions(context: ParseContext, point_with_groups: List[Tuple[CartographyPoint, CartographyGroup]]):
+    count = len(point_with_groups)
     for i in range(0, count):
-        group1, point1 = groups_points[i]
+        point1, group1 = point_with_groups[i]
         for j in range(i + 1, count):
-            group2, point2 = groups_points[j]
+            point2, group2 = point_with_groups[j]
             __logger.debug(
-                'Add junction point between groups <%s> and <%s>: <%s>',
-                group1.name, group2.name, point1.name
+                'Add junction point between groups <%s> and <%s>: <%s> (<%s>)',
+                group1.name, group2.name, point1.name, point2.name
             )
+            point1.additional_categories.update(point2.get_all_categories())  # FIXME temp fix for keep drawer 1.2
+            point2.additional_categories.update(point1.get_all_categories())  # FIXME temp fix for keep drawer 1.2
 
             junction = context.room.get_junction(group1, group2)
             if not junction:

@@ -30,9 +30,9 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
         CartographyRoomDrawer.__init__(self, 'mesh', template)
         self.__outline_drawer = CartographyMeshOutlineGroupDrawer()
         self.__drawers = {
-            lambda c: c.outline: self.__outline_drawer,
-            lambda c: c.level: CartographyMeshExtrudedGroupDrawer(),
-            lambda c: c.ground: CartographyMeshLeveledGroupDrawer()
+            lambda c: c.options.outline: self.__outline_drawer,
+            lambda c: c.options.level: CartographyMeshExtrudedGroupDrawer(),
+            lambda c: c.options.ground: CartographyMeshLeveledGroupDrawer()
         }
 
     # Methods -----------------------------------------------------------------
@@ -68,7 +68,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
             context.group = group
             geom = self.__draw_group(context)
 
-            if group.category.outline:
+            if group.category.options.outline:
                 context.outline_geom = geom
             else:
                 context.geom_by_group[group.name] = geom
@@ -86,7 +86,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
                 geom = drawer.draw(context)
                 self.__check_group_geom(geom)
             except Exception as err:
-                raise Exception('Failed to draw group <{}>', group.name).with_traceback(err.__traceback__)
+                raise Exception('Failed to draw group <{}>'.format(group.name)).with_traceback(err.__traceback__)
         else:
             self.__logger.warning('No drawer found for group <%s> (%s)', group.name, group.category.name)
             geom = CartographyMeshGroupGeometry()
@@ -99,7 +99,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
             duplicated = [v for v in geom.vertices if utils.blender.bmesh.vert.same_3d_position(v, vert)]
             count = len(duplicated)
             if count > 1:
-                raise Exception('Duplicated vertex <{}>: <{}> times', vert.co, count)
+                raise Exception('Duplicated vertex <{}>: <{}> times'.format(vert.co, count))
 
         edges_dict = {'': geom.edges, 'based': geom.based_edges}
         for name, edges in edges_dict.items():
@@ -107,6 +107,6 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
                 duplicated = [e for e in edges if utils.blender.bmesh.edge.same_3d_position(e, edge)]
                 count = len(duplicated)
                 if count > 1:
-                    raise Exception('Duplicated ' + name + ' edge <{}>: <{}> times', [v.co for v in edge.verts], count)
+                    raise Exception('Duplicated {} edge <{}>: <{}> times'.format(name, [v.co for v in edge.verts], count))
 
         # TODO check faces ?

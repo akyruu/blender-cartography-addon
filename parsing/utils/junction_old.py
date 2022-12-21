@@ -76,7 +76,7 @@ def __check_junction(context: ParseContext, junction: JunctionGroup):
         )
     elif junction.start.group != junction.end.group:
         raise Exception('##TODO## start/end junction group is different')  # TODO
-    elif not junction.start.group.category.outline:
+    elif not junction.start.group.category.options.outline:
         raise Exception('##TODO## junction group with another of outline')  # TODO
 
 

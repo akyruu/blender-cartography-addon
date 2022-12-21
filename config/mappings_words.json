@@ -17,6 +17,7 @@
   },
   "interest_type": {
     "LITTLE_BOX": ["Littles? box(es)?", "Petites? caisses?"],
+    "BOX": ["Big box(es)?", "Grosses? caisses?"],
     "LICHEN": ["Lichens?"],
     "ORE": ["Ores?", "Minerai?"]
   },

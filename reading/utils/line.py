@@ -10,7 +10,10 @@ from ..model import ReadContext
 
 
 # METHODS =====================================================================
-def check(context: ReadContext, line: str, line_type: str, patterns: list, strict=True, ignore_reduced=False):
+def check(
+        context: ReadContext, line: str, line_type: str, patterns: list,
+        strict=True, ignore_reduced=False, log_warns=True
+):
     matches = []
 
     # Split line
@@ -35,6 +38,16 @@ def check(context: ReadContext, line: str, line_type: str, patterns: list, stric
                 line_type,
                 context.separator.join(patterns)
             )
+        elif log_warns:
+            context.logger.warning('Insufficient data count for line #%d: %d < %d', context.row, data_count, count)
+            context.logger.debug(
+                'Insufficient data count for line #%d:'
+                '\n\tpattern: [count: <%d>, data: <%s>]'
+                '\n\tline: [count: <%d>, data: <%s>]',
+                context.row,
+                count, utils.io.file.format_line_for_logging(context.separator.join(patterns)),
+                data_count, utils.io.file.format_line_for_logging(context.separator.join(data))
+            )
         return None
     elif data_count > count and not ignore_reduced:
         context.logger.warning('Data ignored for line <%d>: <%d> column(s) ignored', context.row, data_count - count)
@@ -56,6 +69,11 @@ def check(context: ReadContext, line: str, line_type: str, patterns: list, stric
         if m is None:
             if strict:
                 raise CartographyReaderException(context.row, context.column, value, line_type, pattern)
+            elif log_warns:
+                context.logger.warning(
+                    'Data <%d> ignored for line <%d>: <%s> not match with <%s>',
+                    context.column, context.row, value, pattern
+                )
             return None
         matches.append(m)
 

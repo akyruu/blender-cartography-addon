@@ -1,7 +1,7 @@
 """
 Module for structure cartography models
 """
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from mathutils import Vector
 
@@ -21,8 +21,8 @@ class CartographyPoint:
             category: CartographyCategory = None,
             location: Vector = Vector((0, 0, 0)),
             observations: List[str] = None,
-            interest: Optional[Tuple[CartographyInterestType, int]] = None,
-            additional_categories: List[CartographyCategory] = []  # noqa
+            interest: Optional[CartographyInterestType] = None,
+            additional_categories: Set[CartographyCategory] = None  # noqa
     ):
         self.name: str = name
         self.comments: List[str] = comments or []
@@ -30,7 +30,7 @@ class CartographyPoint:
         self.location = location
         self.observations = observations or []
         self.interest = interest
-        self.additional_categories = additional_categories
+        self.additional_categories = additional_categories or set([])
         self.copy = False
 
     # Methods -----------------------------------------------------------------
@@ -39,6 +39,9 @@ class CartographyPoint:
 
     def has_category(self, category: CartographyCategory):
         return category == self.category or category in self.additional_categories
+
+    def get_all_categories(self):
+        return set([self.category] + list(self.additional_categories))
 
     def __repr__(self):
         return utils.object.to_repr(self)
