@@ -1,5 +1,5 @@
 """
-Module for extruded of mesh group drawer
+Module for separated of mesh group drawer
 """
 
 import logging
@@ -15,17 +15,15 @@ from .common import CartographyMeshGroupContext, CartographyMeshGroupDrawer
 
 
 # CLASSES =====================================================================
-class CartographyMeshExtrudedGroupDrawer(CartographyMeshGroupDrawer):
-    """Drawer of mesh for cartography extruded group"""
+class CartographyMeshSeparatedGroupDrawer(CartographyMeshGroupDrawer):
+    """Drawer of mesh for cartography separated group"""
 
     # Fields ------------------------------------------------------------------
-    __logger = logging.getLogger('CartographyMeshExtrudedGroupDrawer')
+    __logger = logging.getLogger('CartographyMeshSeparatedGroupDrawer')
 
     # Constructor -------------------------------------------------------------
     def __init__(self, ):
         CartographyMeshGroupDrawer.__init__(self)
-
-        self._extruded_material_index: int = 0
 
         self._to_level_edges: List[BMEdge] = []
         self._translate_edges: List[BMEdge] = []

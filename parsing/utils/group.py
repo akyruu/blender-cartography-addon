@@ -30,14 +30,14 @@ def get_or_create(context: ParseContext, observations: List[str]) -> Cartography
     name, category = __determinate_group_name_category(context, observations)
     group = context.room.groups.get(name, None)
     if not group:
-        if category.outline:
+        if category.options.outline:
             group = context.room.outline_group
         if not group:
             context.logger.debug('Create new group <%s>', name)
             group = CartographyGroup(name, category)
             context.room.groups[name] = group
 
-            if category.outline:
+            if category.options.outline:
                 context.room.outline_group = group
     else:
         context.logger.debug('Use existing group <%s>', name)
@@ -69,7 +69,7 @@ def __determinate_group_name_category(context, observations: List[str]) -> Tuple
         )
     else:
         category, cat_match = categories[0]
-        if category.outline:
+        if category.options.outline:
             category = CartographyCategory.OUTLINE
             name = CartographyCategory.OUTLINE.name
         else:

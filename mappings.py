@@ -18,8 +18,9 @@ def __build_regex(words: List[str], has_number: bool) -> str:
 cartography_point_name_join = ' - '
 
 # Type of cartography points
-__category_words = config.mappings.words['category']
+__category_words = config.mappings.words.category
 cartography_point_category = {
+    # TODO move to "mapping"
     # Structure
     __build_regex(__category_words['OUTLINE'], False): CartographyCategory.OUTLINE,
     __build_regex(__category_words['GATE'], True): CartographyCategory.GATE,
@@ -42,8 +43,9 @@ cartography_point_category = {
 cartography_junction_pattern = '(Jonction|Junction) .+ (' + '|'.join(cartography_point_category.keys()) + ')'
 
 # Type of cartography interest
-__category_words = config.mappings.words['interest_type']
+__category_words = config.mappings.words.interest_type
 cartography_interest_type = {
+    # TODO move to "mapping"
     __build_regex(__category_words['LITTLE_BOX'], False): CartographyInterestType.LITTLE_BOX,
     __build_regex(__category_words['LICHEN'], False): CartographyInterestType.LICHEN,
     __build_regex(__category_words['ORE'], False): CartographyInterestType.ORE
@@ -51,6 +53,7 @@ cartography_interest_type = {
 
 # Type of cartography points
 cartography_object_type = {
+    # TODO move to "config" ?
     # Point categories
     CartographyCategory.OUTLINE: 'contour',
     CartographyCategory.GATE: 'Gate',

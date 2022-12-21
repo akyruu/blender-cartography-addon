@@ -1,0 +1,169 @@
+{
+  "headers": [
+    [
+      {
+        "pattern": "Position de"
+      },
+      {
+        "ignore": true
+      },
+      {
+        "pattern": "Y"
+      },
+      {
+        "pattern": "X"
+      }
+    ],
+    [
+      {
+        "pattern": "Position, de 2"
+      },
+      {
+        "ignore": true
+      },
+      {
+        "pattern": "scribe 1"
+      },
+      {
+        "pattern": "scribe 2"
+      },
+      {
+        "ignore": true
+      },
+      {
+        "pattern": "explorateur"
+      }
+    ],
+    [
+      {
+        "pattern": "distance 1-2"
+      },
+      {
+        "name": "dist_s1_s2",
+        "pattern": "[0-9]+"
+      },
+      {
+        "name": "scribe_1",
+        "pattern": ".+"
+      },
+      {
+        "name": "scribe_2",
+        "pattern": ".+"
+      },
+      {
+        "ignore": true
+      },
+      {
+        "name": "explorer",
+        "pattern": ".+"
+      },
+      {
+        "ignore": true,
+        "category": "COORDINATE"
+      },
+      {
+        "ignore": true,
+        "category": "COORDINATE"
+      },
+      {
+        "ignore": true,
+        "category": "COORDINATE"
+      },
+      {
+        "ignore": true,
+        "category": "COORDINATE"
+      },
+      {
+        "ignore": true,
+        "category": "COORDINATE"
+      },
+      {
+        "pattern": "(M[ée]thode des cercles|Circle[s']* method|Method of circles?)",
+        "category": "COORDINATE"
+      }
+    ]
+  ],
+  "columns": [
+    {
+      "name": "point_name",
+      "header": "point :",
+      "pattern": "point [0-9]+"
+    },
+    {
+      "name": "side",
+      "header": "(côté|cote|side) : [GL]/[DR]",
+      "pattern": "[DGRL]?"
+    },
+    {
+      "name": "dist_s1",
+      "header": "Distance (à|to) S1",
+      "pattern": "[0-9]*"
+    },
+    {
+      "name": "dist_s2",
+      "header": "Distance (à|to) S2",
+      "pattern": "[0-9]*"
+    },
+    {
+      "name": "height",
+      "header": "(Hauteur|Height)",
+      "pattern": "-?([0-9]+)?"
+    },
+    {
+      "name": "category",
+      "header": "(Catégorie|Category)",
+      "pattern": ".*"
+    },
+    {
+      "name": "category_number",
+      "header": "(N°|#|Numéro|Number)",
+      "pattern": "[0-9]*"
+    },
+    {
+      "name": "interest_type",
+      "header": "Type (de|of) (ponctuel|interest)",
+      "pattern": ".*"
+    },
+    {
+      "name": "observations",
+      "header": "(Observations?)",
+      "pattern": ".*"
+    },
+    {
+      "category": "COORDINATE",
+      "ignore": true
+    },
+    {
+      "category": "COORDINATE",
+      "ignore": true
+    },
+    {
+      "name": "loc_x",
+      "header": "X",
+      "pattern": "(-?[0-9]+)?",
+      "category": "COORDINATE"
+    },
+    {
+      "name": "loc_x_calc",
+      "pattern": "-?[0-9]+",
+      "category": "COORDINATE"
+    },
+    {
+      "name": "loc_y",
+      "header": "Y",
+      "pattern": "(-?[0-9]+)?",
+      "category": "COORDINATE"
+    },
+    {
+      "name": "loc_y_calc",
+      "pattern": "-?[0-9]+",
+      "category": "COORDINATE"
+    },
+    {
+      "name": "loc_z",
+      "header": "Z",
+      "pattern": "-?[0-9]+",
+      "category": "COORDINATE"
+    }
+  ]
+}

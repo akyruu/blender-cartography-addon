@@ -14,7 +14,7 @@ import utils
 from model import CartographyCategoryType, CartographyObjectType, CartographyRoom
 from templating import CartographyTemplate
 from .group import CartographyMeshGroupContext, CartographyMeshGroupGeometry, CartographyMeshOutlineGroupDrawer, \
-    CartographyMeshExtrudedGroupDrawer, CartographyMeshLeveledGroupDrawer
+    CartographyMeshExtrudedGroupDrawer, CartographyMeshLeveledGroupDrawer, CartographyMeshSeparatedGroupDrawer
 from ..common import CartographyRoomDrawer
 
 
@@ -30,9 +30,10 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
         CartographyRoomDrawer.__init__(self, 'mesh', template)
         self.__outline_drawer = CartographyMeshOutlineGroupDrawer()
         self.__drawers = {
-            lambda c: c.outline: self.__outline_drawer,
-            lambda c: c.level: CartographyMeshExtrudedGroupDrawer(),
-            lambda c: c.ground: CartographyMeshLeveledGroupDrawer()
+            lambda c: c.options.outline: self.__outline_drawer,
+            lambda c: c.options.level: CartographyMeshExtrudedGroupDrawer(),
+            lambda c: c.options.ground: CartographyMeshLeveledGroupDrawer(),
+            lambda c: c.options.separated: CartographyMeshSeparatedGroupDrawer()
         }
 
     # Methods -----------------------------------------------------------------
@@ -68,7 +69,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
             context.group = group
             geom = self.__draw_group(context)
 
-            if group.category.outline:
+            if group.category.options.outline:
                 context.outline_geom = geom
             else:
                 context.geom_by_group[group.name] = geom

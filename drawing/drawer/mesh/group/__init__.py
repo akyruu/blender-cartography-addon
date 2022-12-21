@@ -2,3 +2,4 @@ from .common import CartographyMeshGroupContext, CartographyMeshGroupDrawer, Car
 from .extruded import CartographyMeshExtrudedGroupDrawer
 from .leveled import CartographyMeshLeveledGroupDrawer
 from .outline import CartographyMeshOutlineGroupDrawer
+from .separated import CartographyMeshSeparatedGroupDrawer

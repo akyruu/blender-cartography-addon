@@ -1,0 +1,104 @@
+position de 		Y	X						Manu57	Eulios	Chocolatines
+position, de 2		scribe 1	scribe 2		explorateur						
+distance 1-2	71	Choco	Eulios		Manu
+point :	côté : G/D	Distance à S1	Distance à S2	hauteur	catégorie	N°	type de ponctuel	observations			
+point 1	D	3	71		Entrée	1		côté droit			
+point 2	D	8	68	-1.5	Contour			affaissement 			
+point 3	D	14	64		Renfoncement	1		coté gauche renfoncement			
+point 4	D	22	73		Renfoncement	1		fond du renfoncement			
+point 5	D	17	64		Renfoncement	1		coté droit renfoncement			
+point 6	D	26	57		Contour						
+point 7	D	31	57		Contour						
+point 8	D	36	61		Contour						
+point 9	D	39	65		Contour						
+point 10	D	45	60		Contour						
+point 11	D	47	55		Contour						
+point 12	D	51	53		Entrée	2		côté gauche			
+point 13	D	53	53		Entrée	2		côté droit			
+point 14	D	56	42		Contour						
+point 15	D	56	39		Renfoncement	2		côté gauche renfoncement			
+point 16	D	61	38		Renfoncement	2		fond du renfoncement 1			
+point 17	D	61	36		Renfoncement	2		fond du renfoncement 2			
+point 18	D	58	35		Renfoncement	2		côté droit renfoncement			
+point 19	D	57	26		Contour						
+point 20	D	63	21		Contour						
+point 21	D	68	21		Contour						
+point 22	D	70	23		Contour						
+point 23	D	73	23	-1.5 (+ - 1 tête de Vanduul	Sous-bassement	1		trou 			
+point 24	D	71	19		Contour						
+point 25	D	71	13		Contour						
+point 26	D	74	10		Contour						
+point 27	D	72	7		Contour						
+point 28	D	73	4		Entrée	3		côté gauche			
+point 29	G	72	3		Entrée	3		côté droit			
+point 30	G	68	10		Contour						
+point 31	G	66	12		Contour						
+point 32	G	72	17		Contour						
+point 33	G	74	23		Contour						
+point 34	G	77	27		Contour						
+point 35	G	75	32		Contour						
+point 36	G	69	36		Contour						
+point 37	G	56	41		Contour						
+point 38	G	52	48		Entrée	4		côté gauche			
+point 39	G	42	57		Entrée	4		côté droit			
+point 40	G	38	59		Contour						
+point 41	G	35	55		Contour						
+point 42	G	29	53		Contour						
+point 43	G	21	59		Contour						
+point 44	G	19	63		Contour						
+point 45	G	18	66		Contour						
+point 46	G	21	69		Renfoncement	3					
+point 47	G	17	69		Contour						
+point 48	G	9	71		Contour						
+point 49	G	2	72		Entrée	1		côté gauche			
+point 50	G	66	11		Talus	1					
+point 51	G	62	16		Talus	1					
+point 52	G	57	17		Talus	1					
+point 53	G	57	16		Talus	1					
+point 54	G	52	11		Talus	1					
+point 55	G	60	13	2.2	Talus (Sommet)	1					
+point 56	D	33	42		Plateau	1					
+point 57	D	36	41	-1	Plateau	1					
+point 58	D	36	41	1	Plateau	1					
+point 59	D	39	38	-1	Plateau	1					
+point 60	D	39	38	1	Plateau	1					
+point 61	D	46	32		Plateau	1					
+point 62	D	48	28		Plateau	1					
+point 63	G	47	26		Plateau	1					
+point 64	G	44	29		Plateau	1					
+point 65	G	34	39	-1	Plateau	1					
+point 66	G	34	39	1	Plateau	1					
+point 67	G	32	42	-1	Plateau	1					
+point 68	G	32	42	1	Plateau	1					
+point 69	D	46	55		Sous-bassement	2					
+point 70	D	46	51	-1	Sous-bassement	2					
+point 71	D	46	51		Sous-bassement	2					
+point 72	D	49	48	-1	Sous-bassement	2					
+point 73	D	49	48			2					
+point 74	D	52	46		Sous-bassement	2					
+point 75	G	55	34		Point d'escalade						
+point 76	G	55	34		Gouffre	1		contour du gouffre			
+point 77	G	53	38		Gouffre	1		contour du gouffre			
+point 78	G	51	38		Gouffre	1		contour du gouffre			
+point 79	G	47	40 toutpile (cf Manu)		Gouffre	1		contour du gouffre			
+point 80	G	43	44		Gouffre	1		contour du gouffre			
+point 81	G	42	51		Gouffre	1		contour du gouffre			
+point 82	G	46	37		Gouffre	1		contour du gouffre			
+point 83	G	50	35		Gouffre	1		contour du gouffre			
+point 84	G	8	65	-1.5	Sous-bassement	3					
+point 85	G	8	65		Sous-bassement	3					
+point 86	D	7	66	-1.5	Sous-bassement	3					
+point 87	D	7	66		Sous-bassement	3					
+point 88	D	7	67	-1.5	Sous-bassement	3					
+point 89	D	7	67		Sous-bassement	3					
+point 90	D	10	65	-1.5	Sous-bassement	3					
+point 91	D	11	64	-1.5	Sous-bassement	3					
+point 92	D	11	64		Sous-bassement	3					
+point 93	D	9	64		Sous-bassement	3					
+point 94	D	9	64	-1.5	Sous-bassement	3					
+point 95	G	8	65	-0.5	Sous-bassement	3					
+point 96											
+point 97											
+point 98											
+point 99											
+point 100											
