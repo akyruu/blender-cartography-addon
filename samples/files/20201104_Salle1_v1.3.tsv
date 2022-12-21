@@ -1,0 +1,135 @@
+position de 		Y	X
+position, de 2		scribe 1	scribe 2		explorateur
+distance 1-2	70	Armades/Playmo	Manu57		Akyruu						méthode des cercles
+point :	côté : G/D	Distance à S1	Distance à S2	hauteur	catégorie	N°	type de ponctuel	observations			X		Y		z					Adjacent (Y)
+point 1	D	6	70	1	Entrée	1		côté droit, surélévation 1m par rapport au sol de la salle		1	6	0,2571428571	0		1					#DIV/0!
+point 2	D	12	68	1	Contour					1	12	3	3		1
+point 3	D	15	73	1	Contour					1	15	-1,457142857	-1		1
+point 4	D	15	73		Contour					1	15	-1,457142857	-1		0
+point 5	D	24	73	-1.5	Contour			affaissement 0,5m pour se cacher		1	24	1,05	1		-1.5
+point 6	D	26	71		Contour					1	26	3,821428571	4		0
+point 7	D	28	68	1	Contour					1	27	7,571428571	8		1
+point 7.1	D	28	68	1	Base colonne	1		point 1		1	27	7,571428571	8		1
+point 8	D	28	68		Contour			point 1		1	27	7,571428571	8		0
+point 8.1	D	28	68		Base colonne	1		point 1		1	27	7,571428571	8		0
+point 9	D	23	67	1	Base colonne	1		point 2		1	22	6,714285714	7		1
+point 10	D	23	67		Base colonne	1		point 2		1	22	6,714285714	7		0
+point 11	D	19	62	1	Base colonne	1		point 3		1	16	10,12142857	10		1
+point 12	D	19	62		Base colonne	1		point 3		1	16	10,12142857	10		0
+point 13	D	27	55	1	Base colonne	1		point 4		1	20	18,6	19		1
+point 14	D	27	55		Base colonne	1		point 4		1	20	18,6	19		0
+point 15	D	30	56	1	Base colonne	1		point 5		1	23	19,02857143	19		1
+point 16	D	30	56		Base colonne	1		point 5		1	23	19,02857143	19		0
+point 17	D	32	59	1	Contour			point 6		1	27	17,45	17		1
+point 17.1	D	32	59	1	Base colonne	1		point 6		1	27	17,45	17		1
+point 18	D	32	59		Contour			point 6		1	27	17,45	17		0
+point 18.1	D	32	59		Base colonne	1		point 6		1	27	17,45	17		0
+point 19	D	40	51		Entrée	2		côté gauche		1	29	27,85	28		0
+point 20	D	42	43		Entrée	2		côté droit		1	24	34,39285714	34		0
+point 21	D	47	35		Contour					1	21	42,02857143	42		0
+point 21.1	D	47	35		Renfoncement	1		côté gauche		1	21	42,02857143	42		0
+point 22	D	51	34		Contour					1	23	45,32142857	45		0
+point 22.1	D	51	34		Renfoncement	1		fond, position couchée uniquement		1	23	45,32142857	45		0
+point 23	D	48	31		Contour					1	18	44,59285714	45		0
+point 23.1	D	48	31		Renfoncement	1		côté droit		1	18	44,59285714	45		0
+point 24	D	49	25		Contour					1	11	47,68571429	48		0
+point 25	D	63	15		Contour			petit renfoncement		1	13	61,74285714	62		0
+point 26	D	70	0		Contour					1	0	70	70		0
+point 27	G	67	6		Contour					-1	-5	66,80714286	67		0
+point 28	G	75	32		Contour					-1	-32	67,86428571	68		0
+point 29	G	64	47		Contour					-1	-42	48,47857143	48		0
+point 29.1	G	64	47		Eboulis	1		côté gauche		-1	-42	48,47857143	48		0
+point 30	G	58	51	1	Entrée	3		côté gauche		-1	-42	40,45	40		1
+point 30.1	G	58	51	1	Eboulis	1		côté droit		-1	-42	40,45	40		1
+point 31	G	58	51		Entrée	3		côté gauche		-1	-42	40,45	40		0
+point 31.1	G	58	51		Eboulis	1		côté droit		-1	-42	40,45	40		0
+point 32	G	50	57	1	Entrée	3		côté droit		-1	-40	29,65	30		1
+point 33	G	50	57		Entrée	3		côté droit		-1	-40	29,65	30		0
+point 34	G	41	60		Contour					-1	-35	21,29285714	21		0
+point 35	G	40	63		Contour					-1	-36	18,07857143	18		0
+point 35.1	G	40	63		Renfoncement	2				-1	-36	18,07857143	18		0
+point 36	G	37	70	4	Contour					-1	-37	9,778571429	10		4
+point 36.1	G	37	70	4	Renfoncement 2	2		fond		-1	-37	9,778571429	10		4
+point 36.2	G	37	70	4	Plateau	1		début		-1	-37	9,778571429	10		4
+point 37	G	37	70	1	Contour					-1	-37	9,778571429	10		1
+point 37.1	G	37	70	1	Renfoncement	2		fond		-1	-37	9,778571429	10		1
+point 37.2	G	37	70	1	Plateau 1	1		début		-1	-37	9,778571429	10		1
+point 38	G	34	61	4	Renfoncement	2		côté droit		-1	-30	16,67857143	17		4
+point 38.1	G	34	61	4	Plateau	1		angle 1		-1	-30	16,67857143	17		4
+point 39	G	34	61		Renfoncement	2		côté droit		-1	-30	16,67857143	17		0
+point 39	G	34	61		Plateau	1		angle 1		-1	-30	16,67857143	17		0
+point 40	G	23	63	4	Plateau 1	1		angle 2		-1	-20	10,42857143	10		4
+point 41	G	23	63		Plateau	1		angle 2		-1	-20	10,42857143	10		0
+point 41.1	G	23	63		Eboulis	2		angle 2, jonction avec plateau 1 (angle 2)		-1	-20	10,42857143	10		0
+point 42	G	24	72	4	Contour					-1	-24	2,085714286	2		4
+point 42.1	G	24	72	4	Plateau	1		fin		-1	-24	2,085714286	2		4
+point 43	G	24	72		Contour					-1	-24	2,085714286	2		0
+point 43.1	G	24	72		Plateau	1		fin		-1	-24	2,085714286	2		0
+point 44	G	13	69	2	Contour					-1	-13	2,2	2		2
+point 44.1	G	13	69	2	Plateau	2		début		-1	-13	2,2	2		2
+point 45	G	13	69		Contour					-1	-13	2,2	2		0
+point 45.1	G	13	69		Plateau	2		début		-1	-13	2,2	2		0
+point 45.2	G	13	69		Eboulis	2		début		-1	-13	2,2	2		0
+point 46	G	22	57	2	Plateau	2		angle 1		-1	-16	15,25	15		2
+point 47	G	22	57		Plateau	2		angle 1		-1	-16	15,25	15		0
+point 47.1	G	22	57		Eboulis	2		fin		-1	-16	15,25	15		0
+point 48	G	22	50	2	Plateau	2		angle 2		-1	-8	20,6	21		2
+point 49	G	22	50		Plateau	2		angle 2		-1	-8	20,6	21		0
+point 50	G	11	60	2	Plateau	2		angle 3		-1	-4	10,15	10		2
+point 51	G	11	60		Plateau	2		angle 3, accès au plateau		-1	-4	10,15	10		0
+point 52	G	5	68	2	Plateau 2	2		angle 4, fin		-1	-5	2,15	2		2
+point 52.1	G	5	68	2	Contour					-1	-5	2,15	2		2
+point 53	G	5	68	1	Plateau	2		angle 4, fin		-1	-5	2,15	2		1
+point 53.1	G	5	68	1	Entrée	1		côté gauche		-1	-5	2,15	2		1
+point 54	G	5	68		Plateau	2		angle 4, fin		-1	-5	2,15	2		0
+point 54.1	G	5	68		Entrée	1		côté gauche		-1	-5	2,15	2		0
+point 55	D	25	65	1	Colonne	1		point 1		1	23	9,285714286	9		1
+point 56	D	22	63	1	Colonne	1		point 2		1	20	10,10714286	10		1
+point 57	D	26	57	1	Colonne	1		point 3		1	20	16,62142857	17		1
+point 58	D	28	57	1	Colonne	1		point 4		1	22	17,39285714	17		1
+point 59	D	29	64	1	Colonne	1		point 5		1	27	11,75	12		1
+point 60	G	42	41	1	Base colonne	2		point 1		-1	-22	35,59285714	36		1
+point 61	G	42	41		Base colonne	2		point 1		-1	-22	35,59285714	36		0
+point 62	G	45	50	1	Base colonne	2		point 2		-1	-32	31,60714286	32		1
+point 63	G	45	50		Base colonne	2		point 2		-1	-32	31,60714286	32		0
+point 64	G	39	54	1	Base colonne	2		point 3		-1	-30	25,03571429	25		1
+point 65	G	39	54		Base colonne	2		point 3		-1	-30	25,03571429	25		0
+point 66	G	34	55	1	Base colonne	2		point 4		-1	-26	21,65	22		1
+point 67	G	34	55		Base colonne	2		point 4		-1	-26	21,65	22		0
+point 68	G	32	50	1	Base colonne	2		point 5		-1	-21	24,45714286	24		1
+point 69	G	32	50		Base colonne	2		point 5		-1	-21	24,45714286	24		0
+point 70	G	41	44	1	Colonne	2		point 1		-1	-24	33,17857143	33		1
+point 71	G	42	50	1	Colonne	2		point 2		-1	-30	29,74285714	30		1
+point 72	G	38	52	1	Colonne	2		point 3		-1	-28	26	26		1
+point 73	G	34	51	1	Colonne	2		point 4		-1	-23	24,67857143	25		1
+point 74	G	37	46	1	Colonne	2		point 5		-1	-22	29,66428571	30		1
+point 75	G	60	38		Gouffre 1	1		point 1		-1	-33	50,4	50		0
+point 75.1	G	60	38		Point d'escalade					-1	-33	50,4	50		0
+point 76	G	61	34		Gouffre	1		point 2		-1	-30	53,32142857	53		0
+point 77	G	61	31		Gouffre	1		point 3		-1	-27	54,71428571	55		0
+point 78	G	63	29		Gouffre	1		point 4		-1	-26	57,34285714	57		0
+point 79	G	63	29	-1	Gouffre	1		point 4		-1	-26	57,34285714	57		-1
+point 80	G	67	30	-1	Gouffre	1		point 5		-1	-29	60,63571429	61		-1
+point 81	G	68	37	-1	Gouffre	1		point 6		-1	-35	58,25	58		-1
+point 82	G	68	37		Gouffre	1		point 6		-1	-35	58,25	58		0
+point 83	G	64	37		Gouffre	1		point 7		-1	-34	54,47857143	54		0
+point 84	D	51	21		Eboulis	3		point 1, hauteur centrale: 3m		1	8	50,42857143	50		0
+point 85	G	52	18		Eboulis	3		point 2		-1	0	52	52		0
+point 86	G	61	9		Eboulis	3		point 3		-1	0	61	61		0
+point 87	D	58	15		Eboulis	3		point 4		1	8	57,42142857	57		0
+point 88	D	19	64		Eboulis	4		point 1, hauteur centrale: 3m		1	17	8,321428571	8		0
+point 89	D	11	62		Eboulis	4		point 2		1	7	8,407142857	8		0
+point 90	D	18	54		Eboulis	4		point 3		1	7	16,48571429	16		0
+point 91	D	24	51		Eboulis	4		point 4		1	12	20,53571429	21		0
+point 92	D	26	56		Eboulis	4		point 5		1	19	17,42857143	17		0
+point 93	D	15	55		Objets			Bombones x5 (0.8m de hauteur)		1	0	15	15		0
+point 94	G	9	63	2	Objets			Lit x2, côte à côte (point central)		-1	-5	7,228571429	7		2
+point 95	G	14	59	2	Objets			Bombones x5 (0.8m de hauteur)		-1	-8	11,53571429	12		2
+point 96	G	15	56	2	Objets			Caisses empilées (1.6m de hauteur)		-1	-5	14,20714286	14		2
+point 97	G	16	58	2	Objets			Caisses empilées (1.6m de hauteur)		-1	-10	12,8	13		2
+point 98	G	21	55		Objets			Bombones x5 (0.8m de hauteur)		-1	-13	16,54285714	17		0
+point 99	G	64	11		Objets			Etagère avec caisses dessus (3m sur 2m), possibilité cachette accroupi		-1	-9	63,39285714	63		0
+point 100	G	50	39		Objets			Lot de caisses (1m de hauteur), possibilité cachette accroupi		-1	-27	41,99285714	42		0
+point 101	G	50	41		Objets			Lot de caisses (1m de hauteur), possibilité cachette accroupi		-1	-29	40,85	41		0
+point 102	G	51	45		Objets			Caisses empilées (1.6m de hauteur)		-1	-33	39,11428571	39		0
+point 103	G	56	45		Objets			Lot de caisses (1m de hauteur), possibilité cachette accroupi		-1	-36	42,93571429	43		0

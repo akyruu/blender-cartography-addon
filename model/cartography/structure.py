@@ -3,9 +3,8 @@ Module for structure cartography models
 """
 from typing import Dict, List, Optional, Tuple
 
-from mathutils import Vector
-
 import utils
+from mathutils import Vector
 from .common import CartographyInterestType, CartographyCategory
 
 
@@ -30,7 +29,7 @@ class CartographyPoint:
         self.location = location
         self.observations = observations or []
         self.interest = interest
-        self.additional_categories = additional_categories
+        self.extra_categories = additional_categories
         self.copy = False
 
     # Methods -----------------------------------------------------------------
@@ -38,7 +37,7 @@ class CartographyPoint:
         return self.name + (' (' + ', '.join(self.comments) + ')' if self.comments else '')
 
     def has_category(self, category: CartographyCategory):
-        return category == self.category or category in self.additional_categories
+        return category == self.category or category in self.extra_categories
 
     def __repr__(self):
         return utils.object.to_repr(self)
@@ -51,9 +50,10 @@ class CartographyGroup:
     """Group of cartography points"""
 
     # Constructor -------------------------------------------------------------
-    def __init__(self, name: str, category: CartographyCategory, linked: List[any] = None):
+    def __init__(self, name: str, category: CartographyCategory, category_number: int, linked: List[any] = None):
         self.name = name
         self.category = category
+        self.category_number = category_number
         self.points = []
         self.linked: List[CartographyGroup] = linked or []
 

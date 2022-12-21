@@ -89,7 +89,7 @@ class CartographyFilePoint(CartographyFileLine):
             side: CartographyFileSide = None,
             s1_distance: int = 0,
             s2_distance: int = 0,
-            height: int = 0,
+            height: float = 0,
     ):
         CartographyFileLine.__init__(self, row, text)
         self.location = location

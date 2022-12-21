@@ -4,14 +4,12 @@ Module for parser
 
 import logging
 import os
-import re
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import mappings
 import utils
 from model import CartographyCategory, CartographyGroup, CartographyPoint, CartographyRoom
 from reading import CartographyFile, CartographyFilePoint
-from utils.collection import dict as dict_utils
 from . import utils as parse_utils
 from .exception import CartographyParserException
 from .model import ParseContext
@@ -25,110 +23,117 @@ class CartographyParser:
     # Fields ------------------------------------------------------------------
     __logger: logging.Logger = logging.getLogger('CartographyParser')
 
-    # Constructor -------------------------------------------------------------
-    def __init__(self):
-        self.__context = ParseContext(self.__logger)
-
     # Methods -----------------------------------------------------------------
     def parse(self, file: CartographyFile) -> CartographyRoom:
         filename, extension = os.path.splitext(os.path.basename(file.path))
-        self.__context.room = CartographyRoom(filename)
-        self.__context.row = 0
-        self.__context.junctions = {}
+        context = ParseContext(CartographyRoom(filename), self.__logger)
 
         # Read all point lines in file
-        for line in file.points:
-            self.__context.row = line.row
-            self.__parse_point(line)
+        for file_point in file.points:
+            context.row = file_point.row
+            self.__parse_point(context, file_point)
 
         # Post-treatments
-        self.__treat_group_links(self.__context.room)
+        self.__treat_group_links(context.room)
 
         # PT - Junctions @deprecated
-        parse_utils.junction_old.determinate_junctions(self.__context)
-        if len(self.__context.junctions) > 0:
-            parse_utils.junction_old.update_groups_for_junctions(self.__context)
+        #parse_utils.junction_old.determinate_junctions(context)
+        #if len(context.junctions) > 0:
+        #    parse_utils.junction_old.update_groups_for_junctions(context)
 
-        return self.__context.room
+        return context.room
 
-    def __parse_point(self, file_point: CartographyFilePoint):
-        categories = parse_utils.category.parse_categories(file_point.observations, True)
-
+    def __parse_point(self, context: ParseContext, file_point: CartographyFilePoint):
         # Create one point for each category found in file point
         groups_points: List[Tuple[CartographyGroup, CartographyPoint]] = []
-        for category, cat_match in categories:
-            group_point = self.__parse_point_item(file_point, categories, cat_match)
+        group_point = self.__parse_point_item(context, file_point)
+        if group_point:
             groups_points.append(group_point)
-
-        # Create junctions
-        parse_utils.junction.create_junctions(self.__context, groups_points)
+            parse_utils.junction.create_junctions(context, groups_points)  # Create junctions
 
     # Points
     def __parse_point_item(
             self,
-            file_point: CartographyFilePoint,
-            categories: List[Tuple[CartographyCategory, re.Match]],
-            cat_match: re.Match
-    ) -> Tuple[CartographyGroup, CartographyPoint]:
+            context: ParseContext,
+            file_point: CartographyFilePoint
+    ) -> Tuple[CartographyGroup, Optional[CartographyPoint]]:
         point = CartographyPoint()
 
         # Set properties
-        observation = cat_match.group(0)
         point.name = file_point.point_name
-        point.comments = [observation]
+        point.comments = [file_point.observations]
         point.location = file_point.location
-        point.observations = [observation]
+        point.observations = [file_point.observations]
+
+        # Set category (+extra) and interest type
+        category_name = file_point.category
+        if category_name:
+            category = next(
+                (cat
+                 for pattern, cat in mappings.cartography_point_category.items()
+                 if utils.string.match_ignore_case(pattern, category_name))
+                , None)
+            if not category:
+                raise CartographyParserException(context.row, f'Category <{category_name}> not found')
+            point.category = category
+        else:
+            point.category = CartographyCategory.UNKNOWN
+        self.__add_extra_category_if_not_exists(point, point.category)
+
+        point.interest = parse_utils.common.check_interest(file_point.interest_type or '')
+
+        if not point.category and not point.interest:
+            raise CartographyParserException(context.row, 'Point found but not the point category/interest type')
+
+        if point.category == CartographyCategory.GATE:
+            self.__add_extra_category_if_not_exists(point, CartographyCategory.OUTLINE)
 
         # Get or create group
-        group = parse_utils.group.get_or_create(self.__context, point.observations)
+        group_category = point.category
+        if group_category == CartographyCategory.GATE:
+            group_category = CartographyCategory.OUTLINE
+        group = parse_utils.group.get_or_create(context, group_category, file_point.category_number)
 
-        # Determine category and interest type
-        point.category = CartographyCategory.UNKNOWN
-        category = group.category
-        point.interest = parse_utils.common.check_interest(observation)
-        if point.interest is None:
-            category, cat_match = parse_utils.category.parse_point_category(
-                self.__context,
-                file_point.observations,
-                point.category,
-                [group.category]
-            )
-        elif category is None:  # Always false in prod runtime
-            raise CartographyParserException('Point line found but not the point type: #' + str(self.__context.row))
-        point.category = category
+        self.__add_extra_category_if_not_exists(point, group_category)
 
-        # Determine additional categories
-        point.additional_categories = [c for c, m in categories if c != category]
-        self.__add_category_if_not_exists(point, group.category)
-        if point.has_category(CartographyCategory.GATE):
-            self.__add_category_if_not_exists(point, CartographyCategory.OUTLINE)
+        # Check if point already exist
+        existing_point = next((p for p in group.points if p.location == point.location), None)
+        if existing_point:
+            extra_categories = point.extra_categories
+            missing_categories = [c for c in extra_categories if c not in existing_point.extra_categories]
+            if missing_categories:
+                self.__logger.debug(
+                    'Point already exist: %s. Add missing categories: %s',
+                    str(existing_point),
+                    ', '.join(c.name for c in extra_categories)
+                )
+                for category in extra_categories:
+                    self.__add_extra_category_if_not_exists(existing_point, category)
+            else:
+                self.__logger.debug('Point already exist: %s. No missing categories to append. Ignored')
+            return group, None
 
-        # Create and add point to current room
-        self.__context.logger.debug('New point created: %s', str(point))
+        # Add point to group
+        self.__logger.debug('New point created: %s', str(point))
         group.points.append(point)
-
         return group, point
 
     @staticmethod
-    def __add_category_if_not_exists(point: CartographyPoint, category: CartographyCategory):
-        if category != point.category and category not in point.additional_categories:
-            point.additional_categories.append(category)
+    def __add_extra_category_if_not_exists(point: CartographyPoint, category: CartographyCategory):
+        if category != point.category and category not in point.extra_categories:
+            point.extra_categories.append(category)
 
     # Post-treatments
     def __treat_group_links(self, room: CartographyRoom):
         # TODO automatize from category description ?
-        for group in [g for g in room.groups.values() if g.category == CartographyCategory.COLUMN_BASE]:
-            group_name = group.name
-
-            pattern = dict_utils.get_key(mappings.cartography_point_category, CartographyCategory.COLUMN)
-            match = utils.string.match_ignore_case('(' + pattern + ')', group_name, False)
-            if match:
-                linked_name = match.group(1).capitalize()
-                linked_group = room.groups[linked_name]
-                if linked_group:
-                    self.__logger.debug('Column found <%s> for base <%s>', linked_name, group_name)
-                    group.linked.append(linked_group)
-                else:
-                    self.__logger.warning('Column not found for column: <%s>', linked_group)
+        for column_base_group in [g for g in room.groups.values() if g.category == CartographyCategory.COLUMN_BASE]:
+            category_number = column_base_group.category_number
+            column_group = next(
+                (g for g in room.groups.values()
+                 if g.category == CartographyCategory.COLUMN and g.category_number == category_number),
+                None)
+            if column_group:
+                self.__logger.debug('Column #%d found for base #%d', column_group.category_number, category_number)
+                column_base_group.linked.append(column_group)
             else:
-                self.__logger.warning('Column group name not found for base: <%s>', group_name)
+                self.__logger.warning('No column found for base #%d ', category_number)

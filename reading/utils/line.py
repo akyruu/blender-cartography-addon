@@ -21,6 +21,9 @@ class DataMapField:
     def value_to_int(self, default_value: int = 0) -> int:
         return int(self.value) if self.value else default_value
 
+    def value_to_float(self, default_value: float = 0) -> float:
+        return float(self.value) if self.value else default_value
+
 
 # METHODS =====================================================================
 def check(

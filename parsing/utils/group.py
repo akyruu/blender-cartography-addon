@@ -9,7 +9,6 @@ import config
 import utils
 from model import CartographyCategory, CartographyGroup, CartographyRoom
 from parsing.model import ParseContext
-from . import category as category_utils
 
 
 # METHODS =====================================================================
@@ -26,15 +25,15 @@ def find(context: ParseContext, partial_name: str, category: CartographyCategory
     return groups[0] if count == 1 else None
 
 
-def get_or_create(context: ParseContext, observations: List[str]) -> CartographyGroup:
-    name, category = __determinate_group_name_category(context, observations)
+def get_or_create(context: ParseContext, category: CartographyCategory, category_number: int = 0) -> CartographyGroup:
+    name = category.name + (f' {category_number}' if category_number else '')
     group = context.room.groups.get(name, None)
     if not group:
         if category.options.outline:
             group = context.room.outline_group
         if not group:
             context.logger.debug('Create new group <%s>', name)
-            group = CartographyGroup(name, category)
+            group = CartographyGroup(name, category, category_number)
             context.room.groups[name] = group
 
             if category.options.outline:
@@ -44,36 +43,34 @@ def get_or_create(context: ParseContext, observations: List[str]) -> Cartography
     return group
 
 
-def __determinate_group_name_category(context, observations: List[str]) -> Tuple[str, CartographyCategory]:
-    categories = category_utils.parse_categories(observations)
+def __determinate_group_name_category(
+        context,
+        categories: List[CartographyCategory],
+        category_number: int
+) -> Tuple[str, CartographyCategory]:
     if len(categories) == 0:
         category = CartographyCategory.UNKNOWN
         name = category.name
-        context.logger.warning(
-            'Category not found in <%s>. Use category: <%s>',
-            config.obs_separator.join(observations), category.name
-        )
+        context.logger.warning('Category not found. Use category: <%s>', category.name)
     elif len(categories) > 1:
-        category_types = [c for c, m in categories]
+        category_types = [c for c in categories]
         if CartographyCategory.OUTLINE in category_types and CartographyCategory.GATE in category_types:
             category = CartographyCategory.OUTLINE
             name = category.name
         else:
-            category, cat_match = categories[0]
-            name = cat_match.group(0)
+            category = categories[0]
+            name = category.name + (f' {category_number}' if category_number else '')
         context.logger.warning(
-            'Group - Multiple category found: <%s>. Use category: <%s> (observations: <%s>)',
-            ','.join([c.name for c, m in categories]),
-            category.name,
-            config.obs_separator.join(observations)
+            'Group - Multiple category found: <%s>. Use category: <%s>',
+            ','.join([c.name for c in categories]), category.name
         )
     else:
-        category, cat_match = categories[0]
+        category = categories[0]
         if category.options.outline:
             category = CartographyCategory.OUTLINE
             name = CartographyCategory.OUTLINE.name
         else:
-            name = cat_match.group(0)
+            name = category.name + (f' {category_number}' if category_number else '')
 
     return name.strip().capitalize(), category
 

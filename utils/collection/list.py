@@ -85,5 +85,6 @@ def __determine_index(lst: List[T], dyn_index: Optional[GenericIndex], dft: int)
         dyn_index, added = dyn_index
         return __determine_index(lst, dyn_index, dft) + added
     elif isinstance(dyn_index, Callable):
-        return lst.index(inext(e for e in lst if dyn_index(e)))
+        value = inext(e for e in lst if dyn_index(e))
+        return lst.index(value) if value else dft
     return lst.index(dyn_index)

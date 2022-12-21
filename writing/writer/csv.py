@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 from typing import Optional, TextIO
 
+import utils
 from reading import CartographyFile, CartographyFileInfo, CartographyFilePoint, CartographyFileSide
 from .common import CartographyWriter
 from .. import utils as write_utils
@@ -37,6 +38,7 @@ class CartographyCsvWriter(CartographyWriter):
             else:
                 write_utils.line.write_obj(header, output)
 
+    # FIXME used ?
     def __write_header_info(self, info: CartographyFileInfo, output: TextIO):
         write_utils.line.write(self.__separator, [
             'distance 1-2',  # Distance S1-S2 label
@@ -60,15 +62,18 @@ class CartographyCsvWriter(CartographyWriter):
         else:
             side = ''
 
+        # FIXME use patterns config
         write_utils.line.write(self.__separator, [
             point.point_name,  # Point name
             side,  # Side
-            str(point.s1_distance),  # Distance to S1
-            str(point.s2_distance),  # Distance to S2
-            str(point.height),  # Height
-            ', '.join(point.observations), '', '',  # Observations
-            str(point.location.y), '',  # Y
-            str(point.location.x), '',  # X
-            str(point.location.z), '', '', '', '',  # Z
-            ''  # Adjacent Y
+            utils.string.to_string(point.s1_distance),  # Distance to S1
+            utils.string.to_string(point.s2_distance),  # Distance to S2
+            utils.string.to_string(point.height),  # Height
+            utils.string.to_string(point.category),  # Category
+            utils.string.to_string(point.category_number),  # Category number
+            utils.string.to_string(point.interest_type),  # Interest type
+            utils.string.to_string(point.observations), '', '',  # Observations
+            utils.string.to_string(point.location.y), '',  # Y
+            utils.string.to_string(point.location.x), '',  # X
+            utils.string.to_string(point.location.z)  # Z
         ], output)

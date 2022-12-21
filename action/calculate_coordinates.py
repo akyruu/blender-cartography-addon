@@ -49,7 +49,7 @@ def __read_csv_file(filepath: os.path) -> CartographyFile:
         reader = CartographyCsvReader(separator, config.patterns.excel.exclude(ColumnModelCategory.COORDINATE))
     file = reader.read(filepath)
 
-    __logger.info('CSV file <%s> read with success!', filepath)
+    __logger.info('CSV file <%s> read with success! %d points found', filepath, len(file.points))
     return file
 
 

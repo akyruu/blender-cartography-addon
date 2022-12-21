@@ -11,12 +11,12 @@ point 6	G	29	34		Contour					-1	-24	16,65853659	17		0
 point 7	G	31	30		Contour					-1	-23	21,24390244	21		0
 point 8	G	31	30		Escarpement	1				-1	-23	21,24390244	21		0
 point 9	G	27	20		Escarpement	1				-1	-11	24,51219512	25		0
-point 10	G	36	12		Escarpement	1				#REF!		#REF!	#REF!		#REF!
-point 11	G	36	12	5	Escarpement	1				-1	-10	34,54878049	35		0
-point 12	G	41	17		Contour					-1	-10	34,54878049	35		5
-point 13	G	41	17		Escarpement	1				-1	-17	37,47560976	37		0
-point 14	G	41	17	5	Escarpement	1				-1	-17	37,47560976	37		0
-point 15	G	41	17	5	Contour	1				-1	-17	37,47560976	37		5
+point 10	G	36	12		Contour					-1	-10	34,54878049	35		0
+point 11	G	36	12		Escarpement	1				-1	-10	34,54878049	35		0
+point 12	G	36	12	5	Escarpement	1				-1	-10	34,54878049	35		5
+point 13	G	41	17		Contour					-1	-17	37,47560976	37		0
+point 14	G	41	17		Escarpement	1				-1	-17	37,47560976	37		0
+point 15	G	41	17	5	Escarpement	1				-1	-17	37,47560976	37		5
 point 16	G	41	10		Contour					-1	-10	39,7804878	40		0
 point 17	D	41	3		Contour					1	3	40,8902439	41		0
 point 18	D	30	11		Contour					1	0	30	30		0

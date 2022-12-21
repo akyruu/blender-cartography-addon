@@ -33,12 +33,7 @@ def parse_categories(values: List[str] or str, required=False) -> List[Tuple[Car
                 categories.append((category, m))
 
     if not categories and required:
-        raise CartographyParserException(
-            -1,
-            (config.obs_separator.join(values) if isinstance(values, list) else values),
-            'point categories',
-            '|'.join(mappings.cartography_point_category.keys())
-        )
+        raise CartographyParserException('Category not found in values')
 
     return categories
 
@@ -57,10 +52,10 @@ def __match_category_in_observation(pattern: str, value: str) -> re.Match:
 # FIXME deprecated ?
 def parse_point_category(
         context: ParseContext,
-        values: List[str] or str,
+        categories: List[CartographyCategory],
         dft_value: Optional[CartographyCategory] = None,
         categories_to_ignore: List[CartographyCategory] = []  # noqa
-) -> Tuple[CartographyCategory, Optional[re.Match]]:
+) -> CartographyCategory:
     """
     Get the first category that match with value.
 
@@ -72,17 +67,9 @@ def parse_point_category(
     :return Tuple with category (required) and match result (optional)
     :raise CartographyParserException: No category found and default value is None
     """
-    categories = parse_categories(values)
     if categories:
-        return utils.collection.list.inext(
-            ((c, m) for c, m in categories if c not in categories_to_ignore),
-            categories[0]
-        )
+        return utils.collection.list.inext((c for c in categories if c not in categories_to_ignore), categories[0])
     elif dft_value is None:
-        raise CartographyParserException(
-            context.row,
-            config.obs_separator.join(values) if isinstance(values, list) else values,
-            'point category',
-            '|'.join(mappings.cartography_point_category.keys())
-        )
-    return dft_value, None
+        raise CartographyParserException(f'Line #{context.row} - Category not found in {categories}'
+                                         f' (accepted: {mappings.cartography_point_category.keys()}')
+    return dft_value

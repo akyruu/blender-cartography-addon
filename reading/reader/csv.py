@@ -98,7 +98,6 @@ class CartographyCsvReader(CartographyReader):
         info.scribes2 = context.data['scribe_2'].split(', ?')
         info.explorers = context.data['explorer'].split(', ?')
         self.__file.info = info
-        self.__file.headers.append(info)
 
         return self.__file
 
@@ -173,8 +172,11 @@ class CartographyCsvReader(CartographyReader):
             read_utils.line.ignore(context, line)
             return
 
+        # FIXME find a better way
         # Check data found (point name must be filled without data associated, just ignore this case)
-        data_found = sum(1 for m in matches if m and m.group(0))
+        excluded_indexes = [i for i, c in enumerate(self.__model.columns)
+                            if c.ignore or c.category == ColumnModelCategory.COORDINATE]
+        data_found = sum(1 for i, m in enumerate(matches) if m and m.group(0) and i not in excluded_indexes)
         if data_found <= 1:
             read_utils.line.ignore(context, line)
             return
@@ -193,7 +195,7 @@ class CartographyCsvReader(CartographyReader):
         # Determine statements
         point.s1_distance = data_map['dist_s1'].value_to_int()
         point.s2_distance = data_map['dist_s2'].value_to_int()
-        point.height = data_map['height'].value_to_int()
+        point.height = data_map['height'].value_to_float()
 
         # FIXME check here of after ?
         if point.s1_distance == 0 and point.s2_distance == 0 and point.height == 0:
@@ -263,9 +265,9 @@ class CartographyCsvReader(CartographyReader):
         location = Vector((0, 0, 0))
         if self.__patterns.point_has_coordinates:
             location = Vector((
-                data_map['loc_x_calc'].value_to_int(),
-                data_map['loc_y_calc'].value_to_int(),
-                data_map['loc_z'].value_to_int()
+                data_map['loc_x'].value_to_float(),
+                data_map['loc_y'].value_to_float(),
+                data_map['loc_z'].value_to_float()
             ))
         point.location = location
 

@@ -44,7 +44,7 @@ def __read_csv_file(filepath):
         separator = '\t'  # TODO open popup for ask to user choose the file separator
         reader = CartographyCsvReader(separator, config.patterns.excel)
     file = reader.read(filepath)
-    __logger.info('CSV file <%s> read with success!', filepath)
+    __logger.info('CSV file <%s> read with success! %d points found', filepath, len(file.points))
     return file
 
 
@@ -52,7 +52,7 @@ def __parse_cartography_file(file):
     __logger.info('Parse CSV file <%s>', file.path)
     parser = CartographyParser()
     room = parser.parse(file)
-    __logger.info('CSV file <%s> parsed with success!', file.path)
+    __logger.info('CSV file <%s> parsed with success! %d points found!', file.path, len(file.points))
     return room
 
 
@@ -69,8 +69,8 @@ def __draw_blender_model(room, template):
     __logger.info('Draw room <%s>', room.name)
     drawer = CartographyDrawer(
         template,
-        CartographyInterestPointDrawer(template),
-        # CartographyStructuralPointDrawer(template),
+        # CartographyInterestPointDrawer(template),
+        CartographyStructuralPointDrawer(template),
         CartographyMeshDrawer(template)
     )
     drawer.draw(room)

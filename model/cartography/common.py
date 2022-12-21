@@ -15,29 +15,30 @@ class CartographyCategoryType(Flag):
 
 
 class CartographyCategoryOptions:
-    def __init__(self, outline=False, level=0, ground=False, separated=False):
+    def __init__(self, outline=False, level=0, ground=False, separated=False, numbered=False):
         self.outline = outline
         self.level = level
         self.ground = ground
         self.separated = separated
+        self.numbered = numbered
 
 
 class CartographyCategoryOptionsFactory:
     @staticmethod
-    def leveled() -> CartographyCategoryOptions:
-        return CartographyCategoryOptions(ground=True)
+    def leveled(numbered: bool = False) -> CartographyCategoryOptions:
+        return CartographyCategoryOptions(ground=True, numbered=numbered)
 
     @staticmethod
-    def extruded(level: int, ground: bool) -> CartographyCategoryOptions:
-        return CartographyCategoryOptions(level=level, ground=ground)
+    def extruded(level: int, ground: bool, numbered: bool = False) -> CartographyCategoryOptions:
+        return CartographyCategoryOptions(level=level, ground=ground, numbered=numbered)
 
     @staticmethod
-    def outline(level: int, ground: bool) -> CartographyCategoryOptions:
-        return CartographyCategoryOptions(outline=True, level=level, ground=ground)
+    def outline(level: int, ground: bool, numbered: bool = False) -> CartographyCategoryOptions:
+        return CartographyCategoryOptions(outline=True, level=level, ground=ground, numbered=numbered)
 
     @staticmethod
-    def separated() -> CartographyCategoryOptions:
-        return CartographyCategoryOptions(separated=True)
+    def separated(numbered: bool = False) -> CartographyCategoryOptions:
+        return CartographyCategoryOptions(separated=True, numbered=numbered)
 
 
 class CartographyCategory(bytes, Enum):
@@ -53,13 +54,13 @@ class CartographyCategory(bytes, Enum):
 
     # Structural
     OUTLINE = 1, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.outline(2, True)
-    GATE = 2, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.outline(0, False)
-    ESCARPMENT = 3, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.leveled()
-    BASEMENT = 4, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.leveled()
-    LANDING = 5, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.leveled()
-    COLUMN = 6, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.extruded(5, False)
-    COLUMN_BASE = 7, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.leveled()
-    CHASM = 8, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.extruded(-5, True)
+    GATE = 2, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.outline(0, False, True)
+    ESCARPMENT = 3, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.leveled(True)
+    BASEMENT = 4, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.leveled(True)
+    LANDING = 5, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.leveled(True)
+    COLUMN = 6, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.extruded(5, False, True)
+    COLUMN_BASE = 7, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.leveled(True)
+    CHASM = 8, CartographyCategoryType.STRUCTURAL, CartographyCategoryOptionsFactory.extruded(-5, True, True)
 
     # Structural/Interest
     RECESS = 20, CartographyCategoryType.STRUCTURAL_INTEREST

@@ -93,7 +93,7 @@ class CartographyMeshGroupDrawer:
         vertex = self._create_vertex_internal(bm, point.location)
         if append:
             if vertex in self._vertices:
-                raise Exception('Duplicated vertex: <{}>', vertex.co)
+                raise Exception(f'Duplicated vertex: {vertex.co}')
             self._vertices.append(vertex)
         return vertex
 
@@ -115,12 +115,14 @@ class CartographyMeshGroupDrawer:
         edge = self._create_edge_internal(bm, vert1, vert2)
         if append:
             if edge in self._edges:
-                raise Exception('Duplicated edge: <{}>', [v.co for v in edge.verts])
-            self._edges.append(edge)
+                raise Exception(f'Duplicated edge: <{[v.co for v in edge.verts]}>')
+            else :
+                self._edges.append(edge)
             if based:
                 if edge in self._based_edges:
-                    raise Exception('Duplicated based edge: <{}>', [v.co for v in edge.verts])
-                self._based_edges.append(edge)
+                    raise Exception(f'Duplicated based edge: <{[v.co for v in edge.verts]}>')
+                else:
+                    self._based_edges.append(edge)
         return edge
 
     def _create_edge_internal(self, bm: BMesh, vert1: BMVert, vert2: BMVert) -> BMEdge:

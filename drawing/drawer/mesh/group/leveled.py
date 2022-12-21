@@ -178,7 +178,7 @@ class CartographyMeshLeveledGroupDrawer(CartographyMeshGroupDrawer):
 
             count = len(self._outline_top_edges)
             outline_count = len(ground_outline_edges)
-            if ground_outline_edges and outline_count != count:
+            if ground_outline_edges and outline_count != count and False:  # FIXME remove "and False" part
                 self.__logger.info(
                     'Replace outline edges for ground of group: <%s> (%d -> %d)',
                     group.name, count, outline_count

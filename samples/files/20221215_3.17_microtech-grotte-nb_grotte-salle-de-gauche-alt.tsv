@@ -1,0 +1,54 @@
+position de 		Y	X												
+
+position, de 2		scribe 1	scribe 2		explorateur										
+
+distance 1-2	41	Amatheus	Scapin		Rulieng						méthode des cercles				
+
+point :	côté : G/D	Distance à S1	Distance à S2	hauteur	catégorie	N°	type de ponctuel	observations			X		Y		z
+
+point 1	D	3	40	0	Entrée	1		Leger rebord			0.0		1.0		0.0
+point 2	G	3	39	0	Entrée	1					0.0		2.0		0.0
+point 3	G	6	38	0	Contour	0					0.0		3.0		0.0
+point 4	G	8	38	0	Contour	0					-9.0		4.0		0.0
+point 5	G	18	33	0	Contour	0					-14.0		11.0		0.0
+point 6	G	29	34	0	Contour	0					-24.0		17.0		0.0
+point 7	G	31	30	0	Contour	0					-22.0		21.0		0.0
+point 8	G	31	30	0	Escarpement	1					-22.0		21.0		0.0
+point 9	G	27	20	0	Escarpement	1					-12.0		25.0		0.0
+point 10	G	36	12	0	Contour	0					-10.0		35.0		0.0
+point 11	G	36	12	0	Escarpement	1					-10.0		35.0		0.0
+point 12	G	36	12	5.0	Escarpement	1					-10.0		35.0		5.0
+point 13	G	41	17	0	Contour	0					-17.0		37.0		0.0
+point 14	G	41	17	0	Escarpement	1					-17.0		37.0		0.0
+point 15	G	41	17	5.0	Escarpement	1					-17.0		37.0		5.0
+point 16	G	41	10	0	Contour	0					-10.0		40.0		0.0
+point 17	D	41	3	0	Contour	0					3.0		41.0		0.0
+point 18	D	30	11	0	Contour	0					0.0		30.0		0.0
+point 19	D	28	13	0	Contour	0					0.0		28.0		0.0
+point 20	D	26	16	0	Contour	0					6.0		26.0		0.0
+point 21	D	27	18	0	Contour	0					8.0		25.0		0.0
+point 22	D	41	15	0	Contour	0					15.0		38.0		0.0
+point 23	D	38	17	0	Contour	0					16.0		35.0		0.0
+point 24	D	26	23	0	Contour	0					13.0		22.0		0.0
+point 25	D	20	32	0	Contour	0					15.0		13.0		0.0
+point 26	D	16	41	0	Contour	0					16.0		3.0		0.0
+point 27	D	28	13	0			Minerai				0.0		28.0		0.0
+point 28	D	27	18	0			Minerai				8.0		25.0		0.0
+point 29	D	28	22	0			Minerai				14.0		24.0		0.0
+point 30	G	9	33	0			Minerai				0.0		8.0		0.0
+point 31	G	37	7	0			Lichens				-6.0		37.0		0.0
+point 32	D	38	3	0			Minerai				0.0		38.0		0.0
+point 33	D	34	7	0			Minerai				0.0		34.0		0.0
+point 34	D	23	18	0			Minerai				0.0		23.0		0.0
+point 35	D	27	18	0			Minerai				8.0		25.0		0.0
+point 36	G	9	36	0			Feces				-8.0		6.0		0.0
+point 37	G	9	34	0			Feces				0.0		7.0		0.0
+point 38	G	14	29	0			Feces				-8.0		13.0		0.0
+point 39	G	36	18	0			Feces				-16.0		32.0		0.0
+point 40	G	20	21	0			Feces				0.0		20.0		0.0
+point 41	G	27	15	0			Feces				-5.0		27.0		0.0
+point 42	G	36	9	0			Feces				-7.0		35.0		0.0
+point 43	G	37	5	0			Feces				-3.0		37.0		0.0
+point 44	D	20	22	0			Feces				0.0		19.0		0.0
+point 45	D	23	21	0			Feces				9.0		22.0		0.0
+point 46	D	38	13	0			Minerai				12.0		36.0		0.0

@@ -24,6 +24,8 @@ def distance_3d(p1: Vector, p2: Vector) -> float:
 def calc_coordinates_by_dist(p: Vector, dist: int, inverse_y: bool) -> Vector:
     # Formula: round((-distS1²+distS2²-distS1S2²) / (-2 * distS1S2))
     x = round((-math.pow(p.x, 2) + math.pow(p.y, 2) - math.pow(dist, 2)) / (-2 * dist))
+    print('######### calc_coordinates_by_dist: x=(', -math.pow(p.x, 2), '+', math.pow(p.y, 2), '-', math.pow(dist, 2),
+          ') /', (-2 * dist), '=', x)
 
     # Formula: distS2 == distS1S2 ? distS1 : round(sqrt(distS2²-(distS1S2-x)²))
     y = p.x if p.y == dist else round(math.sqrt(math.pow(p.y, 2) - math.pow(dist - x, 2)))
