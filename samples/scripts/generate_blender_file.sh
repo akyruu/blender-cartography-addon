@@ -14,4 +14,4 @@ output=${output/files/generated};
 echo "Launch python script in blender"
 echo "Parameters: action=$action, file=$file, output=$output"
 blender --background --python samples/blender-cartography-addon-exec.py --\
-  -a $action -f $file -o $output
+  -a "$action" -f "$file" -o "$output"
