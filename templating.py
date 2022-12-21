@@ -32,7 +32,7 @@ class CartographyTemplateReader:
 
     # Methods -----------------------------------------------------------------
     def read(self, filepath: os.path) -> CartographyTemplate:
-        with bpy.data.libraries.load(filepath, False) as (data_from, data_to):
+        with bpy.data.libraries.load(filepath) as (data_from, data_to):
             data_to.objects = self.__filter_already_exists(data_from.objects, bpy.data.objects)  # import materials too
 
         template = CartographyTemplate(filepath)
