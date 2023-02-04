@@ -4,7 +4,7 @@ Module for utility list methods
 
 from typing import Callable, Dict, Iterator, List, Optional, Tuple, Union
 
-from utils.common import T, K, Predicate
+from utils.common import T, U, Predicate
 
 # TYPES =======================================================================
 DynamicIndex = Union[Predicate, Tuple[Predicate, int]]
@@ -37,6 +37,13 @@ def pnext(lst: List[T], predicate: Predicate, dft_value: Optional[T] = None) -> 
     return inext((e for e in lst if predicate(e)), dft_value)
 
 
+def flat_map(f: Callable[[T], U], items: List[T]) -> List[U]:
+    flat_items = []
+    for item in items:
+        flat_items.extend(f(item))
+    return flat_items
+
+
 # Extraction ------------------------------------------------------------------
 def sublist(lst: List[T], start: StaticIndex, end: Optional[StaticIndex] = None) -> List[T]:
     return lst[__start_index(lst, start):__end_index(lst, end)]
@@ -56,7 +63,7 @@ def insert_values(lst: List[T], start: int, values: List[T]):
 
 
 # Mapping ---------------------------------------------------------------------
-def group_values(lst: List[T], get_group_key: Callable[[T], K]) -> Dict[K, List[T]]:
+def group_values(lst: List[T], get_group_key: Callable[[T], U]) -> Dict[U, List[T]]:
     groups = {}
     for item in lst:
         key = get_group_key(item)

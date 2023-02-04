@@ -4,9 +4,9 @@ Module for common methods relative to parsing
 
 from typing import Optional
 
-import mappings
 import utils
 from model import CartographyInterestType
+from parsing import config as parse_config
 from ..exception import CartographyParserException
 from ..model import ParseContext
 
@@ -18,7 +18,7 @@ def parse_point_interest_v1p2(
         dft_value: Optional[CartographyInterestType] = None,
         required: bool = False
 ) -> Optional[CartographyInterestType]:
-    interests = [interest for pattern, interest in mappings.cartography_interest_type.items()
+    interests = [interest for pattern, interest in parse_config.interest.by_pattern.items()
                  if utils.string.match_ignore_case(pattern, interest_label)]
     interests_len = len(interests)
     if interests_len == 0:
@@ -28,7 +28,7 @@ def parse_point_interest_v1p2(
     else:
         raise Exception(
             'Invalid mapping configuration: too much interests {} found for <{}>',
-            interest_label, str(mappings.cartography_interest_type.keys())
+            interest_label, str(parse_config.interest.by_pattern.keys())
         )
 
     if interest is None and required:
@@ -36,6 +36,6 @@ def parse_point_interest_v1p2(
             context.row,
             interest_label,
             'point interest',
-            '|'.join(mappings.cartography_interest_type.keys())
+            '|'.join(parse_config.interest.by_pattern.keys())
         )
     return interest

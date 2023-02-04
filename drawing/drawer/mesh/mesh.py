@@ -8,11 +8,10 @@ import bmesh
 import bpy
 from bmesh.types import BMesh
 from bpy.types import Mesh
-from mathutils import Vector
 
 import utils
 from model import CartographyCategoryType, CartographyObjectType, CartographyRoom
-from templating import CartographyTemplate
+from drawing.template.reader import CartographyTemplate
 from .group import CartographyMeshGroupContext, CartographyMeshGroupGeometry, CartographyMeshOutlineGroupDrawer, \
     CartographyMeshExtrudedGroupDrawer, CartographyMeshLeveledGroupDrawer
 from ..common import CartographyRoomDrawer

@@ -8,10 +8,11 @@ from typing import List
 from typing import Optional
 
 import utils
-from config.patterns import TablePattern, ColumnModelCategory
 from mathutils import Vector
 from .common import CartographyReader
+from .. import config as read_config
 from .. import utils as read_utils
+from ..config.table import ModelVersion, ColumnModelCategory
 from ..exception import CartographyReaderException
 from ..model import CartographyFile, CartographyFileInfo, CartographyFileLine, CartographyFilePoint, \
     CartographyFileSide, ReadContext
@@ -43,9 +44,14 @@ class CartographyCsvReader(CartographyReader):
     __logger: logging.Logger = logging.getLogger('CartographyCsvReader')
 
     # Constructor -------------------------------------------------------------
-    def __init__(self, separator: str, model: TablePattern):
+    def __init__(self, separator: str, version: ModelVersion, read_coordinates=True):
         # General
         self.__separator = separator
+
+        model = read_config.table.by_version[version]
+        if not read_coordinates:
+            model = model.exclude(ColumnModelCategory.COORDINATE)
+
         self.__model = model
         self.__patterns = CartographyCsvReader.Patterns(model)
 

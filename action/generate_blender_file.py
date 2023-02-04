@@ -1,13 +1,12 @@
 import logging
 import os
 
-import config.patterns
 import utils
-from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyStructuralPointDrawer, \
-    CartographyMeshDrawer
+from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyMeshDrawer
+from drawing.template.reader import CartographyTemplateReader
 from parsing import CartographyParser
 from reading import CartographyCsvReader, CartographyTsvReader
-from templating import CartographyTemplateReader
+from reading.config.table import ModelVersion
 
 # VARIABLES ===================================================================
 name = 'generate_blender_file'
@@ -28,21 +27,21 @@ def entry_point(args: any):
 def execute(filepath: os.path):
     """Read, parse a CSV file and create the room from coordinates"""
     __logger.info('Generation of blender file start...')
-    file = __read_csv_file(filepath)
+    file = __read_csv_file(filepath, ModelVersion.v1_3)
     room = __parse_cartography_file(file)
     template = __read_blender_template()
     __draw_blender_model(room, template)
     __logger.info('Generation of blender file finished with success!')
 
 
-def __read_csv_file(filepath):
+def __read_csv_file(filepath, version: ModelVersion):
     __logger.info('Read CSV file <%s>', filepath)
     filename, extension = os.path.splitext(filepath)
     if extension.lower() == '.tsv':
-        reader = CartographyTsvReader(config.patterns.excel)
+        reader = CartographyTsvReader(version, True)
     else:  # if extension is '.csv':
         separator = '\t'  # TODO open popup for ask to user choose the file separator
-        reader = CartographyCsvReader(separator, config.patterns.excel)
+        reader = CartographyCsvReader(separator, version, True)
     file = reader.read(filepath)
     __logger.info('CSV file <%s> read with success! %d points found', filepath, len(file.points))
     return file

@@ -5,11 +5,10 @@ Module for leveled of mesh group drawer
 import logging
 from typing import Callable, List
 
-from bmesh.types import BMEdge, BMFace, BMesh, BMVert
-
 import config
-import mappings
 import utils
+from bmesh.types import BMEdge, BMFace, BMesh, BMVert
+from drawing import config as draw_config
 from model import CartographyCategory, CartographyGroup, CartographyPoint
 from utils.blender.bmesh import Geometry
 from .common import CartographyMeshGroupContext, CartographyMeshGroupDrawer
@@ -44,8 +43,8 @@ class CartographyMeshLeveledGroupDrawer(CartographyMeshGroupDrawer):
     def _reset(self, context: CartographyMeshGroupContext):  # overridden
         CartographyMeshGroupDrawer._reset(self, context)
 
-        self._leveled_material_index = context.get_or_create_material(mappings.cartography_mat_wall)
-        self._climbing_material_index = context.get_or_create_material(mappings.cartography_mat_climbing)
+        self._leveled_material_index = context.get_or_create_material(draw_config.template.material_wall)
+        self._climbing_material_index = context.get_or_create_material(draw_config.template.material_climbing)
 
         self._outline_vertices = []
         self._top_vertices = []
@@ -219,7 +218,7 @@ class CartographyMeshLeveledGroupDrawer(CartographyMeshGroupDrawer):
 
         # Determine and apply material
         material_index = self._climbing_material_index \
-            if max_height <= config.max_climbing_height \
+            if max_height <= config.common.max_climbing_height \
             else self._leveled_material_index
         utils.blender.bmesh.face.apply_material(faces, material_index)
 

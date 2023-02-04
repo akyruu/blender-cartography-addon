@@ -11,7 +11,7 @@ import logging
 
 import utils
 from model import CartographyRoom
-from templating import CartographyTemplate
+from drawing.template.reader import CartographyTemplate
 from .common import CartographyRoomDrawer
 
 

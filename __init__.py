@@ -20,17 +20,15 @@ bl_info = {
 
 # MODULES =====================================================================
 modulesNames = [
-    # Configuration
+    # Config
     'config',
     # Model
     'model',
     # Tools
     'utils',
     # Service
-    'mappings',  # Config
     'reading',
     'parsing',
-    'templating',
     'drawing',
     # Main
     'action',

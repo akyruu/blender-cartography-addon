@@ -9,14 +9,6 @@ from model import CartographyGroup, CartographyPoint, CartographyRoom
 
 
 # CLASSES =====================================================================
-class PointGroupTuple:
-    """Tuple with point and group"""
-
-    def __init__(self, point: CartographyPoint, group: CartographyGroup):
-        self.point = point
-        self.group = group
-
-
 class JunctionGroup:
     """Junction between two points"""
 

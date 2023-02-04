@@ -105,7 +105,8 @@ class CartographyInterestType(bytes, Enum):
     BOX = (1, CartographyCategory.ANTHROPOGENIC_OBJECT)
     LITTLE_BOX = (2, CartographyCategory.ANTHROPOGENIC_OBJECT)
     # Harvestable
-    LICHEN = (3, CartographyCategory.HARVESTABLE)
-    ORE = (4, CartographyCategory.HARVESTABLE)
+    LICHEN = (20, CartographyCategory.HARVESTABLE)
+    ORE = (21, CartographyCategory.HARVESTABLE)
+    FECES = (22, CartographyCategory.HARVESTABLE)
     # Others
     UNKNOWN = (99, None)

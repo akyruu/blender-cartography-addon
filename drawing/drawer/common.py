@@ -9,7 +9,7 @@ from enum import Enum
 import bpy
 
 from model import CartographyRoom
-from templating import CartographyTemplate
+from drawing.template.reader import CartographyTemplate
 
 
 # Classes =====================================================================

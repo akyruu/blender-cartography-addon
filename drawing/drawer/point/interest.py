@@ -119,8 +119,8 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
 
         # Mesh create faces and additional vertices/edges
         if category == CartographyCategory.BANK:
-            # Add a centroid (at 1.5 meter of ground) # TODO use the max z for this proper
-            centroid_location = utils.math.translate(utils.math.centroid([v.co for v in outline_vertices]), (0, 0, 1.5))
+            # Add a centroid (at 3 meter of ground) # TODO use the max z for this proper
+            centroid_location = utils.math.translate(utils.math.centroid([v.co for v in outline_vertices]), (0, 0, 3))
             centroid_vertex = utils.blender.bmesh.vert.new(bm, centroid_location)
             self.__logger.debug('[%s] Centroid vertex created: %s', group_name, str(centroid_vertex.co))
 

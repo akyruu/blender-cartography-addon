@@ -3,11 +3,10 @@ import os
 import shutil
 from pathlib import Path
 
-import config.patterns
 import utils
-from config.patterns import ColumnModelCategory
 from mathutils import Vector
 from reading import CartographyCsvReader, CartographyFile, CartographyFileSide, CartographyTsvReader
+from reading.config.table import ModelVersion
 from writing import CartographyCsvWriter, CartographyTsvWriter
 
 # VARIABLES ===================================================================
@@ -28,7 +27,7 @@ def entry_point(args: any):
 def execute(filepath: os.path, target_path: os.path):
     """Read a CSV file, calculate coordinates and update the CSV file"""
     __logger.info('Calculation of coordinates start...')
-    file = __read_csv_file(filepath)
+    file = __read_csv_file(filepath, ModelVersion.v1_3)
     __calculate_coordinates(file)
     if not target_path or target_path == filepath:
         __backup_csv_file(file)
@@ -38,15 +37,15 @@ def execute(filepath: os.path, target_path: os.path):
     __logger.info('Calculation of coordinates finished with success!')
 
 
-def __read_csv_file(filepath: os.path) -> CartographyFile:
+def __read_csv_file(filepath: os.path, version: ModelVersion) -> CartographyFile:
     __logger.info('Read CSV file <%s>', filepath)
 
     filename, extension = os.path.splitext(filepath)
     if extension.lower() == '.tsv':
-        reader = CartographyTsvReader(config.patterns.excel.exclude(ColumnModelCategory.COORDINATE))
+        reader = CartographyTsvReader(version, read_coordinates=False)
     else:  # if extension is '.csv':
         separator = '\t'  # TODO open popup for ask to user choose the file separator
-        reader = CartographyCsvReader(separator, config.patterns.excel.exclude(ColumnModelCategory.COORDINATE))
+        reader = CartographyCsvReader(separator, version, read_coordinates=False)
     file = reader.read(filepath)
 
     __logger.info('CSV file <%s> read with success! %d points found', filepath, len(file.points))

@@ -1,29 +1,16 @@
 """
-Module for templating
-
-History:
-2020/08/21: v0.0.1
-    + add cartography template with writer
+Module for template reader
 """
 
 import logging
 import os
 
 import bpy
-
-import mappings
+from drawing import config as draw_config
+from .model import CartographyTemplate
 
 
 # Classes =====================================================================
-class CartographyTemplate:
-    """Template for cartography"""
-
-    # Constructor -------------------------------------------------------------
-    def __init__(self, filepath: os.path):
-        self.filepath = filepath
-        self.objects = {}
-
-
 class CartographyTemplateReader:
     """Template writer (.blend) for cartography"""
 
@@ -36,7 +23,7 @@ class CartographyTemplateReader:
             data_to.objects = self.__filter_already_exists(data_from.objects, bpy.data.objects)  # import materials too
 
         template = CartographyTemplate(filepath)
-        for obj_type, obj_name in mappings.cartography_object_type.items():
+        for obj_type, obj_name in draw_config.template.by_object.items():
             template.objects[obj_type] = self.__find_object_by_name(obj_name) if obj_name is not None else None
         return template
 

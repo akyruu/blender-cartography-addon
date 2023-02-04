@@ -7,7 +7,7 @@ from typing import List
 
 from bmesh.types import BMEdge, BMFace, BMesh, BMVert
 
-import mappings
+from drawing import config as draw_config
 from utils.blender import bmesh as bmesh_utils
 from utils.blender.bmesh import Geometry
 from utils.collection import list as list_utils
@@ -35,7 +35,7 @@ class CartographyMeshExtrudedGroupDrawer(CartographyMeshGroupDrawer):
     def _reset(self, context: CartographyMeshGroupContext):  # overridden
         CartographyMeshGroupDrawer._reset(self, context)
 
-        self._extruded_material_index = context.get_or_create_material(mappings.cartography_mat_wall)
+        self._extruded_material_index = context.get_or_create_material(draw_config.template.material_wall)
 
         self._to_level_edges = []
         self._translate_edges = []

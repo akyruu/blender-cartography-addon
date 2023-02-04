@@ -6,13 +6,12 @@ import logging
 import os
 from typing import Optional, Tuple
 
-import mappings
 import utils
 from model import CartographyCategory, CartographyGroup, CartographyPoint, CartographyRoom
+from parsing import config as parse_config
 from reading import CartographyFile, CartographyFilePoint
 from utils.collection import dict as dict_utils
 from . import utils as parse_utils
-from .exception import CartographyParserException
 from .model import ParseContext
 
 
@@ -53,14 +52,13 @@ class CartographyParser:
         # Post-treatments
         self.__treat_group_links(context.room)
 
-        # PT - Junctions @deprecated
-        # FIXME useless ? parse_utils.junction_old.determinate_junctions(self.__context)
-        # FIXME useless ? if len(self.__context.junctions) > 0:
-        # FIXME useless ?     parse_utils.junction_old.update_groups_for_junctions(self.__context)
-
         return context.room
 
-    def __parse_point(self, context: ParseContext, file_point: CartographyFilePoint) -> Tuple[CartographyPoint, Optional[CartographyGroup]]:
+    def __parse_point(
+            self,
+            context: ParseContext,
+            file_point: CartographyFilePoint
+    ) -> Tuple[CartographyPoint, Optional[CartographyGroup]]:
         point = CartographyPoint()
 
         # Set properties
@@ -103,7 +101,7 @@ class CartographyParser:
         for group in [g for g in room.groups.values() if g.category == CartographyCategory.COLUMN_BASE]:
             group_name = group.name
 
-            pattern = dict_utils.get_key(mappings.cartography_point_category, CartographyCategory.COLUMN)
+            pattern = dict_utils.get_key(parse_config.category.by_pattern, CartographyCategory.COLUMN)
             match = utils.string.match_ignore_case('(' + pattern + '( [0-9]+)?)', group_name, False)
             if match:
                 linked_name = match.group(1).capitalize()

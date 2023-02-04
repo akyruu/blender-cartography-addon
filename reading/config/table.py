@@ -61,13 +61,27 @@ class TablePatternTypeMapper(TypeMapper):
             return ColumnModelCategory[value]
 
 
+# INTERNAL ====================================================================
+class ModelVersion(bytes, Enum):
+    def __new__(cls, value: int, major: int = 0, minor: int = 0, patch: int = 0, env: str = ''):
+        obj = bytes.__new__(cls, [value])  # noqa
+        obj._value_ = value
+        obj.major = major
+        obj.minor = minor
+        obj.patch = patch
+        obj.env = env
+        return obj
+
+    v1_3 = 1, 1, 3
+
+
+def __read_table_json(version: ModelVersion) -> TablePattern:
+    version_name = f'{version.major}.{version.minor}.{version.patch}' + (f'-{version.env}' if version.env else '')
+    filename = f'json/table/v{version_name}.json'
+    filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), filename)
+    data = utils.io.file.read_json(filepath)
+    return utils.object.to_class(data, TablePattern, TablePatternTypeMapper())
+
+
 # CONFIG ======================================================================
-# Excel pattern
-excel = utils.object.to_class(
-    utils.io.file.read_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'patterns_excel.json')
-    ),
-    TablePattern,
-    TablePatternTypeMapper()
-)
-print('[Config] Patterns - Excel: {}', excel)
+by_version = {v: __read_table_json(v) for v in list(ModelVersion)}
