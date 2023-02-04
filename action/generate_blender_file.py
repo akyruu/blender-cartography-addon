@@ -1,6 +1,7 @@
 import logging
 import os
 
+import config.patterns
 import utils
 from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyStructuralPointDrawer, \
     CartographyMeshDrawer
@@ -38,12 +39,12 @@ def __read_csv_file(filepath):
     __logger.info('Read CSV file <%s>', filepath)
     filename, extension = os.path.splitext(filepath)
     if extension.lower() == '.tsv':
-        reader = CartographyTsvReader()
+        reader = CartographyTsvReader(config.patterns.excel)
     else:  # if extension is '.csv':
         separator = '\t'  # TODO open popup for ask to user choose the file separator
-        reader = CartographyCsvReader(separator)
+        reader = CartographyCsvReader(separator, config.patterns.excel)
     file = reader.read(filepath)
-    __logger.info('CSV file <%s> read with success!', filepath)
+    __logger.info('CSV file <%s> read with success! %d points found', filepath, len(file.points))
     return file
 
 
@@ -51,7 +52,7 @@ def __parse_cartography_file(file):
     __logger.info('Parse CSV file <%s>', file.path)
     parser = CartographyParser()
     room = parser.parse(file)
-    __logger.info('CSV file <%s> parsed with success!', file.path)
+    __logger.info('CSV file <%s> parsed with success! %d points found!', file.path, len(file.points))
     return room
 
 

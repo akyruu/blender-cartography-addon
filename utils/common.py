@@ -6,6 +6,7 @@ from typing import Callable, TypeVar
 
 # TYPES =======================================================================
 T = TypeVar('T')
+U = TypeVar('U')
 
 K = TypeVar('K')
 V = TypeVar('V')

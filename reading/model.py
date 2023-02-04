@@ -5,7 +5,7 @@ Module for common methods relative to reading
 import os
 from enum import Enum
 from logging import Logger
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import utils
 from mathutils import Vector
@@ -82,21 +82,21 @@ class CartographyFilePoint(CartographyFileLine):
             text: str,
             location: Vector = Vector((0, 0, 0)),
             category: str = None,
-            identifier: int = None,
+            group_identifier: int = None,
             interest_type: str = None,
-            observations: List[str] = None,
+            observations: str = None,
             point_name: str = '',
             side: CartographyFileSide = None,
             s1_distance: int = 0,
             s2_distance: int = 0,
-            height: int = 0,
+            height: float = 0,
     ):
         CartographyFileLine.__init__(self, row, text)
         self.location = location
         self.category = category
-        self.group_identifier = identifier
+        self.group_identifier = group_identifier
         self.interest_type = interest_type
-        self.observations = observations or []
+        self.observations = observations
         self.point_name = point_name
         self.side = side
         self.s1_distance = s1_distance
@@ -116,6 +116,7 @@ class ReadContext:
 
     def __init__(self, separator: str, logger: Logger):
         self.separator = separator
-        self.row: int = 1
-        self.column: int = 1
+        self.data: Dict[str, any] = {}
+        self.row: int = 0
+        self.column: int = 0
         self.logger: Logger = logger

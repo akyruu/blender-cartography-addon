@@ -4,10 +4,11 @@ Module for CSV reader
 
 import logging
 import os
+from typing import List
 from typing import Optional
 
-import config
 import utils
+from config.patterns import TablePattern, ColumnModelCategory
 from mathutils import Vector
 from .common import CartographyReader
 from .. import utils as read_utils
@@ -20,165 +21,194 @@ from ..model import CartographyFile, CartographyFileInfo, CartographyFileLine, C
 class CartographyCsvReader(CartographyReader):
     """CSV cartography reader"""
 
+    # Types -------------------------------------------------------------------
+    class Patterns:
+        """Patterns to use for parse/check lines"""
+
+        def __init__(self, model):
+            self.header_extras: List[List[str]] = [
+                ['' if h.ignore else h.pattern for i, h in enumerate(hs)] for hs in model.headers
+            ]
+            self.header_extra_names: List[List[str]] = [
+                [h.name or f'c{i:02}' for i, h in enumerate(hs)] for hs in model.headers
+            ]
+
+            self.point_header: List[str] = ['' if c.ignore else c.header for c in model.columns]
+            self.point_data: List[str] = ['' if c.ignore else c.pattern for c in model.columns]
+            self.point_names: List[str] = [c.name or f'c{i:02}' for i, c in enumerate(model.columns)]
+            self.point_data_names: List[str] = [c.name for i, c in enumerate(model.columns)]
+            self.point_has_coordinates: bool = ColumnModelCategory.COORDINATE in [c.category for c in model.columns]
+
     # Fields ------------------------------------------------------------------
     __logger: logging.Logger = logging.getLogger('CartographyCsvReader')
 
     # Constructor -------------------------------------------------------------
-    def __init__(self, separator: str, logger: Optional[logging.Logger] = None):
-        self.__context = ReadContext(separator, logger or self.__logger)
+    def __init__(self, separator: str, model: TablePattern):
+        # General
+        self.__separator = separator
+        self.__model = model
+        self.__patterns = CartographyCsvReader.Patterns(model)
+
+        # Execution (reset before each execution)
         self.__file: Optional[CartographyFile] = None
         self.__header: bool = True
-        self.__header_info: int = -1
+        self.__headers_found: List[bool] = []
         self.__last_point_side = None
 
     # Methods -----------------------------------------------------------------
     # Reading
     def read(self, filepath: os.path) -> CartographyFile:
+        # Reset execution variables
         self.__file = CartographyFile(filepath)
         self.__header = True
-        self.__header_info = -1
-        self.__context.row = 0
-        self.__context.column = 0
+        self.__headers_found = [False] * len(self.__model.headers)
+        self.__last_point_side = None
 
+        context = ReadContext(self.__separator, self.__logger)
+
+        # Read all lines in CSV file
         with open(filepath, 'r', encoding='utf8') as file:
-            # Read all lines in CSV file
             for line in file:
-                self.__context.row += 1
-                line = line.strip()
-                if not line:
+                context.row += 1
+                if not line.strip():
                     continue
                 elif line.startswith('#'):
-                    read_utils.line.ignore(self.__context, line)
+                    read_utils.line.ignore(context, line)
                     continue
                 elif self.__header:
-                    read = False
-                    if self.__header_info == 0:
-                        read = self.__read_header_info(line)
-
-                    if not read:
-                        self.__read_header(line)
+                    self.__read_header(context, line)
+                    continue
                 else:
-                    self.__read_point(line)
+                    self.__read_point(context, line)
 
             # Check if a point found
             if self.__header:
                 raise CartographyReaderException(
-                    self.__context.row,
-                    self.__context.column,
+                    context.row,
+                    context.column,
                     'Only header was found!',
                     'header',
                     'A line of type "point"'
                 )
 
+        # Collect information from data
+        info = CartographyFileInfo(context.row, line)
+        info.s1s2_distance = int(context.data['dist_s1_s2'])
+        info.scribes1 = context.data['scribe_1'].split(', ?')
+        info.scribes2 = context.data['scribe_2'].split(', ?')
+        info.explorers = context.data['explorer'].split(', ?')
+        self.__file.info = info
+
         return self.__file
 
-    def __read_header(self, line: str):
-        self.__file.headers.append(CartographyFileLine(self.__context.row, line))
-        if self.__header_info < 0 and read_utils.line.check(self.__context, line, 'header', [
-            'position, de 2', '', 'scribe 1', 'scribe 2', '', 'explorateur'
-        ], strict=False, log_warns=False):
-            self.__logger.debug('Header of information found: <%d>', self.__context.row)
-            self.__header_info = 0
-        elif read_utils.line.check(self.__context, line, 'header', [
-            'point :',
-            '(côté|cote|side) : [GL]/[DR]',
-            'Distance (à|to) S1',
-            'Distance (à|to) S2',
-            '(Hauteur|Height)',
-            '(Cat[ée]gories?)',
-            '(N°|#)',
-            '(Type de ponctuel?)',
-            '(Observations?)', '', '',
-            'X', '',
-            'Y', '',
-            'Z'
-        ], strict=False, log_warns=False):
-            self.__logger.debug('Header of point table found: <%d>', self.__context.row)
-            self.__header = False
+    def __read_header(self, context: ReadContext, line: str):
+        self.__file.headers.append(CartographyFileLine(context.row, line))
 
-    def __read_header_info(self, line: str) -> bool:
-        # Check line describe the info from header
-        patterns = [
-            'distance 1-2',  # Distance S1-S2 label
-            '([0-9]+)',  # Distance between S1 and S2
-            '(.+)',  # Scribe 1
-            '(.+)', '',  # Scribe 2
-            '(.+)', '', '', '', '', '',  # Explorer
-            'méthode des cercles'  # Coordinates label
-        ]
-        matches = read_utils.line.check(self.__context, line, 'header', patterns, strict=False, log_warns=False)
-        if not matches:
-            self.__logger.warning('Header information line <%d> not match with excepted pattern', self.__context.row)
-            self.__logger.debug(
-                'Header information line <%d> not match with expected pattern:\n\tpattern=<%s>\n\tline=<%s>',
-                self.__context.row,
-                utils.io.file.format_line_for_logging(self.__context.separator.join(patterns)),
-                utils.io.file.format_line_for_logging(line)
+        if not self.__read_header_extra(context, line):
+            self.__read_header_extra_finish_check()
+            if self.__read_header_point(context, line):
+                self.__header = False
+
+    def __read_header_extra(self, context: ReadContext, line: str) -> bool:
+        headers = self.__model.headers
+        for i, header in enumerate(headers):
+            patterns = self.__patterns.header_extras[i]
+            names = self.__patterns.header_extra_names[i]
+            matches = read_utils.line.check(context, line, 'header_extra', patterns, names, False, True, False)
+            if matches:
+                if self.__headers_found[i]:
+                    self.__logger.warning('Header #%d is already found. Ignored', context.row)
+                    return True
+
+                self.__logger.debug('Header #%d is found: %s', context.row, utils.io.file.format_line_for_logging(line))
+                for index, column in enumerate(header):
+                    if column.name:
+                        value = matches[index].group(0)
+                        self.__logger.debug(
+                            'Header #%d, column #%d - data retrieved: %s=%s',
+                            context.row, index + 1, column.name, value
+                        )
+                        context.data[column.name] = value
+                self.__headers_found[i] = True
+                return True
+        return False
+
+    def __read_header_extra_finish_check(self):
+        headers_not_found = []
+        total = len(self.__headers_found)
+        for i, found in enumerate(self.__headers_found):
+            if not found:
+                headers_not_found.append(i)
+        if len(headers_not_found) > 0:
+            self.__logger.warning(
+                '%d/%d header(s) not found: [%s]',
+                len(headers_not_found),
+                total,
+                ', '.join(map(lambda idx: str(idx), headers_not_found))
             )
-            self.__header_info = 99
-            return False
+        else:
+            self.__logger.debug('%d/%d extra headers found!', total, total)
 
-        self.__logger.debug('Header information line found: <%d>', self.__context.row)
-        info = CartographyFileInfo(self.__context.row, line)
-        info.s1s2_distance = int(matches[1].group(0))
-        info.scribes1 = matches[2].group(0).split(', ?')
-        info.scribes2 = matches[3].group(0).split(', ?')
-        info.explorers = matches[5].group(0).split(', ?')
-        self.__file.info = info
-        self.__file.headers.append(info)
+    def __read_header_point(self, context: ReadContext, line: str) -> bool:
+        # Check point headers for get column indexes
+        patterns = self.__patterns.point_header
+        names = self.__patterns.point_names
+        if read_utils.line.check(context, line, 'header_point', patterns, names, False, True):
+            self.__logger.debug('Header of point table found on line #%d', context.row)
+            return True
 
-        self.__header_info = 1
-        return True
+        self.__logger.warning(
+            'Header of line #%d not identified: %s',
+            context.row, utils.io.file.format_line_for_logging(line)
+        )
+        return False
 
-    def __read_point(self, line: str):
-        # Check line describe a point
-        patterns = [
-            'point [0-9]+(.[0-9]+)?',  # Point name (0)
-            '[DGRL]?',  # Side (1)
-            '([0-9]+)?',  # Distance to S1 (2)
-            '([0-9]+)?',  # Distance to S2 (3)
-            '-?([0-9]+)?',  # Height (4)
-            '([A-Za-z0-9].+)',  # Category (5)
-            '([0-9]+)?',  # Identifier (6)
-            '([A-Za-z0-9].+)?',  # Interest type (7)
-            '([A-Za-z0-9].+)?', '', '-?1?',  # Observations (8)
-            '(-?[0-9]+)?', '-?[0-9]+',  # calc + X (11)
-            '(-?[0-9]+)?', '',  # calc + Y (13)
-            '-?[0-9]+',  # Z (15)
-        ]
-        matches = read_utils.line.check(self.__context, line, 'point', patterns, False)
+    def __read_point(self, context: ReadContext, line: str):
+        # Check line data
+        patterns = self.__patterns.point_data
+        names = self.__patterns.point_names
+        matches = read_utils.line.check(context, line, 'point', patterns, names, False, True)
         if not matches:
-            matches = read_utils.line.check(self.__context, line, 'point', [patterns[0]], False, True)
-            if not matches:
-                raise CartographyReaderException(
-                    self.__context.row,
-                    self.__context.column,
-                    line,
-                    'point',
-                    self.__context.separator.join(patterns)
-                )
-            read_utils.line.ignore(self.__context, line)
+            read_utils.line.ignore(context, line)
             return
 
+        # FIXME find a better way
+        # Check data found (point name must be filled without data associated, just ignore this case)
+        excluded_indexes = [i for i, c in enumerate(self.__model.columns)
+                            if c.ignore or c.category == ColumnModelCategory.COORDINATE]
+        data_found = sum(1 for i, m in enumerate(matches) if m and m.group(0) and i not in excluded_indexes)
+        if data_found <= 1:
+            read_utils.line.ignore(context, line)
+            return
+
+        # Retrieve and check data from line
+        data_names = self.__patterns.point_data_names
+        data_map = read_utils.line.extract_data_map(context, line, data_names)
+
         # Create a new point
-        self.__logger.debug('Point line found: #%d', self.__context.row)
-        point = CartographyFilePoint(self.__context.row, line)
+        self.__logger.debug('Line #%d: point found! (%s)', context.row, utils.io.file.format_line_for_logging(line))
+        point = CartographyFilePoint(context.row, line)
 
-        # Determine string information
-        point.point_name = matches[0].group(0)
-        point.s1_distance = int(matches[2].group(0)) if matches[2].group(0) else 0
-        point.s2_distance = int(matches[3].group(0)) if matches[3].group(0) else 0
-        point.height = int(matches[4].group(0)) if matches[4].group(0) else 0
+        # Determine information
+        point.point_name = data_map['point_name'].value
 
-        # Determine coordinates
-        point.location = Vector((
-            int(matches[11].group(0)),
-            int(matches[13].group(0)),
-            int(matches[15].group(0))
-        ))
+        # Determine statements
+        point.s1_distance = data_map['dist_s1'].value_to_int()
+        point.s2_distance = data_map['dist_s2'].value_to_int()
+        point.height = data_map['height'].value_to_float()
+
+        # FIXME check here of after ?
+        if point.s1_distance == 0 and point.s2_distance == 0 and point.height == 0:
+            raise CartographyReaderException(
+                context.row,
+                context.column,
+                '',
+                'point statement (distances, height)',
+                'not_all_blank'
+            )
 
         # Determine point side
-        side = matches[1].group(0)
+        side = data_map['side'].value
         if not side:
             if not self.__last_point_side:
                 self.__logger.warning('No point side found. The side is unknown')
@@ -193,19 +223,52 @@ class CartographyCsvReader(CartographyReader):
 
         if not point.side:
             raise CartographyReaderException(
-                self.__context.row,
-                self.__context.column,
-                side,
+                context.row,
+                context.column,
+                '',
                 'point side',
                 '[DGRL]'
             )
         self.__last_point_side = point.side
 
-        # Determine infos
-        point.category = matches[5].group(0)
-        point.group_identifier = int(matches[6].group(0)) if matches[6].group(0) else 0
-        point.interest_type = matches[7].group(0)
-        point.observations = [o.strip() for o in matches[8].group(0).split(config.obs_separator)]
+        # Determine global type of point
+        required_data_not_found = ['category']
+
+        category = data_map['category'].value
+        if category:
+            point.category = category
+            point.group_identifier = data_map['group_identifier'].value_to_int()
+            required_data_not_found.remove('category')
+
+        interest_type = data_map['interest_type'].value
+        if interest_type:
+            point.interest_type = interest_type
+
+        # FIXME check here of after ?
+        if len(required_data_not_found) > 0:
+            self.__logger.error(
+                'Required data not found in line #%d: %s',
+                context.row, utils.io.file.format_line_for_logging(line)
+            )
+            raise CartographyReaderException(
+                context.row,
+                context.column,
+                '',
+                'point category',
+                'not_all_blank'
+            )
+
+        point.observations = data_map['observations'].value
+
+        # Determine coordinates
+        location = Vector((0, 0, 0))
+        if self.__patterns.point_has_coordinates:
+            location = Vector((
+                data_map['loc_x'].value_to_float(),
+                data_map['loc_y'].value_to_float(),
+                data_map['loc_z'].value_to_float()
+            ))
+        point.location = location
 
         # Add line to file
         self.__logger.debug('Add point line to file: %s', str(point))

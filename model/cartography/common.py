@@ -60,7 +60,7 @@ class CartographyStructuralCategoryOptions(CartographyCategoryOptions):
 class CartographyCategory(bytes, Enum):
     """Category of cartography group or points"""
 
-    def __new__(cls, value: int, cat_type: CartographyCategoryType, options=CartographyCategoryOptions()):
+    def __new__(cls, value: int, cat_type: CartographyCategoryType, options: CartographyCategoryOptions):
         obj = bytes.__new__(cls, [value])  # noqa
         obj._value_ = value
         obj.type = cat_type
@@ -68,27 +68,27 @@ class CartographyCategory(bytes, Enum):
         return obj
 
     # Structural
-    OUTLINE = (1, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.outlined(2, True))
-    GATE = (2, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.outlined())
-    ESCARPMENT = (3, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.leveled())
-    BASEMENT = (4, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.leveled())
-    LANDING = (5, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.leveled())
-    COLUMN = (6, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.extruded(5, False))
-    COLUMN_BASE = (7, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.leveled())
-    CHASM = (8, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.extruded(-5, True))
+    OUTLINE = 1, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.outlined(2, True)
+    GATE = 2, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.outlined()
+    ESCARPMENT = 3, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.leveled()
+    BASEMENT = 4, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.leveled()
+    LANDING = 5, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.leveled()
+    COLUMN = 6, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.extruded(5, False)
+    COLUMN_BASE = 7, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.leveled()
+    CHASM = 8, CartographyCategoryType.STRUCTURAL, CartographyStructuralCategoryOptions.extruded(-5, True)
 
     # Structural/Interest
-    BANK = (9, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.structured())
-    RECESS = (10, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.structured())
+    BANK = 20, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.structured()
+    RECESS = 21, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.structured()
 
     # Interest
-    CLIMBING_POINT = (11, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions())
-    HARVESTABLE = (12, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.detailed(True))
-    ANTHROPOGENIC_OBJECT = (13, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.detailed(True))
-    STRUCTURE = (14, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.detailed(True))
+    CLIMBING_POINT = 40, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions()
+    HARVESTABLE = 41, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.detailed(True)
+    ANTHROPOGENIC_OBJECT = 42, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.detailed(True)
+    STRUCTURE = 43, CartographyCategoryType.INTEREST, CartographyInterestCategoryOptions.detailed(True)
 
     # Others
-    UNKNOWN = (99, CartographyCategoryType.UNKNOWN, CartographyCategoryOptions())
+    UNKNOWN = 99, CartographyCategoryType.UNKNOWN, CartographyCategoryOptions()
 
 
 # Interest --------------------------------------------------------------------

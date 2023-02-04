@@ -15,3 +15,7 @@ def match_ignore_case(pattern: str, value: str, exact: bool = True) -> re.Match:
         if m is None:
             m = re.match('.*' + pattern + '.*', value, flags)
     return m
+
+
+def to_string(value: any) -> str:
+    return '' if value is None else str(value)

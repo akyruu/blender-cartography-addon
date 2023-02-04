@@ -44,9 +44,9 @@ def __has_junction(
     vert1a, vert1b = __get_vertices(edge1)
     vert2a, vert2b = __get_vertices(edge2)
     return predicate(vert1a, vert2a) \
-           or predicate(vert1a, vert2b) \
-           or predicate(vert1b, vert2a) \
-           or predicate(vert1b, vert2b)
+        or predicate(vert1a, vert2b) \
+        or predicate(vert1b, vert2a) \
+        or predicate(vert1b, vert2b)
 
 
 def same_2d_position(edge1: BMEdge or BiLocation, edge2: BMEdge or BiLocation) -> bool:
@@ -65,7 +65,7 @@ def _same_position(
     vert1a, vert1b = __get_vertices(edge1)
     vert2a, vert2b = __get_vertices(edge2)
     return (predicate(vert1a, vert2a) and predicate(vert1b, vert2b)) \
-           or (predicate(vert1a, vert2b) and predicate(vert1b, vert2a))
+        or (predicate(vert1a, vert2b) and predicate(vert1b, vert2a))
 
 
 def __get_vertices(edge: BMEdge or BiLocation) -> BiLocation:

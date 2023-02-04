@@ -3,9 +3,10 @@ import os
 import shutil
 from pathlib import Path
 
-from mathutils import Vector
-
+import config.patterns
 import utils
+from config.patterns import ColumnModelCategory
+from mathutils import Vector
 from reading import CartographyCsvReader, CartographyFile, CartographyFileSide, CartographyTsvReader
 from writing import CartographyCsvWriter, CartographyTsvWriter
 
@@ -42,13 +43,13 @@ def __read_csv_file(filepath: os.path) -> CartographyFile:
 
     filename, extension = os.path.splitext(filepath)
     if extension.lower() == '.tsv':
-        reader = CartographyTsvReader()
+        reader = CartographyTsvReader(config.patterns.excel.exclude(ColumnModelCategory.COORDINATE))
     else:  # if extension is '.csv':
         separator = '\t'  # TODO open popup for ask to user choose the file separator
-        reader = CartographyCsvReader(separator)
+        reader = CartographyCsvReader(separator, config.patterns.excel.exclude(ColumnModelCategory.COORDINATE))
     file = reader.read(filepath)
 
-    __logger.info('CSV file <%s> read with success!', filepath)
+    __logger.info('CSV file <%s> read with success! %d points found', filepath, len(file.points))
     return file
 
 

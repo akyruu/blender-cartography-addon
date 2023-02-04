@@ -22,5 +22,5 @@ class CartographyReaderException(Exception):
     def __get_message(value: str, pattern: str) -> str:
         return 'Invalid {} (l.{}, c.{}):' \
                + ('\n\tCurrent: <{}>\n\tExpected: <{}> (case insensitive)'
-                  if (value and len(value)) > 80 or (pattern and len(pattern)) > 80
-                  else ' <{}>. Expected: <{}> (case insensitive)')
+                  if (value and len(value) > 80) or (pattern and len(pattern) > 80)
+                  else 'Current: <{}>. Expected: <{}> (case insensitive)')

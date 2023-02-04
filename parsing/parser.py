@@ -12,6 +12,7 @@ from model import CartographyCategory, CartographyGroup, CartographyPoint, Carto
 from reading import CartographyFile, CartographyFilePoint
 from utils.collection import dict as dict_utils
 from . import utils as parse_utils
+from .exception import CartographyParserException
 from .model import ParseContext
 
 
@@ -23,22 +24,16 @@ class CartographyParser:
     # Fields ------------------------------------------------------------------
     __logger: logging.Logger = logging.getLogger('CartographyParser')
 
-    # Constructor -------------------------------------------------------------
-    def __init__(self):
-        self.__context = ParseContext(self.__logger)
-
     # Methods -----------------------------------------------------------------
     def parse(self, file: CartographyFile) -> CartographyRoom:
         filename, extension = os.path.splitext(os.path.basename(file.path))
-        self.__context.room = CartographyRoom(filename)
-        self.__context.row = 0
-        self.__context.junctions = {}
+        context = ParseContext(CartographyRoom(filename), self.__logger)
 
         # Read all point lines in file
         point_with_groups_by_location = {}
         for file_point in file.points:
-            self.__context.row = file_point.row
-            point, group = self.__parse_point(file_point)
+            context.row = file_point.row
+            point, group = self.__parse_point(context, file_point)
 
             # Regroup point with group by location
             if group is not None:
@@ -52,40 +47,40 @@ class CartographyParser:
         # Create junctions
         filter(lambda items: len(items) > 1, point_with_groups_by_location.values())
         for point_with_groups in point_with_groups_by_location.values():
-            parse_utils.junction.create_junctions(self.__context, point_with_groups)
-        self.__logger.debug('<%d> junctions created!', len(self.__context.room.junctions))
+            parse_utils.junction.create_junctions(context, point_with_groups)
+        self.__logger.debug('<%d> junctions created!', len(context.room.junctions))
 
         # Post-treatments
-        self.__treat_group_links(self.__context.room)
+        self.__treat_group_links(context.room)
 
         # PT - Junctions @deprecated
         # FIXME useless ? parse_utils.junction_old.determinate_junctions(self.__context)
         # FIXME useless ? if len(self.__context.junctions) > 0:
         # FIXME useless ?     parse_utils.junction_old.update_groups_for_junctions(self.__context)
 
-        return self.__context.room
+        return context.room
 
-    def __parse_point(self, file_point: CartographyFilePoint) -> Tuple[CartographyPoint, Optional[CartographyGroup]]:
+    def __parse_point(self, context: ParseContext, file_point: CartographyFilePoint) -> Tuple[CartographyPoint, Optional[CartographyGroup]]:
         point = CartographyPoint()
 
         # Set properties
         point.name = file_point.point_name
         point.group_identifier = file_point.group_identifier
         point.location = file_point.location
-        point.observations = file_point.observations
+        point.observations = file_point.observations.split(', ')
 
         # Determine category and interest type
         category_label = file_point.category
-        point.category = parse_utils.category.parse_point_category_v1p2(self.__context, category_label)
+        point.category = parse_utils.category.parse_point_category_v1p2(context, category_label)
         point.interest = parse_utils.interest.parse_point_interest_v1p2(
-            self.__context,
-            file_point.interest_type,
+            context,
+            file_point.interest_type or '',
             required=parse_utils.category.require_interest(point.category)
         )
 
         # Determine group
         group_identifier = file_point.group_identifier
-        group = parse_utils.group.get_or_create(self.__context, point.category, category_label, group_identifier)
+        group = parse_utils.group.get_or_create(context, point.category, category_label, group_identifier)
 
         # Determine additional categories and comments
         if group.category is not point.category:
@@ -95,7 +90,7 @@ class CartographyParser:
             point.comments.append(group.name)
         point.comments += point.observations
 
-        self.__context.logger.debug('New point created: %s', str(point))
+        self.__logger.debug('New point created: %s', str(point))
 
         # Add point to required group
         group.points.append(point)

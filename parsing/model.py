@@ -30,8 +30,8 @@ class JunctionGroup:
 class ParseContext:
     """Context for CartographyParser"""
 
-    def __init__(self, logger: Logger):
-        self.room: Optional[CartographyRoom] = None
+    def __init__(self, room: CartographyRoom, logger: Logger):
+        self.room: CartographyRoom = room
         self.row: int = 0
         self.junctions: Dict[str, JunctionGroup] = {}
         self.logger: Logger = logger

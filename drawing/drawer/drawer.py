@@ -12,6 +12,7 @@ import logging
 import utils
 from model import CartographyRoom
 from templating import CartographyTemplate
+from .common import CartographyRoomDrawer
 
 
 # Classes =====================================================================
@@ -22,7 +23,7 @@ class CartographyDrawer:
     __logger = logging.getLogger('CartographyDrawer')
 
     # Constructor -------------------------------------------------------------
-    def __init__(self, template: CartographyTemplate, *room_drawers):
+    def __init__(self, template: CartographyTemplate, *room_drawers: CartographyRoomDrawer):
         self.__template = template
         self.__room_drawers = room_drawers
 

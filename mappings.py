@@ -18,8 +18,9 @@ def __build_regex(words: List[str]) -> str:
 cartography_point_name_join = ' - '
 
 # Type of cartography points
-__category_words = config.mappings.words['category']
+__category_words = config.mappings.words.category
 cartography_point_category = {
+    # TODO move to "mapping"
     # Structure
     __build_regex(__category_words['OUTLINE']): CartographyCategory.OUTLINE,
     __build_regex(__category_words['GATE']): CartographyCategory.GATE,
@@ -29,9 +30,9 @@ cartography_point_category = {
     __build_regex(__category_words['COLUMN']): CartographyCategory.COLUMN,
     __build_regex(__category_words['COLUMN_BASE']): CartographyCategory.COLUMN_BASE,
     __build_regex(__category_words['CHASM']): CartographyCategory.CHASM,
-    __build_regex(__category_words['RECESS']): CartographyCategory.RECESS,
     # Obstacle
     __build_regex(__category_words['BANK']): CartographyCategory.BANK,
+    __build_regex(__category_words['RECESS']): CartographyCategory.RECESS,
     # Interest
     __build_regex(__category_words['CLIMBING_POINT']): CartographyCategory.CLIMBING_POINT,
     __build_regex(__category_words['HARVESTABLE']): CartographyCategory.HARVESTABLE,
@@ -43,8 +44,9 @@ cartography_point_category = {
 cartography_junction_pattern = '(Jonction|Junction) .+ (' + '|'.join(cartography_point_category.keys()) + ')'
 
 # Type of cartography interest
-__interest_type_words = config.mappings.words['interest_type']
+__interest_type_words = config.mappings.words.interest_type
 cartography_interest_type = {
+    # TODO move to "mapping"
     __build_regex(__interest_type_words['LITTLE_BOX']): CartographyInterestType.LITTLE_BOX,
     __build_regex(__interest_type_words['BOX']): CartographyInterestType.BOX,
     __build_regex(__interest_type_words['LICHEN']): CartographyInterestType.LICHEN,
@@ -53,6 +55,7 @@ cartography_interest_type = {
 
 # Type of cartography points
 cartography_object_type = {
+    # TODO move to "config" ?
     # Point categories
     CartographyCategory.OUTLINE: 'contour',
     CartographyCategory.GATE: 'Gate',
