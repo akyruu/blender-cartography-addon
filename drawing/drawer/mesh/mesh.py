@@ -44,7 +44,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
 
         # Create object
         name = room.name + '_plane'
-        obj = utils.blender.object.create(name, Vector((0, 0, 0)), template, collection)
+        obj = utils.blender.object.create_from_template(name, (0, 0, 0), template, collection)
 
         # Create and clean BMesh
         mesh = utils.blender.object.get_mesh(obj)

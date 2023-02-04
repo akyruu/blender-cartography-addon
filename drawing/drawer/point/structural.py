@@ -41,5 +41,5 @@ class CartographyStructuralPointDrawer(CartographyRoomDrawer):
         if template is None:
             return
 
-        obj = utils.blender.object.create(point.get_label(), point.location, template, collection)
+        obj = utils.blender.object.create_from_template(point.get_label(), point.location, template, collection)
         obj.hide_set(point.copy)

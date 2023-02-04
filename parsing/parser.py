@@ -70,6 +70,7 @@ class CartographyParser:
 
         # Set properties
         point.name = file_point.point_name
+        point.group_identifier = file_point.group_identifier
         point.location = file_point.location
         point.observations = file_point.observations
 

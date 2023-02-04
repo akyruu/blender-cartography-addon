@@ -28,7 +28,7 @@ def extrude(bm: BMesh, geom: List[Union[BMVert, BMEdge, BMFace]]) -> Geometry:
     return Geometry(extruded_geom)
 
 
-def extrude_edges_z(bm: BMesh, edges: List[BMEdge], z: float or int) -> Geometry:
-    extruded = extrude(bm, edges)
+def extrude_z(bm: BMesh, geom: List[Union[BMVert, BMEdge, BMFace]], z: float or int) -> Geometry:
+    extruded = extrude(bm, geom)
     bmesh.ops.translate(bm, vec=(0, 0, z), verts=extruded.vertices)  # noqa
     return extruded

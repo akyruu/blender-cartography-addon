@@ -13,11 +13,12 @@ BiLocation = Tuple[Location] or List[Location]
 
 
 # METHODS =====================================================================
-def distance_3d(p1: Vector, p2: Vector) -> float:
+def distance_3d(loc1: Location, loc2: Location) -> float:
+    """Distance between two point in 3D"""
     return math.sqrt(
-        math.pow(abs(p1.x - p2.x), 2)
-        + math.pow(abs(p1.y - p2.y), 2)
-        + math.pow(abs(p1.z - p2.z), 2)
+        math.pow(abs(__get_x(loc1.x) - __get_x(loc2.x)), 2)
+        + math.pow(abs(__get_y(loc1.y) - __get_y(loc2.y)), 2)
+        + math.pow(abs(__get_z(loc1.z) - __get_z(loc2.z)), 2)
     )
 
 
@@ -36,6 +37,41 @@ def calc_coordinates_by_dist(p: Vector, dist: int, inverse_y: bool) -> Vector:
     return Vector((x, y, z))
 
 
+def centroid(locations: List[Location]):
+    locations_count = len(locations)
+    return (
+        sum([__get_x(loc) for loc in locations]) / locations_count,
+        sum([__get_y(loc) for loc in locations]) / locations_count,
+        sum([__get_z(loc) for loc in locations]) / locations_count
+    )
+
+
+def sum_vector(loc1: Location, loc2: Location) -> Vector:
+    """Summary of vectors"""
+    return Vector((
+        __get_x(loc1) + __get_x(loc2),
+        __get_y(loc1) + __get_y(loc2),
+        __get_z(loc1) + __get_z(loc2)
+    ))
+
+
+def diff_vector(loc1: Location, loc2: Location) -> Vector:
+    """Difference of vectors"""
+    return Vector((
+        __get_x(loc1) - __get_x(loc2),
+        __get_y(loc1) - __get_y(loc2),
+        __get_z(loc1) - __get_z(loc2)
+    ))
+
+
+def translate(loc: Location, vector: Location) -> Vector:
+    return Vector((
+        __get_x(loc) + __get_x(vector),
+        __get_y(loc) + __get_y(vector),
+        __get_z(loc) + __get_z(vector)
+    ))
+
+
 def same_2d_position(loc1: Location, loc2: Location) -> bool:
     return __get_x(loc1) == __get_x(loc2) and __get_y(loc1) == __get_y(loc2)
 
@@ -44,12 +80,12 @@ def same_3d_position(loc1: Location, loc2: Location) -> bool:
     return __get_x(loc1) == __get_x(loc2) and __get_y(loc1) == __get_y(loc2) and __get_z(loc1) == __get_z(loc2)
 
 
+# Internal --------------------------------------------------------------------
 def __get_x(loc: Location) -> int or float:
     return loc.x if isinstance(loc, Vector) else loc[0]
 
 
 def __get_y(loc: Location) -> int or float:
-
     return loc.y if isinstance(loc, Vector) else loc[1]
 
 

@@ -11,6 +11,13 @@ __logger = logging.Logger('blender_collection')
 
 
 # METHODS =====================================================================
+def get_or_create(name: str, parent: bpy.types.Collection = None) -> bpy.types.Collection:
+    collection = bpy.data.collections.get(name)
+    if not collection:
+        collection = create(name, parent)
+    return collection
+
+
 def create(name: str, parent: bpy.types.Collection = None, erase=False) -> bpy.types.Collection:
     collection = bpy.data.collections.get(name)
     if collection:

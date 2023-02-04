@@ -17,14 +17,16 @@ class CartographyPoint:
     def __init__(
             self,
             name: str = None,
+            group_identifier: int = 0,
             comments: str = None,
             category: CartographyCategory = None,
             location: Vector = Vector((0, 0, 0)),
             observations: List[str] = None,
             interest: Optional[CartographyInterestType] = None,
-            additional_categories: Set[CartographyCategory] = None  # noqa
+            additional_categories: Optional[Set[CartographyCategory]] = None,
     ):
         self.name: str = name
+        self.group_identifier = group_identifier
         self.comments: List[str] = comments or []
         self.category = category
         self.location = location

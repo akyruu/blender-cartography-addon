@@ -2,9 +2,9 @@
 Module for utility list methods
 """
 
-from typing import Callable, Iterator, List, Optional, Tuple, Union
+from typing import Callable, Dict, Iterator, List, Optional, Tuple, Union
 
-from utils.common import T, Predicate
+from utils.common import T, K, Predicate
 
 # TYPES =======================================================================
 DynamicIndex = Union[Predicate, Tuple[Predicate, int]]
@@ -13,6 +13,10 @@ GenericIndex = Union[DynamicIndex, StaticIndex]
 
 
 # METHODS =====================================================================
+def contains_one(lst: List[T], sub_lst: List[T]) -> bool:
+    return inext(e for e in sub_lst if e in lst) is not None
+
+
 def contains_all(lst: List[T], sub_lst: List[T]) -> bool:
     return inext(e for e in sub_lst if e not in lst) is None
 
@@ -49,6 +53,19 @@ def insert_values(lst: List[T], start: int, values: List[T]):
     for e in values:
         lst.insert(i, e)
         i += 1
+
+
+# Mapping ---------------------------------------------------------------------
+def group_values(lst: List[T], get_group_key: Callable[[T], K]) -> Dict[K, List[T]]:
+    groups = {}
+    for item in lst:
+        key = get_group_key(item)
+        items = groups.get(key)
+        if items is None:
+            items = []
+            groups[key] = items
+        items.append(item)
+    return groups
 
 
 # Removing --------------------------------------------------------------------
