@@ -39,9 +39,7 @@ modulesNames = [
 
 # Importation --------------------------------------------------------------
 modulesFullNames = [
-    ('{}'.format(moduleName)
-     if 'DEBUG_MODE' in sys.argv
-     else '{}.{}'.format(__name__, moduleName))
+    (f'{moduleName}' if 'DEBUG_MODE' in sys.argv else f'{__name__}.{moduleName}')
     for moduleName in modulesNames
 ]
 for moduleFullName in modulesFullNames:
@@ -64,7 +62,7 @@ def register():
                 try:
                     bpy.utils.register_class(cls)
                 except RuntimeError as err:
-                    raise RuntimeError('Failed to register {0}. Cause: {1}'.format(cls, err))
+                    raise RuntimeError(f'Failed to register {cls}. Cause: {err}')
         if hasattr(module, 'register'):
             module.register()
 
@@ -78,7 +76,7 @@ def unregister():
                 try:
                     bpy.utils.unregister_class(cls)
                 except RuntimeError as err:
-                    raise RuntimeError('Failed to unregister {0}. Cause: {1}'.format(cls, err))
+                    raise RuntimeError(f'Failed to unregister {cls}. Cause: {err}')
 
 
 # ENTRY POINT =================================================================

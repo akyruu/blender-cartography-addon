@@ -18,7 +18,7 @@ __logger = logging.getLogger(name)
 def entry_point(args: any):
     file = args.file
     if not file:
-        raise Exception('A file required for action <{}>'.format(name))
+        raise Exception(f'A file required for action <{name}>')
 
     target_path = args.output if args.output else file
     execute(file, target_path)

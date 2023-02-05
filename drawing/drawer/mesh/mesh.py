@@ -85,7 +85,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
                 geom = drawer.draw(context)
                 self.__check_group_geom(geom)
             except Exception as err:
-                raise Exception('Failed to draw group <{}>'.format(group.name)).with_traceback(err.__traceback__)
+                raise Exception(f'Failed to draw group <{group.name}>').with_traceback(err.__traceback__)
         else:
             self.__logger.warning('No drawer found for group <%s> (%s)', group.name, group.category.name)
             geom = CartographyMeshGroupGeometry()
@@ -98,7 +98,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
             duplicated = [v for v in geom.vertices if utils.blender.bmesh.vert.same_3d_position(v, vert)]
             count = len(duplicated)
             if count > 1:
-                raise Exception('Duplicated vertex <{}>: <{}> times'.format(vert.co, count))
+                raise Exception(f'Duplicated vertex <{vert.co}>: <{count}> times')
 
         edges_dict = {'': geom.edges, 'based': geom.based_edges}
         for name, edges in edges_dict.items():
@@ -106,6 +106,6 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
                 duplicated = [e for e in edges if utils.blender.bmesh.edge.same_3d_position(e, edge)]
                 count = len(duplicated)
                 if count > 1:
-                    raise Exception('Duplicated {} edge <{}>: <{}> times'.format(name, [v.co for v in edge.verts], count))
+                    raise Exception(f'Duplicated {name} edge <{[v.co for v in edge.verts]}>: <{count}> times')
 
         # TODO check faces ?

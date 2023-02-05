@@ -48,7 +48,7 @@ def __to_class(obj: any, target_type: Type[T], type_mapper: TypeMapper, path: st
     if type_mapper.map_obj_child(path):
         for name, value in obj.items():
             if not hasattr(target, name):
-                raise Exception("Unknown attribute <{}> for class <{}>".format(name, target.__class__.__name__))
+                raise Exception(f'Unknown attribute <{name}> for class <{target.__class__.__name__}>')
 
             attr_path = (path + '.' if path else '') + name
             attr_value = getattr(target, name)

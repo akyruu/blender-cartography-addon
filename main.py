@@ -26,4 +26,4 @@ def entry_point(action_name: str):
     if action_inst:
         action_inst.entry_point(args)
     else:
-        raise Exception('Unknown action: <{}>'.format(action))
+        raise Exception(f'Unknown action: <{action}>')

@@ -56,7 +56,7 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
             points: List[CartographyPoint],
             collection: bpy.types.Collection
     ) -> bool:
-        group_name = '{} {} ({})'.format(collection.name, group_identifier, ', '.join([p.name for p in points]))
+        group_name = f'{collection.name} {group_identifier} (' + ', '.join([p.name for p in points]) + ')'
         self.__logger.debug(
             'Draw structured group: %s with points %s',
             group_name, str([p.name + ' (' + str(p.location) + ')' for p in points])
@@ -72,7 +72,7 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
             return False
 
         # Build mesh
-        mesh_name = '{}_{}_mesh'.format(category.name.lower(), group_identifier)
+        mesh_name = f'{category.name.lower()}_{group_identifier}_mesh'
         mesh = utils.blender.mesh.create(mesh_name)
         bm = utils.blender.mesh.edit(mesh)
 

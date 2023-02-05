@@ -43,8 +43,8 @@ def parse_point_category_v1p2(
     elif categories_len == 1:
         category = categories[0]
     else:
-        raise Exception('Invalid mapping configuration: too much categories {} found for <{}>'
-                        .format(category_label, str(parse_config.category.by_pattern.keys())))
+        raise Exception(f'Invalid mapping configuration: too much categories {category_label} found'
+                        f' for <{parse_config.category.by_pattern.keys()}>')
 
     if category is None and required:
         raise CartographyParserException(

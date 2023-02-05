@@ -18,7 +18,7 @@ def entry_point(args: any):
     utils.blender.scene.clear()
     file = args.file
     if not file:
-        raise Exception('A file required for action <{}>'.format(name))
+        raise Exception(f'A file required for action <{name}>')
     execute(file)
     if args.output:
         utils.blender.io.export_blend_file(args.output)
