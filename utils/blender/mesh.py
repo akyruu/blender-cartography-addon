@@ -7,7 +7,6 @@ from typing import List, Tuple
 import bmesh
 import bpy
 from bmesh.types import BMesh
-from bpy.types import Mesh, Material
 from mathutils import Vector
 
 
@@ -28,8 +27,8 @@ def create(
     return mesh
 
 
-def update(mesh: Mesh, bm: BMesh):
-    """Update Mesh with BMesh"""
+def update(mesh: bpy.types.Mesh, bm: BMesh):
+    """Update bpy.types.Mesh with BMesh"""
     if bm.is_wrapped:
         bmesh.update_edit_mesh(mesh, False, False)
     else:
@@ -37,8 +36,8 @@ def update(mesh: Mesh, bm: BMesh):
         mesh.update()
 
 
-def edit(mesh: Mesh) -> BMesh:
-    """Create BMesh from Mesh"""
+def edit(mesh: bpy.types.Mesh) -> BMesh:
+    """Create BMesh from bpy.types.Mesh"""
     if mesh.is_editmode:
         bm = bmesh.from_edit_mesh(mesh)
     else:
@@ -47,8 +46,8 @@ def edit(mesh: Mesh) -> BMesh:
     return bm
 
 
-# Material --------------------------------------------------------------------
-def get_or_create_material(mesh: Mesh, name: str) -> Tuple[Material, int]:
+# bpy.types.Material --------------------------------------------------------------------
+def get_or_create_material(mesh: bpy.types.Mesh, name: str) -> Tuple[bpy.types.Material, int]:
     material = mesh.materials.get(name)
     if not material:
         material = bpy.data.materials.get(name)

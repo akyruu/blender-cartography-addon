@@ -22,7 +22,7 @@ args = utils.args.parse()
 def entry_point(action_name: str):
     """Entry point for execute an action"""
     __logger.info('Launch action <%s>...', action_name)
-    action_inst = utils.collection.list.pnext(__actions, lambda a: a.name == action_name)
+    action_inst = next((a for a in __actions if a.name == action_name), None)
     if action_inst:
         action_inst.entry_point(args)
     else:

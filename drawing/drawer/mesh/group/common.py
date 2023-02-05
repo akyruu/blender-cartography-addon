@@ -6,10 +6,9 @@ import logging
 from abc import abstractmethod
 from typing import Dict, List, Optional, Tuple
 
-from bmesh.types import BMEdge, BMFace, BMesh, BMVert
-from bpy.types import Mesh
-
+import bpy
 import utils
+from bmesh.types import BMEdge, BMFace, BMesh, BMVert
 from model import CartographyGroup, CartographyPoint, CartographyRoom
 from utils.blender.bmesh import Geometry
 from utils.math import Location
@@ -32,7 +31,7 @@ class CartographyMeshGroupContext:
     """Context of CartographyMeshGroupDrawer"""
 
     # Constructor -------------------------------------------------------------
-    def __init__(self, mesh: Mesh, bm: BMesh, room: CartographyRoom):
+    def __init__(self, mesh: bpy.types.Mesh, bm: BMesh, room: CartographyRoom):
         self.mesh = mesh
         self.bm = bm
 

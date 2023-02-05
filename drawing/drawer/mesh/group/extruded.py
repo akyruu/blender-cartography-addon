@@ -7,12 +7,10 @@ from typing import List
 
 from bmesh.types import BMEdge, BMFace, BMesh, BMVert
 
-from drawing import config as draw_config
 from utils.blender import bmesh as bmesh_utils
 from utils.blender.bmesh import Geometry
-from utils.collection import list as list_utils
 from .common import CartographyMeshGroupContext, CartographyMeshGroupDrawer
-
+from .... import config as draw_config
 
 # CLASSES =====================================================================
 class CartographyMeshExtrudedGroupDrawer(CartographyMeshGroupDrawer):
@@ -102,7 +100,7 @@ class CartographyMeshExtrudedGroupDrawer(CartographyMeshGroupDrawer):
         for edge in self._to_level_edges:
             extruded = self._extrude_edge_z(bm, edge, z)
             bmesh_utils.face.apply_material(extruded.faces, self._extruded_material_index)
-            translate_edge = list_utils.inext(e for e in extruded.edges if e.verts[0].co.z == e.verts[1].co.z)
+            translate_edge = next((e for e in extruded.edges if e.verts[0].co.z == e.verts[1].co.z))
             self._translate_edges.append(translate_edge)
 
     # FIXME merge this code with the creation of faced edges ?

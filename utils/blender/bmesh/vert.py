@@ -7,9 +7,8 @@ from typing import Tuple
 import bpy
 from bmesh.types import BMesh, BMVert
 from mathutils import Vector
-
-import utils
 from utils.math import Location
+from ... import math as math_utils
 
 
 # METHODS =====================================================================
@@ -20,10 +19,7 @@ def global_co(vert: BMVert, obj: bpy.types.Object) -> Vector:
 
 def get(bm: BMesh, location: Location) -> BMVert:
     vector = Vector(location) if isinstance(location, Tuple) else location
-    return utils.collection.list.pnext(
-        bm.verts,
-        lambda v: v.co.x == vector.x and v.co.y == vector.y and v.co.z == vector.z
-    )
+    return next((v for v in bm.verts if math_utils.same_3d_position(v.co, vector)), None)
 
 
 def new(bm: BMesh, location: Location) -> BMVert:
@@ -31,11 +27,11 @@ def new(bm: BMesh, location: Location) -> BMVert:
 
 
 def same_2d_position(vert1: BMVert or Location, vert2: BMVert or Location) -> bool:
-    return utils.math.same_2d_position(__get_location(vert1), __get_location(vert2))
+    return math_utils.same_2d_position(__get_location(vert1), __get_location(vert2))
 
 
 def same_3d_position(vert1: BMVert or Location, vert2: BMVert or Location) -> bool:
-    return utils.math.same_3d_position(__get_location(vert1), __get_location(vert2))
+    return math_utils.same_3d_position(__get_location(vert1), __get_location(vert2))
 
 
 def __get_location(vert: BMVert or Location) -> Location:

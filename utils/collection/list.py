@@ -2,7 +2,7 @@
 Module for utility list methods
 """
 
-from typing import Callable, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from utils.common import T, U, Predicate
 
@@ -14,27 +14,16 @@ GenericIndex = Union[DynamicIndex, StaticIndex]
 
 # METHODS =====================================================================
 def contains_one(lst: List[T], sub_lst: List[T]) -> bool:
-    return inext(e for e in sub_lst if e in lst) is not None
+    return next((e for e in sub_lst if e in lst), None) is not None
 
 
 def contains_all(lst: List[T], sub_lst: List[T]) -> bool:
-    return inext(e for e in sub_lst if e not in lst) is None
+    return next((e for e in sub_lst if e not in lst), None) is None
 
 
 def get_last(lst: List[T]) -> Optional[T]:
     """Get last item in list"""
     return lst[-1] if lst and len(lst) > 0 else None
-
-
-def inext(iterator: Iterator[T], dft_value: Optional[T] = None) -> Optional[T]:  # noqa
-    try:
-        return next(iterator)
-    except StopIteration:
-        return dft_value
-
-
-def pnext(lst: List[T], predicate: Predicate, dft_value: Optional[T] = None) -> Optional[T]:  # noqa
-    return inext((e for e in lst if predicate(e)), dft_value)
 
 
 def flat_map(f: Callable[[T], U], items: List[T]) -> List[U]:
@@ -109,6 +98,6 @@ def __determine_index(lst: List[T], dyn_index: Optional[GenericIndex], dft: int)
         dyn_index, added = dyn_index
         return __determine_index(lst, dyn_index, dft) + added
     elif isinstance(dyn_index, Callable):
-        value = inext(e for e in lst if dyn_index(e))
+        value = next((e for e in lst if dyn_index(e)), None)
         return lst.index(value) if value else dft
     return lst.index(dyn_index)

@@ -69,8 +69,8 @@ class CartographyParser:
 
         # Determine category and interest type
         category_label = file_point.category
-        point.category = parse_utils.category.parse_point_category_v1p2(context, category_label)
-        point.interest = parse_utils.interest.parse_point_interest_v1p2(
+        point.category = parse_utils.category.parse_point_category(context, category_label)
+        point.interest = parse_utils.interest.parse_point_interest(
             context,
             file_point.interest_type or '',
             required=parse_utils.category.require_interest(point.category)

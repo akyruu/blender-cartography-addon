@@ -3,9 +3,8 @@ Module for structure cartography models
 """
 from typing import Dict, List, Optional, Set, Tuple
 
-from mathutils import Vector
-
 import utils
+from mathutils import Vector
 from .common import CartographyInterestType, CartographyCategory
 
 
@@ -89,9 +88,8 @@ class CartographyJunction:
         self.points2.append(point2)
         self.points.append((point1, point2))
 
-    def has_point(self, point: CartographyPoint):
-        loc = point.location
-        return utils.collection.list.pnext(self.points, lambda p: loc in [p.location for p in p]) is not None
+    def has_point(self, point: CartographyPoint) -> bool:
+        return next((True for (p1, p2) in self.points if p1.is_same(point) or p2.is_same(point)), False)
 
     def __repr__(self):
         return utils.object.to_repr(self)
@@ -121,13 +119,13 @@ class CartographyRoom:
         return junction
 
     def get_junction(self, group1: CartographyGroup, group2: CartographyGroup) -> CartographyJunction:
-        return utils.collection.list.pnext(self.junctions, lambda j: group1 in j.groups and group2 in j.groups)
+        return next((j for j in self.junctions if group1 in j.groups and group2 in j.groups), None)
 
     def has_junction(self, group1: CartographyGroup, group2: Optional[CartographyGroup] = None) -> bool:
         predicate = (lambda j: group1 in j.groups) \
             if not group2 \
             else (lambda j: group1 in j.groups and group2 in j.groups)
-        return utils.collection.list.pnext(self.junctions, predicate) is not None
+        return next((j for j in self.junctions if predicate(j)), None) is not None
 
     def __repr__(self):
         return utils.object.to_repr(self)

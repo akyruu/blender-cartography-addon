@@ -7,7 +7,6 @@ import logging
 import bmesh
 import bpy
 from bmesh.types import BMesh
-from bpy.types import Mesh
 
 import utils
 from model import CartographyCategoryType, CartographyObjectType, CartographyRoom
@@ -57,7 +56,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
         bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.001)
         utils.blender.mesh.update(mesh, bm)
 
-    def __draw_room(self, mesh: Mesh, bm: BMesh, room: CartographyRoom):
+    def __draw_room(self, mesh: bpy.types.Mesh, bm: BMesh, room: CartographyRoom):
         context = CartographyMeshGroupContext(mesh, bm, room)
 
         self.__logger.debug('Draw mesh for room <%s>...', room.name)
@@ -79,7 +78,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
 
     def __draw_group(self, context: CartographyMeshGroupContext) -> CartographyMeshGroupGeometry:
         group = context.group
-        drawer = utils.collection.list.inext(d for p, d in self.__drawers.items() if p(group.category))
+        drawer = next((d for p, d in self.__drawers.items() if p(group.category)), None)
         if drawer:
             try:
                 geom = drawer.draw(context)

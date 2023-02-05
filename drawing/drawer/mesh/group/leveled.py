@@ -8,10 +8,10 @@ from typing import Callable, List
 import config
 import utils
 from bmesh.types import BMEdge, BMFace, BMesh, BMVert
-from drawing import config as draw_config
 from model import CartographyCategory, CartographyGroup, CartographyPoint
 from utils.blender.bmesh import Geometry
 from .common import CartographyMeshGroupContext, CartographyMeshGroupDrawer
+from .... import config as draw_config
 
 
 # TODO check algo for negative leveled (based on z negative ?
@@ -69,8 +69,7 @@ class CartographyMeshLeveledGroupDrawer(CartographyMeshGroupDrawer):
 
     @staticmethod
     def _append_vertex_to_limits(vertex: BMVert, limit_vertices: List[BMVert], comp: Callable[[float, float], bool]):
-        predicate = (v for v in limit_vertices if utils.blender.bmesh.vert.same_2d_position(v, vertex))
-        limit_vertex = utils.collection.list.inext(predicate)
+        limit_vertex = next((v for v in limit_vertices if utils.blender.bmesh.vert.same_2d_position(v, vertex)), None)
         if not limit_vertex:
             limit_vertices.append(vertex)
         elif comp(vertex.co.z, limit_vertex.co.z):
@@ -153,10 +152,7 @@ class CartographyMeshLeveledGroupDrawer(CartographyMeshGroupDrawer):
         return faced_edges
 
     def _get_or_create_faced_edge(self, bm: BMesh, vert1: BMVert, vert2: BMVert) -> BMEdge:
-        edge = utils.collection.list.pnext(
-            self._edges,
-            lambda e: utils.blender.bmesh.edge.same_3d_position(e, (vert1, vert2))
-        )
+        edge = next((e for e in self._edges if utils.blender.bmesh.edge.same_3d_position(e, (vert1, vert2))), None)
         if not edge:
             edge = self._create_edge(bm, vert1, vert2)
         return edge
@@ -236,6 +232,7 @@ class CartographyMeshLeveledGroupDrawer(CartographyMeshGroupDrawer):
                 edges += linked_geom.based_edges
             else:
                 self.__logger.warning('Geometry not found for linked group: <%s>', linked_name)
+
         return edges
 
     def _create_faces(self, bm: BMesh, edges: List[BMEdge]) -> List[BMFace]:

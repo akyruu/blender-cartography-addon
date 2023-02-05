@@ -10,7 +10,9 @@ import utils
 from mathutils import Vector
 from model import CartographyPoint, CartographyCategory, CartographyCategoryType, CartographyInterestType, \
     CartographyRoom
+from utils.math import Location
 from ..common import CartographyRoomDrawer, CartographyTemplate
+from ...template.model import CartographyTemplateItem
 
 
 # Classes =====================================================================
@@ -82,9 +84,8 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
 
         locations = [utils.math.translate(p.location, vector) for p in points]
         locations = list(filter(
-            lambda loc: utils.collection.list.pnext(
-                locations,
-                lambda l: l != loc and utils.math.same_2d_position(l, loc) and l.z < loc.z,
+            lambda loc: next(
+                (l for l in locations if l != loc and utils.math.same_2d_position(l, loc) and l.z < loc.z),
                 None
             ) is None,
             locations

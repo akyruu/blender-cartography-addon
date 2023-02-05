@@ -20,7 +20,7 @@ def require_interest(category: CartographyCategory):
     return category.type == CartographyCategoryType.INTEREST and category.options.detailed_required
 
 
-def parse_point_category_v1p2(
+def parse_point_category(
         context: ParseContext,
         category_label: str,
         dft_value: Optional[CartographyCategory] = None,

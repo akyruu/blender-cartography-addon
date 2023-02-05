@@ -12,7 +12,7 @@ from ..model import ParseContext
 
 
 # METHODS =====================================================================
-def parse_point_interest_v1p2(
+def parse_point_interest(
         context: ParseContext,
         interest_label: str,
         dft_value: Optional[CartographyInterestType] = None,
