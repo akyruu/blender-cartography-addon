@@ -5,11 +5,9 @@ Module for outline of mesh group drawer
 import logging
 from typing import Dict, List, Optional, Tuple
 
+import utils
 from bmesh.types import BMEdge, BMesh, BMVert
-
 from model import CartographyCategory, CartographyGroup, CartographyPoint, CartographyRoom
-from utils.blender import bmesh as bmesh_utils
-from utils.collection import list as list_utils, dict as dict_utils
 from .common import CartographyMeshGroupContext, CartographyMeshGroupGeometry
 from .extruded import CartographyMeshExtrudedGroupDrawer
 
@@ -41,33 +39,35 @@ class CartographyMeshOutlineGroupDrawer(CartographyMeshExtrudedGroupDrawer):
             self.__gate_vertices.append(vertex)
         return vertex
 
+    def __is_gate_vertex(self, vertex: BMVert):
+        return vertex in self.__gate_vertices
+
     # Edges
     def _close_edge(self, bm: BMesh, vertices: List[BMVert]):
         vert1 = vertices[0]
-        if vert1 in self.__gate_vertices:
-            reverse_vertices = vertices.copy()
-            reverse_vertices.reverse()
+        vert2 = vertices[len(vertices) - 1]
 
-            vert2: Optional[BMVert] = None
-            for i in range(0, len(reverse_vertices)):
-                vert = reverse_vertices[i]
-                if vert in self.__gate_vertices:
-                    if not vert2 or vert.co.z > vert2.co.z:
-                        vert2 = vert
-                elif vert2:
-                    break
-        else:
-            vert2 = vertices[len(vertices) - 1]
+        # If edges corresponding to a gate, search for the most leveled point
+        # FIXME check if is always true (tested on 20201104_Salle1_v1.3.tsv)
+        if self.__is_gate_vertex(vert1) and self.__is_gate_vertex(vert2):
+            self.__logger.debug(f'Close edge [{vert1.co}, {vert2.co}] correspond to a GATE: search leveled point...')
+            reversed_gate_vertices = self.__gate_vertices.copy()
+            reversed_gate_vertices.reverse()
+            vert2 = next((
+                v for v in reversed_gate_vertices
+                if utils.math.same_2d_position(v.co, vert2.co) and v.co.z > vert2.co.z
+            ), vert2)
+            self.__logger.debug(f'Leveled point found: {vert2.co}')
 
         self._create_edge(bm, vert2, vert1)
 
     def _is_edge_to_level(self, edge: BMEdge):  # overridden
         return CartographyMeshExtrudedGroupDrawer._is_edge_to_level(self, edge) \
-               and not self.__is_gate_edge(edge)
+            and not self.__is_gate_edge(edge)
 
     def __is_gate_edge(self, edge: BMEdge):
         vert1, vert2 = edge.verts
-        return vert1 in self.__gate_vertices and vert2 in self.__gate_vertices
+        return self.__is_gate_vertex(vert1) and self.__is_gate_vertex(vert2)
 
     # Faces - Ground
     def _draw_ground_face(self, context: CartographyMeshGroupContext):  # overridden
@@ -104,7 +104,7 @@ class CartographyMeshOutlineGroupDrawer(CartographyMeshExtrudedGroupDrawer):
             linked_names = [g.name for g in group.linked]
             if linked_names:
                 self.__logger.debug('Delete linked geometry to group <%s>: <%s>', group_name, str(linked_names))
-                dict_utils.pop_all(filtered_geom_by_group, linked_names)
+                utils.collection.dict.pop_all(filtered_geom_by_group, linked_names)
 
         # Split filtered geoms
         for group_name, geom in filtered_geom_by_group.items():  # Outline group isn't in this dictionary
@@ -120,7 +120,7 @@ class CartographyMeshOutlineGroupDrawer(CartographyMeshExtrudedGroupDrawer):
         based_edges = geom.based_edges
         for i, edge in enumerate(edges):
             for based_edge in based_edges:
-                if bmesh_utils.edge.has_3d_junction(edge, based_edge):
+                if utils.blender.bmesh.edge.has_3d_junction(edge, based_edge):
                     junction_edges.append(edge)
 
         # Remove outline edges in collision and insert based edges of geometry
@@ -132,8 +132,8 @@ class CartographyMeshOutlineGroupDrawer(CartographyMeshExtrudedGroupDrawer):
                     'Replace <%d> outline edges by <%d> based edges from group <%s>',
                     end_index - start_index, len(based_edges), group_name
                 )
-                list_utils.remove_sublist(edges, start_index, end_index)
-                list_utils.insert_values(edges, start_index, based_edges)
+                utils.collection.list.remove_sublist(edges, start_index, end_index)
+                utils.collection.list.insert_values(edges, start_index, based_edges)
             else:
                 # TODO
                 print('TODO')

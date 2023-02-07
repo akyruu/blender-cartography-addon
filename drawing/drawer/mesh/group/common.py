@@ -92,7 +92,7 @@ class CartographyMeshGroupDrawer:
         vertex = self._create_vertex_internal(bm, point.location)
         if append:
             if vertex in self._vertices:
-                raise Exception(f'Duplicated vertex: <{vertex.co}>')
+                raise Exception(f'[{point.name}] Duplicated vertex: <{vertex.co}>')
             self._vertices.append(vertex)
         return vertex
 

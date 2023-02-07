@@ -3,16 +3,16 @@ Mappings for parsing about interests
 """
 
 from model import CartographyInterestType
-from .common import __to_value_by_patterns
+from . import utils as config_utils
 
 # CONFIG ======================================================================
 # Type of cartography interest
-by_pattern = __to_value_by_patterns({
+by_pattern = config_utils.pattern.config({
     # Objects
     CartographyInterestType.LITTLE_BOX: ["Littles? box(es)?", "Petites? caisses?"],
     CartographyInterestType.BOX: ["Big box(es)?", "Grosses? caisses?"],
     # Harvestable
     CartographyInterestType.LICHEN: ["Lichens?"],
     CartographyInterestType.ORE: ["Ores?", "Minerai?"],
-    CartographyInterestType.FECES: ["Ores?", "Minerai?"]
+    CartographyInterestType.FECES: ["Feces?", "(Mati[ère]s? )?f[ée]cale?s?|Extr[ée]ments"]
 })

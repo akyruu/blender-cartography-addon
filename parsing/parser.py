@@ -51,6 +51,7 @@ class CartographyParser:
 
         # Post-treatments
         self.__treat_group_links(context.room)
+        self.__treat_input_errors(context.room)
 
         return context.room
 
@@ -113,3 +114,19 @@ class CartographyParser:
                     self.__logger.warning('Column not found for column: <%s>', linked_group)
             else:
                 self.__logger.warning('Column group name not found for base: <%s>', group_name)
+
+    def __treat_input_errors(self, room: CartographyRoom):
+        # Check no duplicated values
+        points = room.all_points
+        for i in range(0, len(points)):
+            curr_point = points[i]
+            same_point = next((
+                p for p in utils.collection.list.sublist(points, i + 1)
+                if p.is_same(curr_point)
+            ), None)
+            if same_point:
+                self.__logger.warning(
+                    'Point <%s>: an another point %s already exist for coordinates %s. Ignore this point',
+                    curr_point.name, same_point.name, curr_point.location
+                )
+                room.remove_point(curr_point)

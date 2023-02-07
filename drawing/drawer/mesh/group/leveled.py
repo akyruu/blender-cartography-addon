@@ -220,6 +220,12 @@ class CartographyMeshLeveledGroupDrawer(CartographyMeshGroupDrawer):
 
     def _draw_ground_face(self, context: CartographyMeshGroupContext):
         ground_edges = self._get_ground_edges(context)
+        ground_edges_count = len(ground_edges)
+        if ground_edges_count < 3:
+            # TODO raise an exception and intercept in parent call ???
+            self.__logger.debug(f'Failed to draw ground face: insufficient edges {ground_edges_count} < 3. Ignored')
+            return
+
         self._create_faces(context.bm, ground_edges)
 
     def _get_ground_edges(self, context: CartographyMeshGroupContext) -> List[BMEdge]:

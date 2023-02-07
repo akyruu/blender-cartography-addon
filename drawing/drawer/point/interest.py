@@ -85,7 +85,7 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
         locations = [utils.math.translate(p.location, vector) for p in points]
         locations = list(filter(
             lambda loc: next(
-                (l for l in locations if l != loc and utils.math.same_2d_position(l, loc) and l.z < loc.z),
+                (l_ for l_ in locations if l_ != loc and utils.math.same_2d_position(l_, loc) and l_.z < loc.z),
                 None
             ) is None,
             locations
@@ -166,61 +166,67 @@ class CartographyInterestPointDrawer(CartographyRoomDrawer):
         self.__logger.debug('Draw anthropogenic object: <%s>', str(point))
 
         # Check point
-        if point.interest is None:  # FIXME move the unknown code ?
+        interest_type = point.interest
+        if interest_type is None:  # FIXME move the unknown code ?
             self.__logger.warning('An interest is required for anthropic object point: <%s>.', str(point))
             return False
-        else:
-            interest = point.interest
-            template = self._get_template_object(interest, 'interest type')
+        template_item = self._get_template_interest_item(interest_type)
 
         # Get template
-        if template is None:
-            self.__logger.error('No template found for anthropogenic object: <%s>. Ignored', point.interest)
+        if not template_item or not template_item.object:
+            self.__logger.error('No template found for anthropogenic object: <%s>. Ignored', interest_type)
             return False
 
         # Create objects
         location = Vector((point.location.x, point.location.y, point.location.z))
-        utils.blender.object.create_from_template(point.get_label(), location, template, collection)
+        utils.blender.object.create_from_template(point.get_label(), location, template_item.object, collection)
 
         return True
 
     def __draw_other(self, point: CartographyPoint, collection: bpy.types.Collection) -> bool:
-        self.__logger.debug('Draw interest point: <%s>', str(point))
-
-        # Get template and create point
-        template = self._get_template_object(point.category, 'category')
-        if template is None:
-            self.__logger.warning('No template found for interest point: <%s>.', str(point))
-            return False
-        obj = utils.blender.object.create_from_template(point.get_label(), point.location, template, collection)
-
-        # Icon
-        if point.interest is not None:
-            interest = point.interest
-
-            # Get icon template
-            template = self._get_template_object(interest, 'interest type')
-            if template is None:
-                self.__logger.warning('No template found for interest type: <%s>.', str(interest))
-                return False
-
-            # Create image
-            name = obj.name + '_icon'
-            z = obj.location.z + obj.dimensions.z  # noqa
-            utils.blender.object.create_from_template(name, (obj.location[0], obj.location[1], z), template, collection)
+        self.__logger.debug('Draw other interest point: <%s>', point.name)
+        self.__draw_obj(point, point.category, point.interest, collection)
         return True
 
     def __draw_unknown(self, point: CartographyPoint, collection: bpy.types.Collection):
-        self.__logger.debug('Draw unknown point', point, collection)
+        self.__logger.debug('Draw unknown point <%s> in collection <%s>)', point.name, collection.name)
+        self.__draw_obj(point, CartographyCategory.UNKNOWN, CartographyInterestType.UNKNOWN, collection)
 
-        # FIXME determined model with icon with config ?
-        base_template = self._get_template_object(CartographyCategory.UNKNOWN, 'category')
-        base_obj_name = point.name + ' (' + ', '.join(point.observations) + ')'
-        obj = utils.blender.object.create_from_template(base_obj_name, point.location, base_template, collection)
+    def __draw_obj(
+            self,
+            point: CartographyPoint,
+            category: CartographyCategory,
+            interest: CartographyInterestType,
+            collection: bpy.types.Collection
+    ) -> bool:
+        has_interest = interest is not None
+        if has_interest:
+            collection = utils.blender.collection.create(point.get_label(), collection)
 
-        # Create image
-        icon_template = self._get_template_object(CartographyInterestType.UNKNOWN, 'interest type')
-        icon_obj_name = base_obj_name + '_icon'
-        z = obj.location.z + obj.dimensions.z  # noqa
-        utils.blender.object.create_from_template(icon_obj_name, (obj.location[0], obj.location[1], z), icon_template,
-                                                  collection)
+        # Create base object
+        base_name = f'{point.get_label()}_base' if has_interest else point.get_label()
+        base_location = point.location
+        base_template_item = self._get_template_category_item(category)
+        base_obj_item = self.__draw_obj_item(base_name, base_location, base_template_item, collection)
+
+        if interest:
+            # Create interest image and place it on top of base object
+            image_location = utils.math.translate(base_location, (0, 0, base_obj_item.dimensions.z))
+            image_template_item = self._get_template_interest_item(interest)
+            self.__draw_obj_item(f'{point.get_label()}_icon', image_location, image_template_item, collection)
+        return True
+
+    @staticmethod
+    def __draw_obj_item(
+            obj_name: str,
+            location: Location,
+            template_item: CartographyTemplateItem,
+            collection: bpy.types.Collection
+    ) -> bpy.types.Object:
+        # Check template
+        if not template_item or not template_item.object:
+            return None
+
+        # Create object
+        obj_location = utils.math.translate(location, (0, 0, template_item.config.z_translation))
+        return utils.blender.object.create_from_template(obj_name, obj_location, template_item.object, collection)

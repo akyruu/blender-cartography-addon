@@ -44,6 +44,13 @@ class CartographyPoint:
     def get_all_categories(self):
         return set([self.category] + list(self.additional_categories))
 
+    def is_same(self, other) -> bool:
+        return other and isinstance(other, CartographyPoint) \
+            and self.category == other.category \
+            and self.interest == other.interest \
+            and self.group_identifier == other.group_identifier \
+            and utils.math.same_3d_position(self.location, other.location)
+
     def __repr__(self):
         return utils.object.to_repr(self)
 
@@ -88,8 +95,8 @@ class CartographyJunction:
         self.points2.append(point2)
         self.points.append((point1, point2))
 
-    def has_point(self, point: CartographyPoint) -> bool:
-        return next((True for (p1, p2) in self.points if p1.is_same(point) or p2.is_same(point)), False)
+    def has_same_point(self, point: CartographyPoint) -> bool:
+        return next((1 for (p1, p2) in self.points if p1.is_same(point) or p2.is_same(point)), None) is not None
 
     def __repr__(self):
         return utils.object.to_repr(self)
@@ -112,6 +119,20 @@ class CartographyRoom:
     @property
     def all_points(self) -> List[CartographyPoint]:
         return [p for g in self.groups.values() for p in g.points]
+
+    def remove_point(self, point: CartographyPoint) -> bool:
+        removed = False
+        for group in self.groups.values():
+            if point in group.points:
+                group.points.remove(point)
+                removed = True
+                break
+        if removed:
+            junctions_to_remove = [j for j in self.junctions if j.has_same_point(point)]
+            for junction in junctions_to_remove:
+                self.junctions.remove(junction)
+
+        return removed
 
     def add_junction(self, group1: CartographyGroup, group2: CartographyGroup) -> CartographyJunction:
         junction = CartographyJunction(group1, group2)

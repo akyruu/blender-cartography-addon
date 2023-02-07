@@ -2,7 +2,8 @@ import logging
 import os
 
 import utils
-from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyMeshDrawer
+from drawing import CartographyDrawer, CartographyInterestPointDrawer, CartographyMeshDrawer, \
+    CartographyStructuralPointDrawer
 from drawing.template.reader import CartographyTemplateReader
 from parsing import CartographyParser
 from reading import CartographyCsvReader, CartographyTsvReader
@@ -57,7 +58,7 @@ def __parse_cartography_file(file):
 
 def __read_blender_template():
     blend_path = os.path.join(utils.io.path.workspace(), 'bca-template.blend')
-    __logger.info('Read .blend template <%s>', blend_path)
+    __logger.info('Read .blend utils <%s>', blend_path)
     reader = CartographyTemplateReader()
     template = reader.read(blend_path)
     __logger.info('Template .blend <%s> read with success!', blend_path)
@@ -68,7 +69,7 @@ def __draw_blender_model(room, template):
     __logger.info('Draw room <%s>', room.name)
     drawer = CartographyDrawer(
         template,
-        # CartographyStructuralPointDrawer(template),
+        CartographyStructuralPointDrawer(template, hidden=True),
         CartographyMeshDrawer(template),
         CartographyInterestPointDrawer(template)
     )

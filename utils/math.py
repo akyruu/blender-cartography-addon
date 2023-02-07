@@ -13,6 +13,10 @@ BiLocation = Tuple[Location] or List[Location]
 
 
 # METHODS =====================================================================
+def create_vector(x, y, z):
+    return Vector((x, y, z))
+
+
 def distance_3d(loc1: Location, loc2: Location) -> float:
     """Distance between two point in 3D"""
     return math.sqrt(

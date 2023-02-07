@@ -1,1 +1,1 @@
-from . import template
+from . import model, template

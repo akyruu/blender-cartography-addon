@@ -3,11 +3,11 @@ Mappings for parsing about categories
 """
 
 from model import CartographyCategory
-from .common import __to_value_by_patterns
+from . import utils as config_utils
 
 # CONFIG ======================================================================
 # Type of cartography points
-by_pattern = __to_value_by_patterns({
+by_pattern = config_utils.pattern.config({
     CartographyCategory.OUTLINE: ["Outline", "Contour"],
     CartographyCategory.GATE: ["Gate", "Porte", "Entr[ée]e"],
     CartographyCategory.ESCARPMENT: ["Escarpment", "Escarpement"],
@@ -23,6 +23,3 @@ by_pattern = __to_value_by_patterns({
     CartographyCategory.ANTHROPOGENIC_OBJECT: ["(Anthropogenics? )?Objects?", "Objets?( Anthropiques?)?"],
     CartographyCategory.STRUCTURE: ["Structure"]
 })
-
-# Cartography: pattern for determinate a junction
-cartography_junction_pattern = '(Jonction|Junction) .+ (' + '|'.join(by_pattern.keys()) + ')'

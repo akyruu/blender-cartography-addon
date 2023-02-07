@@ -16,10 +16,13 @@ __logger = logging.getLogger('blender_bmesh_face')
 
 # METHODS =====================================================================
 def new(bm: BMesh, edges: List[BMEdge], use_only_triangle=False) -> List[BMFace]:
+    edges_count = len(edges)
+    if edges_count < 3:
+        raise Exception(f'Insufficient edges: {edges_count} < 3 ({[[v.co for v in e.verts] for e in edges]}')
+
     try:
         fill = bmesh.ops.triangle_fill(bm, use_beauty=True, use_dissolve=False, edges=edges)  # noqa
     except ValueError as err:
-        return []  # FIXME test
         duplicated_edges = edge_utils.get_duplicated(edges)
         if duplicated_edges:
             raise Exception(

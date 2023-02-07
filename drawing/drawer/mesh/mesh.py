@@ -25,7 +25,7 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
 
     # Constructor -------------------------------------------------------------
     def __init__(self, template: CartographyTemplate):
-        CartographyRoomDrawer.__init__(self, 'mesh', template)
+        CartographyRoomDrawer.__init__(self, 'Plan 3D', template)
         self.__outline_drawer = CartographyMeshOutlineGroupDrawer()
         self.__drawers = {
             lambda c: c.options.outline: self.__outline_drawer,
@@ -35,14 +35,14 @@ class CartographyMeshDrawer(CartographyRoomDrawer):
 
     # Methods -----------------------------------------------------------------
     def draw(self, room: CartographyRoom, collection: bpy.types.Collection):
-        # Get template
-        template = self._get_template_object(CartographyObjectType.PLANE, 'object type')
-        if template is None:
+        # Get utils
+        template_item = self._get_template_object_item(CartographyObjectType.PLANE)
+        if not template_item or not template_item.object:
             return
 
         # Create object
         name = room.name + '_plane'
-        obj = utils.blender.object.create_from_template(name, (0, 0, 0), template, collection)
+        obj = utils.blender.object.create_from_template(name, (0, 0, 0), template_item.object, collection)
 
         # Create and clean BMesh
         mesh = utils.blender.object.get_mesh(obj)

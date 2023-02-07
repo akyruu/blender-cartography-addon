@@ -13,9 +13,6 @@ from . import vert as vert_utils
 
 # METHODS =====================================================================
 def new(bm: BMesh, vert1: BMVert, vert2: BMVert) -> BMEdge:
-    edge = get(bm, [vert1, vert2])  # FIXME test
-    if edge:  # FIXME test
-        return edge  # FIXME test
     return bm.edges.new([vert1, vert2])  # noqa
 
 
